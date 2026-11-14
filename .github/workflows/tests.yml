@@ -1,0 +1,28 @@
+# Unit tests (CPU, synthetic data) and the check of the hash-frozen analysis plans, on every push.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+      - name: Install (CPU-only PyTorch)
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 fonts-liberation
+          python -m pip install --upgrade pip
+          pip install torch==2.14.0 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+      - name: Analysis plans unchanged since their freezes
+        run: python tools/verify_freeze.py
+      - name: Tests
+        run: python -m pytest -q

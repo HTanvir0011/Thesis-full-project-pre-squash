@@ -1,0 +1,15 @@
+# single config for the project; no secrets here (tokens live only in C:\Thesis new\*_Token.txt)
+accounts:            # label -> Kaggle username. RibCXR (licensed) is allowed ONLY on ac_1, the DUA holder.
+  ac_1: ac_1
+  ac_2: ac_2
+  ac_3: ac_3
+  ac_4: ac_4
+  ac_5: ac_5
+  ac_6: ac_6   # ac_6-ac_8 added 2026-11-02 (fresh 30 GPU-h each)
+  ac_7: ac_7      # replaced ac_7_former (no phone verification) on 2026-11-02; passed GPU/internet test; no VinBigData rules (403)
+  ac_8: ac_8           # replaced ac_8_former (no phone verification) on 2026-11-02
+  ac_9: ac_9
+licensed_only_on: ac_1
+vinbigdata_joined: [ac_1, ac_8, ac_9]   # accounts that accepted the VinBigData competition rules (checked 2026-11-02 by downloading sample_submission.csv; ac_6 got 403)
+seed: 20261026
+lidc_dataset: washingtongold/lidcidri30

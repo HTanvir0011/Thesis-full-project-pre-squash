@@ -1,0 +1,129 @@
+% Thesis introduction. Longer than paper/sections/introduction.tex, which is not input here. No result numbers except in the summary of answers,
+% which are copied from the generated tables.
+\section{Motivation}
+This thesis develops an explainable and hallucination-aware framework in which chest CT supervises models that read chest radiographs. It
+has two parts. The first, which takes most of the thesis, trains bone suppressors on projections rendered from CT and asks whether they
+erase lesions; it also asks whether classifiers gain from the suppressed images. The second uses CT to teach a Swin transformer classifier
+of radiographs directly, through a CT classifier and projections of the same patients, and asks whether that classifier becomes more
+accurate, whether its explanations agree with those of the CT model, and whether it reports fewer findings that are not there. Both parts
+ask the same question of a CT-supervised model: what it keeps, what it invents and where it looks.
+
+A chest radiograph projects the whole thorax onto one plane. Ribs, clavicles and the spine lie over most of the lung fields, and a small nodule
+or an early consolidation that sits behind a rib has to be seen through the bone shadow. Software that suppresses rib and clavicle shadows has
+been shown to help readers find lung nodules \citep{freedman2011lung}, and computer-aided detection has been evaluated on such images as well
+\citep{schalekamp2014cad}.
+
+Dual-energy subtraction (DES) separates bone and soft tissue physically: two exposures at different tube voltages are combined so that either
+material cancels \citep{kuhlman2006des}. It needs dedicated hardware and a second exposure, and it is rare outside larger centres. Learning-based
+bone suppression produces a comparable soft-tissue image from a single standard radiograph. Two families exist today. One trains generative
+models on real dual-energy pairs \citep{chen2024bsdiff,sun2026bsldm,sun2025gllcm,sun2026debonedit}; it needs paired data from the target
+hospital. The other renders paired supervision from chest CT: each scan is split into bone and soft tissue, the parts are projected separately,
+and a network learns to predict one component from their sum \citep{angaitkar2026anatomy}. The second family can be trained on public data,
+and the bone image of every training sample is known exactly.
+
+CT can also supervise a radiograph classifier more directly. Public data sets now pair chest CT volumes with report-derived findings
+\citep{hamamci2026ctrate}, and the projections of those volumes \citep{angaitkar2026anatomy} pair each scan with a radiograph-like image of
+the same patient. A classifier trained on CT sees each finding without the overlap of ribs, heart and mediastinum, and knowledge
+distillation \citep{hinton2015distilling} offers a way to pass what it learned to an X-ray model through the paired images. Swin
+transformers \citep{liu2022swinv2} can serve both modalities with one architecture, which makes the transfer and the comparison of their
+heat maps straightforward.
+
+\section{Problem statement}
+A suppressor is usually judged by how closely its output matches a reference image: PSNR and SSIM against a dual-energy soft-tissue image, or
+the error of the bone image on rendered data. These measures reward a correct bone estimate on average over the image. They do not ask what
+happens to a lesion. A network that predicts the bone image is free to assign part of a nodule's signal to that image, because the nodule is
+small, dense and, behind a rib, hard to tell from bone. The suppressed image $s=x-f(x)$ then shows less of the lesion than the radiograph did,
+which defeats the purpose of suppression. Fidelity metrics hardly change, because the lesion covers a few hundred pixels of an image of a
+million.
+
+Measuring this needs a lesion whose signal is known, and real radiographs do not come with one. A second difficulty is that the safest model
+by this measure is one that does nothing: the identity removes no bone and no lesion. Any measure of lesion loss must therefore be read next to
+a measure of how much bone the model removes. Figure~\ref{fig:audit_maps} (Chapter~\ref{ch:audit}) shows the problem on one radiograph: the
+same added nodule is moved into the bone image to very different degrees by three suppressors.
+
+Classifiers raise the mirror-image problem. A classifier can report a finding the image does not contain, or miss one it does, and its
+accuracy on a test set does not say which images or which changes provoke such errors. Heat maps are meant to show where a classifier looks,
+but they are often not checked against expert annotations, and the common gradient-based maps were designed for convolutional networks
+rather than transformers \citep{chattopadhay2018gradcampp}. When CT is used to teach an X-ray classifier, three things therefore need testing besides accuracy: whether the transfer helps
+on real radiographs at all, whether the two models attend to the same place in the same patient, and whether the classifier hallucinates
+less when the image changes in ways that add anatomy but no disease.
+
+\section{Research questions}
+The thesis answers six research questions; each is tied to pre-specified hypotheses of the four analysis plans (Chapters~\ref{ch:v1},
+\ref{ch:v2}, \ref{ch:classifier} and~\ref{ch:crossmodal}).
+\begin{description}
+\item[RQ1] Is supervision with exact CT components enough to keep lesions, and how much of a lesion does a model trained on rendered LIDC-IDRI
+ data absorb? (first plan, H1; Chapter~\ref{ch:v1})
+\item[RQ2] Does a lesion-invariance (twin) regulariser lower absorption without losing fidelity on real radiographs? (second plan, H1$'$, H2$'$
+ and H3$'$; Chapters~\ref{ch:v2}, \ref{ch:audit} and~\ref{ch:benchmark})
+\item[RQ3] Does the counterfactual audit measure something real, that is, does evidence that does not use lesion insertion agree with it?
+ (H4$'$a; Chapter~\ref{ch:benchmark})
+\item[RQ4] Does it matter for downstream tasks, and how reliable is the output: does the ensemble spread track the error, and do conformal
+ intervals cover it, also on a population no model was trained on? (H4$'$b and H5$'$; Chapters~\ref{ch:benchmark}, \ref{ch:reliability}
+ and~\ref{ch:external})
+\item[RQ5] Do classifiers gain from the suppressor's soft-tissue and bone images when they read them as separate streams, compared with a
+ control of the same capacity, and for which findings? (third plan, H6--H8 and H10; Chapter~\ref{ch:classifier})
+\item[RQ6] Does knowledge distilled from a Swin CT classifier into a Swin X-ray classifier improve the classification of real radiographs,
+ do the CT and X-ray models attend to the same place in the same patient, and does the transfer make the classifier hallucinate less?
+ (fourth plan, H11--H15; Chapter~\ref{ch:crossmodal})
+\end{description}
+
+\section{Contributions}
+\begin{enumerate}
+\item A counterfactual lesion audit that measures the fraction of an added lesion a suppressor moves into its bone image, on real radiographs,
+ at sites shared by all models, with bone overlap taken from independent annotations, and reported beside suppression strength (first paper and
+ thesis).
+\item A twin lesion-invariance regulariser for CT-supervised suppressors, with a dose-response over its weight and an ablation of its parts
+ (first paper and thesis).
+\item A training recipe on public data only (rendered LIDC-IDRI CTs in the first study, the Qure.ai CT projections in the second), with a
+ three-model ensemble, split-conformal intervals and a screen of modern encoders (first paper and thesis; the v1 study, the renderer and the
+ physics are described in full only here).
+\item Two pre-specified evaluations on locked sets, with downstream classification and detection, an external validation on paediatric
+ radiographs, and every change to the analysis disclosed, including negative results (first paper and thesis; the negative results and the
+ deviations log are thesis appendices).
+\item A pre-specified test of whether classifiers gain from the soft-tissue and bone images, used alone, stacked or as streams of a multi-stream
+ network, against a control of the same capacity, with an analysis by finding group, stream-wise attribution maps scored against expert boxes
+ and conformal uncertainty (second paper and thesis).
+\item An explainable, hallucination-aware Swin transformer framework for cross-modality chest CT and X-ray classification: a 2.5D Swin CT
+ classifier on CT-RATE, its distillation into an X-ray classifier through paired projections, a test of heat-map agreement between the
+ modalities, counterfactual hallucination tests and conformal false-negative control, evaluated under a fourth pre-specified plan against a
+ DenseNet-121 reference (thesis).
+\end{enumerate}
+
+\section{Outline of the thesis}
+Chapter~\ref{ch:background} introduces chest radiography, dual-energy subtraction, learning-based suppression, the architectures, metrics,
+uncertainty methods and statistics used later. Chapter~\ref{ch:data} describes the data sets and the CT-to-radiograph physics of the first
+study. Chapter~\ref{ch:v1} reports the first, pre-specified study on rendered LIDC-IDRI data and the real-image check that led to the second
+plan. Chapter~\ref{ch:v2} presents the Qure.ai projections as an exactly additive training source, the twin regulariser, the exploratory
+screening that fixed its operating point, the dose-response and the encoder screen. Chapter~\ref{ch:audit} defines and validates the audit and
+reports the confirmatory audit. Chapter~\ref{ch:benchmark} gives the experimental design and the locked-set results for fidelity, rib
+suppression, real nodules and downstream tasks. Chapter~\ref{ch:reliability} reports the ensemble uncertainty, and Chapter~\ref{ch:external}
+the external validation on BDCXR-3257. Chapter~\ref{ch:classifier} tests whether classifiers gain from the suppressor's images (third plan),
+and Chapter~\ref{ch:crossmodal} builds and tests the cross-modality Swin framework (fourth plan). Chapter~\ref{ch:discussion} discusses the
+findings of the suppression studies and their limits, Chapter~\ref{ch:ethics} covers reproducibility, licences and ethics, and
+Chapter~\ref{ch:conclusion} answers the research questions. Appendix~\ref{app:deviations} lists the deviations from the analysis plans,
+Appendix~\ref{app:negative} the negative and null results, Appendix~\ref{app:extra} additional tables, and Appendix~\ref{app:classifier}
+the deviations and additional figures of the classifier study. Two papers accompany this thesis: the first reports the second study, the
+second the classifier study of Chapter~\ref{ch:classifier}. The v1 study, the physics details, the screening history, the cross-modality
+study, the negative results and the ethics chapter are given in full only here.
+
+\section{Notation}
+\begin{center}
+\begin{tabular}{@{}lp{0.68\linewidth}@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$x$ & radiograph (or training composite), intensities in $[0,1]$ \\
+$b$, $s=x-b$ & bone image and soft-tissue image \\
+$f$, $f_k$ & suppressor (predicts the bone image), member $k$ of an ensemble of $K$ \\
+$\bar f$, $\sigma$ & ensemble mean and per-pixel standard deviation (spread) \\
+$n$, $\alpha$ & lesion signal added to an image, its amplitude \\
+$A$ & absorption: fraction of $\alpha n$ moved into the bone estimate (Equation~\ref{eq:absorption}) \\
+$w$ & weight of the twin lesion-invariance term (Equation~\ref{eq:twin}) \\
+$M$ & lesion support used by the twin term \\
+$X$, $S$, $\hat B$ & classifier inputs in Chapter~\ref{ch:classifier}: radiograph, predicted soft-tissue and bone image \\
+P0, P1 & projection models of Chapter~\ref{ch:crossmodal}, without and with distillation from the CT teacher \\
+F$_\mathrm{in}$, F$_\mathrm{p0}$, F$_\mathrm{p1}$ & NIH classifiers of Chapter~\ref{ch:crossmodal}, initialised from ImageNet, P0 and P1 \\
+\bottomrule
+\end{tabular}
+\end{center}

@@ -1,0 +1,8 @@
+{
+ "ct_run": "/kaggle/input/notebooks/ac_1/s4-v4-ct-a/results/ct_xm_ct_s1",
+ "xr_run": "/kaggle/input/datasets/ac_1/s4-xm-xray/results/qp_xm_xray_s1",
+ "n_scans": 227,
+ "n_maps": 419,
+ "frame_r": 0.472065488011925,
+ "frame_r_flip": 0.4350721040486239
+}

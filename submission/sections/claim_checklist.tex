@@ -1,0 +1,55 @@
+% CLAIM 2024 (tejani2024claim): where each item is addressed. Shared by paper/main.tex and thesis/main.tex; only labels defined in both are used.
+% The item labels are short paraphrases; the checklist itself (RSNA) is not reproduced and must be filled in its official form for submission.
+Item numbers follow the CLAIM 2024 checklist \citep{tejani2024claim}; the labels are short paraphrases.
+{\footnotesize
+\begin{longtable}{@{}rp{0.28\linewidth}p{0.6\linewidth}@{}}
+\toprule
+No. & Item (paraphrased) & Where addressed \\
+\midrule
+\endhead
+1 & AI in the title & Title (learned bone-suppression models). \\
+2 & Structured summary & Abstract (background, purpose, methods, results, conclusions). \\
+3 & Background, intended use & Introduction; research use only (Section~\ref{sec:limitations}). \\
+4 & Aims and hypotheses & Introduction; hypotheses H1$'$--H5$'$ and E1--E3 (Section~\ref{sec:experiments}). \\
+5 & Prospective or retrospective & Retrospective study of existing data sets (Section~\ref{sec:data}). \\
+6 & Study goal & Development on development data, then a pre-specified confirmatory evaluation (Section~\ref{sec:experiments}). \\
+7 & Data sources & Section~\ref{sec:data} and Table~\ref{tab:data}. \\
+8 & Inclusion and exclusion & Usable-CT rules, VinBigData consensus boxes, BDCXR-3257 classes (Section~\ref{sec:data}). \\
+9 & Preprocessing & Sections~\ref{sec:methods} and~\ref{sec:method_v2}; per-set preparation in Section~\ref{sec:data}. \\
+10 & Data subsets & SZCH development and held-out parts, training/validation/test splits (Section~\ref{sec:data}). \\
+11 & De-identification & Data de-identified by their providers; no re-identification or linkage (Declarations; reproducibility). \\
+12 & Missing data & No unreadable image in any set (Section~\ref{sec:data}); two Node21 boxes without a defined contrast dropped (Table~\ref{tab:nodule_cnr}). \\
+13 & Acquisition protocol & SZCH-X-Rays scanner and DES mode (Section~\ref{sec:data}); other sets as described by their providers. \\
+14 & Reference standard & Dual-energy soft-tissue image, exact synthetic components, radiologist rib masks, provider labels and boxes (Sections~\ref{sec:data} and~\ref{sec:audit}). \\
+15 & Rationale for the reference standard & Section~\ref{sec:audit} (why independent bone overlap); Section~\ref{sec:data}. \\
+16 & Source of annotations & Annotations of the data providers; none made in this study (Section~\ref{sec:data}). \\
+17 & Test-set annotation & As provided; VinBigData boxes kept only where two radiologists agree (Section~\ref{sec:data}). \\
+18 & Inter- and intra-rater variability & Not assessed; consensus rule for VinBigData only (Section~\ref{sec:data}). \\
+19 & Assignment to partitions & Hash-based patient- or image-level splits; grouped folds for BDCXR-3257 (Sections~\ref{sec:data} and~\ref{sec:bdcxr_protocol}). \\
+20 & Disjointness of partitions & Patient-level for CTs and NIH, image-level for detection sets, near-duplicate groups for BDCXR-3257 (Section~\ref{sec:data}). \\
+21 & Intended sample size & No power calculation; set sizes are those of the available data (Section~\ref{sec:experiments}). \\
+22 & Model description & Sections~\ref{sec:methods} and~\ref{sec:method_v2}. \\
+23 & Software and versions & Code repository and evaluation scripts (Section~\ref{sec:repro}). \\
+24 & Parameter initialisation & Pretrained encoders (Section~\ref{sec:method_v2}). \\
+25 & Training details & Section~\ref{sec:method_v2} (suppressors) and Section~\ref{sec:experiments} (downstream models). \\
+26 & Final-model selection & Pre-declared rules R1, R2 and the tie-break; v1 selection on validation CTs (Section~\ref{sec:experiments}). \\
+27 & Ensembling & Three-model deep ensemble (Section~\ref{sec:method_v2}). \\
+28 & Metrics & Sections~\ref{sec:experiments} and~\ref{sec:audit}. \\
+29 & Significance and uncertainty & Bootstrap intervals, Wilcoxon, DeLong, Holm (Section~\ref{sec:experiments}). \\
+30 & Robustness and sensitivity & Amplitude sweep (Table~\ref{tab:app_amplitude}), three encoders (Table~\ref{tab:encoders}), external validation (Section~\ref{sec:bdcxr_protocol}). \\
+31 & Explainability & Audit maps (Figure~\ref{fig:audit_maps}); no saliency methods were used. \\
+32 & Internal evaluation & Held-out SZCH pairs and synthetic test data (Tables~\ref{tab:szch_heldout} and~\ref{tab:app_qp}). \\
+33 & External testing & VinDr-RibCXR, JSRT, Node21, TBX11K, VinBigData, NIH ChestX-ray14, BDCXR-3257 (Section~\ref{sec:data}). \\
+34 & Clinical trial registration & Not applicable (no clinical trial); the analysis plans were frozen and hashed before testing (Section~\ref{sec:repro}) but not deposited in a public registry. \\
+35 & Cases included and excluded & Section~\ref{sec:data} (images per set and split). \\
+36 & Demographics per partition & Not available for most sets; age and sex of BDCXR-3257 summarised (Section~\ref{sec:data}). \\
+37 & Performance with uncertainty & Every result table reports 95\,\% intervals. \\
+38 & Diagnostic performance & Downstream AUROC and detection metrics (Tables~\ref{tab:downstream_cls}, \ref{tab:downstream_det} and~\ref{tab:bdcxr_cls}). \\
+39 & Failure analysis & Failed hypotheses and limits (Section~\ref{sec:limitations}); audit failure cases (Section~\ref{sec:audit}). \\
+40 & Limitations & Section~\ref{sec:limitations}. \\
+41 & Implications for practice & Section~\ref{sec:discussion}. \\
+42 & Protocol & SAP.md, SAP\_v2.md and SAP\_bdcxr.md, frozen before evaluation (Section~\ref{sec:repro}). \\
+43 & Availability of code, model and data & Section~\ref{sec:repro}. \\
+44 & Funding & Acknowledgements. \\
+\bottomrule
+\end{longtable}}

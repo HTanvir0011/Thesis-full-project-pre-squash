@@ -1,0 +1,4 @@
+== clia_v1: python -m s4.eval_synth --ckpt $(echo ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt | sed 's/^[a-z]*://; s/+/ /g') --bank outputs/shard0/render outputs/shard1/render outputs/shard2/render --split splits/ct_split.csv --out results/final/synth/clia_v1
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.008140483028196458, 'psnr': 38.48457830163497, 'ssim': 0.9606970171385174, 'lcr': 3.256712453015149, 'absorption': 0.36495378493935116}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.007652924266419833, 'psnr': 38.91367484949812, 'ssim': 0.9636666333373589, 'lcr': 3.9586951104402543, 'absorption': 0.3595267109746317}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.007966494644532286, 'psnr': 38.59206484541108, 'ssim': 0.9628325659262983, 'lcr': 4.2873059266298075, 'absorption': 0.3463930694067047}

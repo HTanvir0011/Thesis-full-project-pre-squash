@@ -1,0 +1,11 @@
+[{"stream_name":"stdout","time":18.772427196,"data":"2 runs: nih_hyb_hybrid@densenet121_s0 nih_hyb_hybrid@densenet121_s1 | data /kaggle/input/notebooks/ac_3/s4-prep-nih/nih/split.npy | boxes /kaggle/input/datasets/nih-chest-xrays/data/BBox_List_2017.csv\n"}
+,{"stream_name":"stdout","time":1914.75947979,"data":"nih_hyb_hybrid@densenet121_s0 rc 0 1896s\n"}
+,{"stream_name":"stdout","time":1914.867902511,"data":"nih_hyb_hybrid@densenet121_s1 rc 0 1896s\n"}
+,{"stream_name":"stdout","time":1914.868577186,"data":"ALL DONE; failed: [] | expected, no finished model mounted: []\n"}
+,{"stream_name":"stderr","time":1917.173183903,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1917.173217384,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1917.458490898,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1917.458519479,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1918.391730193,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1919.472689884,"data":"[NbConvertApp] Writing 281307 bytes to __results__.html\n"}
+]

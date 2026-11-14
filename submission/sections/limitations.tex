@@ -1,0 +1,40 @@
+\section{Limitations}
+\label{sec:limitations}
+% Each limitation is stated with its consequence for how the results must be read (SAP_v2.md, SAP_v3.md, SAP_v4.md, deviations log).
+\begin{enumerate}
+\item \emph{Synthetic supervision and one source of real pairs.} The bone image of a real radiograph is never observed. Real-image fidelity
+ is measured against dual-energy soft-tissue images from one hospital and one acquisition set-up (GE Discovery XR656), which differ from the
+ radiograph in tone and fine texture, so raw and band-limited metrics are both reported and calibrated metrics are not absolute.
+\item \emph{The audit is linear and additive, and shares its mechanism with the regulariser.} Lesions are added in image units; beam
+ hardening, scatter and tone mapping are not modelled, so $A$ measures the leak of an added signal rather than clinical detectability, and it
+ is read next to a suppression gain because $A=0$ is reached by doing nothing. The real-nodule contrast and downstream subgroup analyses
+ limit, but do not remove, the circularity of inserting lesions both in training and in the audit.
+\item \emph{Development use of SZCH.} All 75 SZCH images were used in development (audit) and 24 for paired decisions, so only the 51
+ held-out pairs support fidelity claims; the plan changed once after the SZCH pairs had been looked at.
+\item \emph{Resolution, backbone and operating point.} Our suppressors predict at 512\,px with tiny encoders, the reference model at
+ 1024\,px with SwinV2-B. The SSIM gap sits in fine texture (with a band limit of $\sigma=4$ it shrinks from 0.021 to 0.002); whether
+ prediction at 1024\,px closes it was not tested. Only $w=16$ was evaluated with the full protocol.
+\item \emph{Uncertainty.} Conformal calibration treats pixels as exchangeable and was calibrated on synthetic data; the recalibration on real
+ pairs was chosen after the shift was seen and used 24 pairs from one hospital. Ensemble members share training data.
+\item \emph{Scope and external validity.} Training and paired evaluation use adult frontal radiographs; BDCXR-3257 is a single-centre
+ paediatric set with image-level labels and no patient identifiers, and its audit inserts adult nodules into children's radiographs. There
+ is no lateral imaging and no reader study. On JSRT the bone overlap of each audit site came from the reference model's bone map. Downstream
+ models were not tuned per input, and the overlap analysis is not estimable on TBX11K. The models are for research use only.
+\item \emph{Classifier study.} One encoder (DenseNet-121) and one resolution ($256\times256$\,px) were tested; heavier encoders or full
+ resolution may use the extra streams differently. The NIH test split served the downstream experiments of Study I as well, its labels are
+ report-derived, and VinBigData has one focal class. The per-class DeLong tests treat NIH images as independent although patients contribute
+ several images, and the pointing game depends on the attribution method, the 15\,px tolerance and the eight annotated NIH classes.
+\item \emph{Cross-modality study.} The 2.5D CT recipe was seed-unstable, and the replacement of seed 2 by seed 5 followed a rule fixed
+ beforehand but used a teacher trained later. The CT subset is small (\num{1600} training volumes) and its labels are report-derived. The
+ localisation of the H13 difference in hernia (86 positive test images) comes from per-class tests planned only as descriptive, and H13
+ compares encoders trained with different pre-specified budgets (DenseNet-121 for 20 epochs at the full encoder learning rate, Swin for 10
+ epochs at a quarter of it), neither tuned further; the reference's NIH test score was known from Study II when the fourth plan was frozen.
+ H14 relies on
+ Grad-CAM++ for both modalities, the least localising of the three maps on real radiographs. The example heat maps contain no mass or nodule,
+ and VinBigData fine-tuning was not run. Teacher outputs, predictions and weights reached the authors' computer against the design's own
+ data rule; nothing derived from CT-RATE was released.
+\item \emph{Post-freeze corrections and registration.} Analysis errors found in an independent check after the first locked run were
+ corrected (among them a resampling error that narrowed interaction intervals and detection metrics that depended on the order of tied
+ scores by up to 0.00055); cloud and local GPU outputs differ by at most 0.0024\,dB. No pre-specified verdict changed. The analysis plans were
+ hash-frozen in version control before testing but not deposited in a public registry.
+\end{enumerate}

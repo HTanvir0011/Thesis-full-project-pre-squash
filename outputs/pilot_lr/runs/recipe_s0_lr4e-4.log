@@ -1,0 +1,24 @@
+arm=recipe cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 0, 'rot_deg': 15.0} train CT=588 val CT=64 lesion library=1057
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/kaggle/input/datasets/ac_2/s4-code/s4/train.py:149: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1191s loss 0.1651 {'mae': 0.027407977730035782, 'psnr': 26.34461212158203, 'ssim': 0.8407942652702332, 'lcr': 1.787557601928711}
+4000 2380s loss 0.1317 {'mae': 0.013493448495864868, 'psnr': 33.32940673828125, 'ssim': 0.9208307266235352, 'lcr': 1.7364643812179565}
+6000 3568s loss 0.0846 {'mae': 0.011284803971648216, 'psnr': 35.027931213378906, 'ssim': 0.9348702430725098, 'lcr': 1.3286796808242798}
+7500 4460s loss 0.1018 {'mae': 0.009982977993786335, 'psnr': 35.94506072998047, 'ssim': 0.9415531754493713, 'lcr': 0.7540096640586853}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.010974821472493342, 'psnr': 35.074279097062124, 'ssim': 0.9386370193354691, 'lcr': -0.5395712707713246, 'absorption': 0.38025843098777373}
+{
+ "method": "ours:/kaggle/working/runs/recipe_s0_lr4e-4/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.1289 +- 0.6339",
+ "mse_raw": "0.0039 +- 0.0006",
+ "ssim_raw": "0.8476 +- 0.0176",
+ "psnr_cal": "25.5905 +- 0.6959",
+ "mse_cal": "0.0028 +- 0.0005",
+ "ssim_cal": "0.8403 +- 0.0286",
+ "psnr_cal_bone": "21.6304 +- 1.4687",
+ "psnr_cal_nonbone": "26.4588 +- 0.8802",
+ "ssim_cal_bone": "0.7578 +- 0.0459",
+ "ssim_cal_nonbone": "0.8494 +- 0.0312"
+}

@@ -1,0 +1,20 @@
+{
+ "n_series": 896,
+ "n_ct_series": 606,
+ "n_patients_all": 598,
+ "n_patients_ct": 598,
+ "chunks": [
+  "LIDC-IDRI-0001-0200",
+  "LIDC-IDRI-0201-0400",
+  "LIDC-IDRI-0401-0600"
+ ],
+ "modalities": {
+  "DX": 237,
+  "CR": 53,
+  "CT": 606
+ },
+ "ct_with_xml": 549,
+ "ct_ge_100_slices": 601,
+ "unreadable": [],
+ "seconds": 438
+}

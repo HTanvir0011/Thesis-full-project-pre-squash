@@ -1,0 +1,84 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{CT decomposition and projection}
+\paragraph{Data.} We used the LIDC-IDRI collection (1\,018 chest CT series from 1\,010 patients) with the radiologists' nodule contours.
+Series were read from DICOM or from the LUNA16 MetaImage copy (voxel-identical on all 12 series we compared, including nodule slice locations); 1\,000 series
+could be rendered (18 were skipped because of non-axial orientation or irregular slice spacing). A render was \emph{usable} if the lungs were not cut by the
+scan, at most 50 of the 512 frame rows lay beyond the scan, the lung volume was between 1.5 and 9~L and the bone volume exceeded 300~cm$^3$
+(844 usable CTs). Patients were assigned to train/validation/test (70/10/20\%) by a hash of the patient identifier (588/98/158 CTs; 1\,057/172/298
+consensus nodules) before any model was trained; the split file hash is recorded in \path{freeze.json}.
+
+\paragraph{Components.} Each CT was split into bone, non-lung soft tissue and lung. The body is the largest component of $\mathrm{HU}>-300$
+(slice-wise hole filling, then a $1{\times}9{\times}9$ opening to detach the couch). Bone follows the iterative-relaxation recipe of the reference method \citep[Algorithm~1]{angaitkar2026anatomy}, with a 10~mm support cube,
+the first pass starting from the reference mask and a single closing after the ladder:
+a reference mask at 300~HU, thresholds $\tau\in\{200,150,100\}$~HU admitted only where at least 5\% of a 10~mm neighbourhood was already bone, union with the
+reference mask, a radius-2 closing to fill marrow, and removal of components smaller than 1\% of the largest. Lung is air ($<-320$~HU) inside the body in
+components at least 20\% the size of the largest, closed and hole-filled slice-wise (so vessels and nodules belong to the lung component) and
+without bone. Bone voxels were replaced in the soft-tissue component by a normalised convolution of the surrounding soft tissue (Gaussian, 4~mm, with
+12 and 36~mm fall-backs). Density is water-equivalent, $\rho=\mathrm{clip}(1+\mathrm{HU}/1000,0,3)$~g\,cm$^{-3}$.
+
+\paragraph{Projection.} Each component was integrated along the anteroposterior axis (parallel beam), giving an areal density $a_c$ (g\,cm$^{-2}$).
+The frame is a body crop: width 1.08 times the body width, height the lung extent plus 60~mm clipped to 0.75--1.2 of the width (short scans cannot
+reach 1.2), area-resized to $512\times512$ and later squashed to a square exactly as real radiographs are. Padded rows are set to air.
+The AP view is the horizontal mirror of the PA view.
+
+\paragraph{Detector physics.} A pixel value is
+\begin{equation}
+P_c=-\ln\frac{\sum_E \phi(E)\,E\,\exp\!\big(-(\mu/\rho)_c(E)\,a_c\big)}{\sum_E\phi(E)\,E},
+\label{eq:physics}
+\end{equation}
+with ICRU-44 \citep{icru1989report44} cortical bone, soft tissue and lung attenuation (table~4 of NIST SRD 126; \citealp{hubbell2004xraymass}) and W-anode spectra (SpekPy, 12$^\circ$, 2.5~mm Al) at
+70--140~kVp (training draws 80--130~kVp, the synthetic evaluation uses 100~kVp). Components are therefore stored as areal densities and the
+spectrum is applied at training time, so one render serves every tube voltage.
+The sum of separately projected components differs from the projection of the whole body because of beam hardening; we report this
+additivity gap (6.1\% at 100~kVp for 20~g\,cm$^{-2}$ of soft tissue and 3~g\,cm$^{-2}$ of bone).
+
+\subsection{Training images with exact components}
+A training sample is composed on the GPU from the stored areal densities in this order: lesion insertion (below), one random affine transform shared by all maps
+(rotation $\pm15^\circ$, scale 0.9--1.15, shift $\pm6\%$, mirror), the physics above, component weighting
+$S=\mathrm{norm}(P_{\mathrm{nl}}+g\,P_{\mathrm{lung}})$, $g\sim U(1,3)$, $B=w\,P_{\mathrm{bone}}/p_{99}$, $w\sim U(0.2,0.5)$,
+$X=(S+B)/1.5$, and a monotone tone curve $\gamma$. The tone curve is either a random gamma or histogram matching to the intensity quantiles of a randomly
+drawn real radiograph (4\,000 NIH ChestX-ray14 training-list images). Defining $X'=\gamma(X)$, $S'=\gamma(S)$ and $B'=X'-S'$ keeps the
+decomposition exact under any monotone mapping. Gaussian blur is linear and applied identically to $X'$ and $B'$; quantum noise and scatter
+modify only $X'$.
+
+\subsection{Suppressor}
+The suppressor is a SwinV2-Tiny encoder (ImageNet-1k, window 8, $512^2$ input) with a nested (UNet++) decoder over the four Swin stages, CBAM attention, a plain
+U-Net tail with two shallow convolutional skips to full resolution and a $1\times1$ head that outputs the bone image directly; the suppressed image is
+$x-\hat b$. Relative to the reference this is a smaller backbone at half the resolution, forced by compute. Training used AdamW (lr $2\times10^{-4}$,
+weight decay 0.01, 500-step warm-up, cosine decay), batch 8, mixed precision, gradient clipping at 1, EMA weights and 200\,000 samples per arm.
+The loss is $0.5\,\mathrm{L1}+0.5\,\mathrm{MSE}+0.5\,(1-\mathrm{SSIM})+2.5\,(\mathrm{L1}+\mathrm{MSE})_{\mathrm{ROI}}$ with the ROI taken from the lung component
+(top structures: $P_{\mathrm{lung}}/p_{99.9}>0.3$). Every arm changes exactly one factor of the recipe arm (Table~\ref{tab:arms}); all other settings,
+including the seed set, are identical.
+
+\subsection{Lesion-faithful supervision}
+Each lesion (LIDC consensus of at least two readers, 50\% voxel agreement) was projected as its excess density over the surrounding lung.
+\emph{Lesion-weighted loss} adds $(\mathrm{L1}+\mathrm{MSE})$ on a dilated lesion mask with weight 1. \emph{Counterfactual lesion insertion (CLIA)}
+adds, before the physics, 0--3 lesion patches drawn from \emph{training} CTs at random lung positions (including over bone) with random scale
+(0.7--1.5) and an amplitude of 0.6--1.6 times that scale; the bone target is untouched, so the network is explicitly taught that a lesion on a rib is not bone.
+
+\subsection{Lesion-absorption audit}
+For a model with bone estimate $\hat B$ and a lesion signal $n$ in composite-image units, the absorption is
+$A=\langle \hat B(x+\alpha n)-\hat B(x),\,\alpha n\rangle/\langle\alpha n,\alpha n\rangle$ over the lesion support;
+$A=0$ means the lesion stays in the soft image and $A=1$ that it was removed with the bone. Because $A=0$ is trivially reached by doing nothing,
+it is always reported next to the suppression gain. On synthetic test CTs the lesions are drawn from the test CTs only (never from training CTs) and the truth is exact.
+On real radiographs (SZCH test set) lesions from held-out CTs are added at random positions in the lung fields (lung masks from a published chest-X-ray
+segmentation network); the bone overlap of a site is measured on the real dual-energy bone signal, never on a model output.
+
+\subsection{Evaluation on real images}
+\paragraph{Paired dual-energy data.} The SZCH-X-Rays test set has 75 radiographs with dual-energy-subtraction soft-tissue references.
+Tone differs between a radiograph and its DES image, so metrics are reported as is (``raw'') and after a per-image least-squares gain and offset of the estimate
+onto the reference (``calibrated'', primary); calibrated PSNR and SSIM are also reported inside the region where DES removed the most signal
+(top 10\% of calibrated radiograph minus DES) and outside it.
+\paragraph{Rib benchmark.} On VinDr-RibCXR (245 images with per-rib masks; evaluated locally, never used for training) we report the relative reduction of Sobel
+gradient energy on the rib-boundary band inside the lungs ($R_\mathrm{rib}$), on lung pixels away from ribs ($R_\mathrm{non}$), their difference (selectivity)
+and the ROC-AUC of the gradient-reduction map for separating the two sets of pixels.
+\paragraph{Controls and baselines.} Identity, CLAHE, a homomorphic filter and the publicly released CT-supervised weights of the reference method
+(research licence) are scored with the same code.
+
+\subsection{Statistics}
+All comparisons are paired. Confidence intervals are percentile bootstrap intervals (10\,000 resamples) over patients when several units come from one patient;
+tests are Wilcoxon signed-rank tests with Holm correction within a hypothesis family; non-inferiority uses the lower bound of a one-sided 95\% interval against a
+margin fixed in the analysis plan; AUCs are compared with the paired DeLong test. Seeds are averaged within unit before testing and their spread is reported.
+The analysis plan, the split and the code commit were frozen before any locked evaluation set was scored (\path{freeze.json}).

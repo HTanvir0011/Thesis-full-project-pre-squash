@@ -1,0 +1,1 @@
+[[0, "hyb", "nih", "hybrid", 0, 2, "--arch", "densenet121.ra_in1k", "--max_steps", "40", "--max_eval", "256", "--stop_after_epochs", "1"], [1, "hyb", "nih", "orig", 0, 2, "--arch", "densenet121.ra_in1k", "--max_steps", "40", "--max_eval", "256"]]

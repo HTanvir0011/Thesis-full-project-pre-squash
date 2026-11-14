@@ -1,0 +1,44 @@
+\section{Related work}
+\label{sec:related}
+% PLAN (four subsections, about 1.5 pages). Describe a cited paper only as far as its abstract or title supports; check each claim against the PDF
+% before submission.
+%   2.1 Bone suppression: classical and CNN methods (suzuki2006mtann, yang2017cascade, gusarev2017deep); diffusion methods on real DES pairs
+%       (chen2024bsdiff, sun2026bsldm, sun2025gllcm, sun2026debonedit). SZCH-X-Rays was introduced with BS-LDM and released with DeBoneDiT.
+%   2.2 CT-supervised suppression (angaitkar2026anatomy; CT-RATE hamamci2026ctrate as the CT source of the projections we train on). What we reuse
+%       (projections, released weights as comparator) and what we change (backbone, resolution, regulariser, evaluation).
+%   2.3 Evaluation of restoration models for lesion fidelity: lesion insertion and removal, nodule generation (the NODE21 generation track,
+%       sogancioglu2024node21), hallucination in generative restoration. [citations to be found, see paper/REFS_TODO.md]
+%   2.4 Uncertainty and encoders: deep ensembles (lakshminarayanan2017ensembles), split conformal prediction (lei2018conformal,
+%       angelopoulos2023conformal); modern encoders screened here (liu2022swinv2, woo2023convnextv2, simeoni2025dinov3, perezgarcia2025raddino).
+\subsection{Bone suppression}
+Early learning-based rib suppression used massive-training artificial neural networks \citep{suzuki2006mtann}; later work used convolutional
+networks, for example a cascade of multi-scale networks in the gradient domain \citep{yang2017cascade} and other deep models
+\citep{gusarev2017deep}. Recent methods train diffusion models on paired radiographs and DES soft-tissue images
+\citep{chen2024bsdiff,sun2026bsldm,sun2025gllcm,sun2026debonedit}; the SZCH-X-Rays data set was compiled for BS-LDM \citep{sun2026bsldm} and made
+public with DeBoneDiT \citep{sun2026debonedit}. BS-Diff trained on 120 pairs, augmented to 840, at $256\times256$ pixels; BS-LDM on 818 SZCH
+pairs and 241 processed JSRT pairs at $1024\times1024$; GL-LCM and DeBoneDiT on the 741-pair SZCH version and JSRT at $1024\times1024$
+(DeBoneDiT in a latent space of $4\times256\times256$).
+
+\subsection{CT-supervised suppression}
+\citet{angaitkar2026anatomy} build digitally reconstructed radiographs from chest CT, project bone, non-lung soft tissue and lung
+separately, and train models that predict one component. Their projections are released on the Hugging Face Hub and are built from CT-RATE volumes
+\citep{hamamci2026ctrate}: the release holds \num{21887} projections whose volume names are those of CT-RATE. We train on these projections and use the released weights as the main comparator. Our models differ in encoder and resolution (ConvNeXt-V2-T
+at 512~px against SwinV2-B at 1024~px) and in sample budget, and add the twin regulariser, the ensemble and the audit.
+
+\subsection{Evaluating lesion fidelity}
+Learned image-to-image models can remove or invent content: distribution matching in translation networks can drop or hallucinate lesions
+\citep{cohen2018distribution}, deep reconstruction can be unstable to small structures \citep{antun2020instabilities}, and hallucinations of
+learned reconstruction have been defined and measured \citep{bhadra2021hallucinations,tivnan2024hallucination}. Inserting known features or signals into
+images is an established way to test learned MRI reconstruction \citep{cheng2020addressing} and the effect of learned denoising on signal
+detection \citep{li2021assessing}. For bone
+suppression, simulated nodules were inserted to measure contrast after a hand-built clavicle suppression method \citep{hogeweg2013suppression},
+and a phantom with a simulated nodule at many positions was used to measure contrast after bone suppression \citep{takagi2020dose}. These
+studies measure lesion contrast; our audit measures the fraction of a known additive lesion signal that a learned suppressor moves into its
+bone image, on real radiographs, and is shared by every model compared.
+
+\subsection{Uncertainty and encoders}
+Deep ensembles give a simple predictive-uncertainty estimate \citep{lakshminarayanan2017ensembles}, and split-conformal prediction turns an error score into
+intervals with a coverage guarantee under exchangeability \citep{lei2018conformal,angelopoulos2023conformal}. We use both for the bone image
+(Section~\ref{sec:experiments}). For the encoder we start from SwinV2-T \citep{liu2022swinv2} and screen ConvNeXt V2 \citep{woo2023convnextv2},
+DINOv3 \citep{simeoni2025dinov3} and RAD-DINO \citep{perezgarcia2025raddino} under the same recipe: a modern convolutional encoder, a general
+self-supervised vision transformer and a vision transformer pre-trained on chest radiographs.

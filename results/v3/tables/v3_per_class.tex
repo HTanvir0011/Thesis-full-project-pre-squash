@@ -1,0 +1,38 @@
+% H8 per class: paired DeLong on the seed ensembles, Holm within encoder and data set over classes x both contrasts; encoder densenet121
+\begin{tabular}{llllllll}
+\toprule
+data set & class & AUROC orig & AUROC hybrid & $\Delta$ hybrid $-$ orig & Holm $p$ & $\Delta$ hybrid $-$ early & Holm $p$ \\
+\midrule
+NIH & Atelectasis & 0.7871 & 0.7876 & +0.0005 & 1 & -0.0014 & 1 \\
+NIH & Cardiomegaly & 0.8995 & 0.8989 & -0.0006 & 1 & -0.0028 & 1 \\
+NIH & Effusion & 0.8394 & 0.8387 & -0.0006 & 1 & -0.0021 & 0.556 \\
+NIH & Infiltration & 0.7084 & 0.6924 & -0.0160 & 1.58e-26 & -0.0128 & 3.18e-21 \\
+NIH & Mass & 0.8381 & 0.8377 & -0.0004 & 1 & -0.0062 & 0.136 \\
+NIH & Nodule & 0.7806 & 0.7935 & +0.0129 & 0.00121 & +0.0053 & 1 \\
+NIH & Pneumonia & 0.7429 & 0.7343 & -0.0086 & 1 & -0.0080 & 1 \\
+NIH & Pneumothorax & 0.8794 & 0.8787 & -0.0007 & 1 & -0.0007 & 1 \\
+NIH & Consolidation & 0.7596 & 0.7569 & -0.0026 & 1 & -0.0054 & 0.391 \\
+NIH & Edema & 0.8524 & 0.8545 & +0.0020 & 1 & -0.0027 & 1 \\
+NIH & Emphysema & 0.9299 & 0.9303 & +0.0003 & 1 & -0.0031 & 1 \\
+NIH & Fibrosis & 0.8316 & 0.8312 & -0.0004 & 1 & -0.0039 & 1 \\
+NIH & Pleural Thickening & 0.7881 & 0.7878 & -0.0004 & 1 & -0.0030 & 1 \\
+NIH & Hernia & 0.9011 & 0.9164 & +0.0153 & 1 & +0.0033 & 1 \\
+VinBigData & Aortic enlargement & 0.9871 & 0.9876 & +0.0005 & 1 & -0.0007 & 1 \\
+VinBigData & Atelectasis & 0.9315 & 0.9230 & -0.0086 & 1 & -0.0085 & 1 \\
+VinBigData & Calcification & 0.9265 & 0.9406 & +0.0141 & 1 & +0.0107 & 1 \\
+VinBigData & Cardiomegaly & 0.9893 & 0.9900 & +0.0007 & 1 & +0.0003 & 1 \\
+VinBigData & Consolidation & 0.9892 & 0.9896 & +0.0004 & 1 & -0.0001 & 1 \\
+VinBigData & ILD & 0.9865 & 0.9826 & -0.0039 & 1 & +0.0051 & 1 \\
+VinBigData & Infiltration & 0.9749 & 0.9693 & -0.0055 & 1 & -0.0067 & 1 \\
+VinBigData & Lung Opacity & 0.9514 & 0.9604 & +0.0091 & 1 & -0.0004 & 1 \\
+VinBigData & Nodule/Mass & 0.9578 & 0.9664 & +0.0085 & 1 & +0.0094 & 1 \\
+VinBigData & Other lesion & 0.9254 & 0.9267 & +0.0013 & 1 & -0.0051 & 1 \\
+VinBigData & Pleural effusion & 0.9852 & 0.9906 & +0.0055 & 1 & +0.0063 & 1 \\
+VinBigData & Pleural thickening & 0.9391 & 0.9404 & +0.0012 & 1 & -0.0031 & 1 \\
+VinBigData & Pneumothorax & 0.9640 & 0.9666 & +0.0025 & 1 & -0.0138 & 1 \\
+VinBigData & Pulmonary fibrosis & 0.9524 & 0.9606 & +0.0082 & 1 & -0.0003 & 1 \\
+BDCXR-3257 & Normal & 0.8999 & 0.8987 & -0.0012 & 1 & +0.0043 & 0.804 \\
+BDCXR-3257 & Pneumonia Bacterial & 0.8580 & 0.8579 & -0.0000 & 1 & -0.0027 & 1 \\
+BDCXR-3257 & Pneumonia Viral & 0.7804 & 0.7689 & -0.0115 & 0.378 & -0.0023 & 1 \\
+\bottomrule
+\end{tabular}

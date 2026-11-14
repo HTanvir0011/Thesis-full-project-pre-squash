@@ -1,0 +1,28 @@
+[{"stream_name":"stdout","time":440.04296921,"data":"{\n"}
+,{"stream_name":"stdout","time":440.043049419,"data":" \"n_series\": 896,\n"}
+,{"stream_name":"stdout","time":440.043056101,"data":" \"n_ct_series\": 606,\n"}
+,{"stream_name":"stdout","time":440.043061262,"data":" \"n_patients_all\": 598,\n"}
+,{"stream_name":"stdout","time":440.04306518,"data":" \"n_patients_ct\": 598,\n"}
+,{"stream_name":"stdout","time":440.043069503,"data":" \"chunks\": [\n"}
+,{"stream_name":"stdout","time":440.043074021,"data":"  \"LIDC-IDRI-0001-0200\",\n"}
+,{"stream_name":"stdout","time":440.043078074,"data":"  \"LIDC-IDRI-0201-0400\",\n"}
+,{"stream_name":"stdout","time":440.043081908,"data":"  \"LIDC-IDRI-0401-0600\"\n"}
+,{"stream_name":"stdout","time":440.043086464,"data":" ],\n"}
+,{"stream_name":"stdout","time":440.043090764,"data":" \"modalities\": {\n"}
+,{"stream_name":"stdout","time":440.043094676,"data":"  \"DX\": 237,\n"}
+,{"stream_name":"stdout","time":440.043098349,"data":"  \"CR\": 53,\n"}
+,{"stream_name":"stdout","time":440.043102473,"data":"  \"CT\": 606\n"}
+,{"stream_name":"stdout","time":440.04310622,"data":" },\n"}
+,{"stream_name":"stdout","time":440.043109826,"data":" \"ct_with_xml\": 549,\n"}
+,{"stream_name":"stdout","time":440.043113257,"data":" \"ct_ge_100_slices\": 601,\n"}
+,{"stream_name":"stdout","time":440.043117319,"data":" \"unreadable\": [],\n"}
+,{"stream_name":"stdout","time":440.04312105,"data":" \"seconds\": 438\n"}
+,{"stream_name":"stdout","time":440.04312501,"data":"}\n"}
+,{"stream_name":"stdout","time":514.398194912,"data":"ribcxr files: 247\n"}
+,{"stream_name":"stderr","time":517.050408359,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":517.050444772,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":517.431173151,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":517.431202151,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":519.245094731,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":520.467570591,"data":"[NbConvertApp] Writing 289432 bytes to __results__.html\n"}
+]

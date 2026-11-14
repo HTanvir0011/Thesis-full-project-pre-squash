@@ -1,0 +1,1 @@
+[[0,"qp_twin16",0,100000,4,0.0002,"_B","--backbone swinv2_base_window8_256.ms_in1k --accum 2"],[1,"qp_twin32",0,100000,8,0.0002]]

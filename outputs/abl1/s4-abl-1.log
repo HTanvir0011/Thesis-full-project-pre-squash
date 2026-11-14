@@ -1,0 +1,17 @@
+[{"stream_name":"stdout","time":4.750874812,"data":"jobs: [[0, 'recipe', 0, 200000, 8, 0.0002], [0, 'recipe', 1, 200000, 8, 0.0002], [1, 'clia_nodule', 0, 200000, 8, 0.0002], [1, 'clia_nodule', 1, 200000, 8, 0.0002]]\n"}
+,{"stream_name":"stdout","time":15274.882440702,"data":"clia_nodule_s0 train rc 0 04:30:06\n"}
+,{"stream_name":"stdout","time":15357.941188653,"data":"clia_nodule_s0 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":15926.404591285,"data":"recipe_s0 train rc 0 04:40:57\n"}
+,{"stream_name":"stdout","time":16008.427088017,"data":"recipe_s0 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":29818.664774151,"data":"clia_nodule_s1 train rc 0 08:32:30\n"}
+,{"stream_name":"stdout","time":29903.459446764,"data":"clia_nodule_s1 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":31161.856472934,"data":"recipe_s1 train rc 0 08:54:53\n"}
+,{"stream_name":"stdout","time":31240.621033064,"data":"recipe_s1 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":31240.65200221,"data":"ALL DONE\n"}
+,{"stream_name":"stderr","time":31242.756943671,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":31242.756976061,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":31243.021443328,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":31243.021469678,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":31243.844389731,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":31244.849278156,"data":"[NbConvertApp] Writing 294017 bytes to __results__.html\n"}
+]

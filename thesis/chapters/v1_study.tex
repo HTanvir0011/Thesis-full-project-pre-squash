@@ -1,0 +1,71 @@
+% The v1 study is thesis-only. Numbers come from results/ablation_val and results/ablation_test (tools/aggregate_ablation.py, tables written by
+% tools/paper_extras.py), from DECISIONS.md and DEVIATIONS.md (2026-10-27), and from results/final/stats_held.json.
+\section{Question and analysis plan}
+The first study asked whether a suppressor trained only on CT renders of the public LIDC-IDRI collection keeps lesions, and whether showing
+it lesions during training helps. The analysis plan (SAP.md) was written and frozen with \path{freeze.json} on 27 October 2026, before any
+locked set was evaluated. Its first hypothesis is synthetic, with exact truth:
+\begin{description}
+\item[H1] On synthetic test CTs, a lesion-aware arm absorbs less of an inserted lesion than the recipe arm (per-CT mean of $A$, paired,
+ patient-cluster bootstrap interval, Holm over the lesion-aware arms), and its bone-image MAE is non-inferior within a margin of 5\,\% of the
+ recipe's mean MAE (one-sided 5\,\%).
+\end{description}
+The same rule, applied to synthetic \emph{validation} CTs, selected the v1 model: an arm qualifies only if its absorption is lower with Holm
+$p<0.05$ and its bone MAE is non-inferior. SAP.md locked the real sets: SZCH-X-Rays (75 dual-energy pairs), JSRT, Node21, the TBX11K
+validation set and VinDr-RibCXR were never to be used for training, tuning or selection; the validation parts of NIH ChestX-ray14 and
+VinBigData could inform pilots. Real-image results could never choose a model.
+
+\section{Design}
+Each arm changes one factor of the recipe of Chapter~\ref{ch:data} (the training recipe of the reference paper, re-implemented): the
+lesion-aware arms add counterfactual lesion insertion (CLIA, up to three lesions from training CTs pasted into the composite), a loss term
+weighted on lesion pixels, or both; the factor arms remove the frequency loss, the histogram-matching augmentation, the marking-ROI loss or
+the rotation augmentation. Every arm was trained with three seeds for \num{200000} samples, at the learning rate fixed by a pilot on
+synthetic validation CTs ($2\times10^{-4}$; Appendix~\ref{app:deviations}). CTs were split by patient (70/10/20) with a fixed hash; 844 CTs met
+the usable-CT rules, and the selection used 98 validation CTs with 177 insertion sites, the test 158 CTs with 317 sites. Lesions for the audit
+come from other CTs of the same split, never from training CTs.
+
+\section{Outcome of the selection rule}
+On the validation CTs (Table~\ref{tab:v1_ablation}) every lesion-aware arm absorbed less than the recipe arm (CLIA by 0.033, the
+lesion-weighted loss by 0.036, the combination by 0.100), but only CLIA kept its bone MAE within the margin: the lesion-weighted loss sat on
+the margin ($-0.00036$ against $-0.00036$) and the combination was about 6\,\% worse. By the pre-declared rule CLIA became the v1 model, and the
+combination was kept as a pre-declared trade-off variant. Among the factor arms, removing the marking-ROI loss raised absorption (by 0.024); removing
+histogram matching lowered both absorption (by 0.039) and the synthetic bone error, but that augmentation targets the appearance of real
+radiographs, which synthetic validation does not measure; removing the frequency loss or the rotation changed absorption little.
+
+On the test CTs (Table~\ref{tab:v1_h1}) H1 passes: CLIA absorbs 0.022 less than the recipe arm $[0.013,0.032]$, Holm $p<0.001$, with
+non-inferior bone MAE. The lesion-weighted loss also lowers absorption (0.019) and is non-inferior on the test CTs; the combination lowers it most
+(0.066) and misses the margin again. The 300k-sample finals of CLIA and recipe, trained later with three seeds each, replicate the contrast.
+The Holm adjustment in these tables runs over all seven contrasts of the ablation, which is more conservative than the three named in the plan.
+\begin{table}[htbp]
+\centering\small
+\caption{v1 ablation on synthetic validation CTs (selection data; three seeds each, 200k samples): every arm against the recipe arm.}
+\label{tab:v1_ablation}
+\fittable{tables/v1_ablation_val.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{First analysis plan, H1: lesion-aware arms against the recipe arm on synthetic LIDC test CTs (three seeds each), and the 300k-sample
+finals as a replication.}
+\label{tab:v1_h1}
+\fittable{tables/v1_h1.tex}
+\end{table}
+
+\section{Real-image check and the resulting deviation}
+After the ablation the v1 arms were compared with the released weights of the reference model on the 75 SZCH-X-Rays pairs, the comparison
+that SAP.md had locked for the final evaluation. The v1 models had the higher bone-region PSNR$_{cal}$ (22.04 against 21.66\,dB) and the lower
+full-resolution SSIM$_{cal}$ (0.850 against 0.869), and in the real-image audit on all 75 images they absorbed far more of an inserted lesion
+($A$ 0.306 against 0.134 over 450 sites). Because these images had now been looked at, SZCH-X-Rays could no longer serve as a clean locked set
+for decisions about a new recipe. It became a development set: 24 images, chosen by a hash of the file name (\path{tools/szch_split.py}),
+were used for paired-metric decisions from then on, the other 51 were held out for final fidelity claims, and the audit on all 75 images became
+development evidence only. The confirmatory audit moved to VinDr-RibCXR and JSRT, which no model had touched. Appendix~\ref{app:deviations}
+lists this deviation with the others.
+
+\section{Consequences for the v2 design}
+The v1 study answered its own question: on rendered data with exact truth, lesion insertion lowers absorption a little at no cost in bone
+error. It did not solve the problem it was meant to solve. On real radiographs the v1 models absorbed more than twice what the reference model
+absorbed, and the absorption hardly depended on the lesion amplitude (Chapter~\ref{ch:audit}): it behaved like a uniform leak of lesion
+signal into the bone estimate rather than a failure on hard cases. Three changes followed. The training source moved to the Qure.ai CT
+projections, which are translated towards the appearance of real radiographs and are exactly additive (Chapter~\ref{ch:v2}). Lesion insertion,
+which had acted only through the supervised target, was replaced by a term that ties the predictions with and without the lesion directly.
+And a second analysis plan, SAP\_v2.md, was written before any held-out or locked evaluation of the new models. On the final locked sets the v1
+model still absorbs 0.289 of an inserted lesion on VinDr-RibCXR, against 0.149 for the reference model and 0.051 for the v2 ensemble
+(Chapter~\ref{ch:audit}).

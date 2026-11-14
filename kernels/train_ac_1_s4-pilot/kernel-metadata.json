@@ -1,0 +1,19 @@
+{
+ "id": "ac_1/s4-pilot",
+ "title": "s4-pilot",
+ "code_file": "run_train.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_1/s4-bank",
+  "ac_1/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

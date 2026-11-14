@@ -1,0 +1,45 @@
+\section{Discussion}
+\label{sec:discussion}
+% Written from the final tables (results/final/stats_held.json, results/bdcxr/stats.json). Failed hypotheses are named first.
+\paragraph{Principal findings.} Three pre-specified results did not hold: the soft-tissue image alone did not improve any downstream task
+(Table~\ref{tab:downstream_cls}, Table~\ref{tab:downstream_det}), SSIM fell short of the reference model by more than its margin
+(Table~\ref{tab:h2}), and conformal intervals calibrated on synthetic data covered 14\,\% instead of 90\,\% of real bone pixels
+(Table~\ref{tab:reliability}); recalibrated on 24 real pairs in an exploratory analysis, they covered 89\,\% (Table~\ref{tab:bone_recal}). Real-nodule contrast was mixed: higher than with the reference model on JSRT, lower on Node21
+(Table~\ref{tab:nodule_cnr}). The central results held. Lesion absorption fell steadily with the twin weight (Table~\ref{tab:dose_response}); the
+twin ensemble absorbed a third of what the released CT-supervised model absorbed and less than a third of what the matched control absorbed, on
+an audit set no model had seen during development (Table~\ref{tab:audit_contrasts}); and it did so at non-inferior bone-region fidelity. The effect
+replicated with two other encoders (Table~\ref{tab:encoders}) and on paediatric radiographs from a population no model was trained on (Section~\ref{sec:bdcxr}).
+
+\paragraph{What the audit adds.} Fidelity metrics and lesion absorption rank suppressors differently (Figure~\ref{fig:pareto}). The v1 model has
+the highest bone-region PSNR of the CT-supervised models and the highest absorption; ours and the reference model are within 0.06\,dB of each
+other and a factor of three apart in absorption. BS-LDM, trained on dual-energy pairs from the same hospital, is about 7\,dB ahead in fidelity on
+that hospital's images, yet in the development audit it absorbed 0.42 of an inserted lesion (at site positions not paired with the other
+methods, so only descriptive). A suppressor that matches the dual-energy target closely can still remove lesions: fidelity to that target does
+not protect what the target never showed it. Absorption must nevertheless be read beside suppression strength. The reference model removes more
+rib-edge energy than ours (48\,\% against 30\,\%) and more non-rib energy (22\,\% against 8\,\%), so part of its higher absorption may reflect
+stronger suppression in general; ours absorbs a third as much while removing about 60\,\% of the rib-edge energy.
+
+\paragraph{What the regulariser costs.} On real paired radiographs the twin costs no measurable bone-region fidelity up to $w=16$ (21.22 to
+21.28\,dB across $w=0\ldots16$); at $w=32$ and 64 the PSNR drops by about 0.3\,dB, so $w=16$ is the usable
+operating point, chosen on development data before the freeze. The cost appears where the truth is exact: on the Qure-projection test split the
+bone error of the twin ensemble is 41\,\% higher than that of the control (MAE 0.0041 against 0.0029), and in the ablation the validation error rises
+from 0.0033 to 0.0057. The regulariser therefore trades some synthetic bone accuracy for lesion invariance; on real images that trade was not
+visible. The ablation shows what carries the effect: gradients through both twin branches and a consistency term confined to the pasted lesion.
+Showing lesions during training without the twin term (CLIA) did not lower absorption.
+
+\paragraph{Relation to other methods.} The reference model is a SwinV2-B at $1024$~px trained with a far larger sample budget; we compare its
+released weights as a user would run them, and we cannot say how much of the absorption difference is due to our regulariser rather than to
+training differences, except through the matched no-twin control, which absorbs slightly more than the reference model (0.178 against 0.149). Diffusion models trained on real
+dual-energy pairs \citep{sun2026bsldm,sun2026debonedit} answer a different question: they need paired data from the target site, sample slowly
+(about 2.5 minutes per image for BS-LDM on a T4 GPU) and were not designed for lesion invariance.
+
+\paragraph{Advice for evaluation and use.} We suggest that a bone suppressor be audited for lesion absorption before it is used, with the audit
+reported next to a suppression measure; that suppressed images be offered beside the original rather than instead of it, which is also the only
+use in which they helped downstream models here; and that the ensemble spread be used as a warning flag rather than as a calibrated interval: it
+rose 2.7-fold on paediatric radiographs, but intervals calibrated on synthetic data did not cover real errors, and recalibration needed real
+pairs. Whether classifiers that combine the radiograph with the soft-tissue and bone images in separate streams gain from suppression is tested
+in \clsstudy.
+
+\paragraph{Future work.} Prediction at $1024$~px, combining CT-derived and real dual-energy supervision with the twin term, conformal
+recalibration on real pairs from more sites, lesion types other than nodules (consolidation, as in the paediatric pneumonia set), paediatric training data, and a
+reader study that measures detectability rather than signal.

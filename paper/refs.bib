@@ -1,0 +1,1102 @@
+% refs.bib -- ONLY entries that were checked against a source page on 2026-10-29, 2026-11-03 or 2026-11-04 (web search + page fetch). The source is named in the
+% comment above each entry. Never add an entry here that has not been checked; put candidates in REFS_TODO.md instead.
+% Conventions: author lists longer than 24 names are cut after six names with "and others" (LIDC-IDRI, LUNA16, CT-RATE, DINOv3);
+% the full lists are on the cited pages. Journal style may need the full list at submission.
+% "url" is used for DOIs that contain an underscore so that every .bst prints them safely.
+
+% =====================================================================================================================
+% CT-supervised bone suppression: the reference method and its data
+% =====================================================================================================================
+
+% checked: https://arxiv.org/abs/2609.24937 (v1 21 Sep 2026, v2 22 Sep 2026; no journal reference listed)
+@misc{angaitkar2026anatomy,
+  author        = {Angaitkar, Mrunmay and Kumar, Piyush and Satia, Aarjav and Rao, Pranav and Mittal, Ashish and Tadepalli, Manoj and Putha, Preetham},
+  title         = {Anatomy-Decomposed Chest Computed Tomography ({CT}) Projections as Scalable Supervision for Bone Suppression in Chest Radiographs},
+  year          = {2026},
+  howpublished  = {arXiv preprint arXiv:2609.24937},
+  eprint        = {2609.24937},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  doi           = {10.48550/arXiv.2609.24937},
+  note          = {Preprint; no journal reference listed on arXiv on 2026-10-29}
+}
+
+% checked: https://pmc.ncbi.nlm.nih.gov/articles/PMC9300612 and https://arxiv.org/abs/2012.15029 (24 authors; dataset on PhysioNet, credentialed licence)
+@article{nguyen2022vindrcxr,
+  author  = {Nguyen, Ha Q. and Lam, Khanh and Le, Linh T. and Pham, Hieu H. and Tran, Dat Q. and Nguyen, Dung B. and Le, Dung D. and Pham, Chi M. and Tong, Hang T. T. and Dinh, Diep H. and Do, Cuong D. and Doan, Luu T. and Nguyen, Cuong N. and Nguyen, Binh T. and Nguyen, Que V. and Hoang, Au D. and Phan, Hien N. and Nguyen, Anh T. and Ho, Phuong H. and Ngo, Dat T. and Nguyen, Nghia T. and Nguyen, Nhan T. and Dao, Minh and Vu, Van},
+  title   = {{VinDr-CXR}: An open dataset of chest {X}-rays with radiologist's annotations},
+  journal = {Scientific Data},
+  year    = {2022},
+  volume  = {9},
+  pages   = {429},
+  doi     = {10.1038/s41597-022-01498-w},
+  eprint  = {2012.15029},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/2107.01327 (comment: accepted by MIDL 2021) and https://2021.midl.io/papers/a5 (listed as a short paper, A4-12)
+@inproceedings{nguyen2021ribcxr,
+  author    = {Nguyen, Hoang C. and Le, Tung T. and Pham, Hieu H. and Nguyen, Ha Q.},
+  title     = {{VinDr-RibCXR}: A Benchmark Dataset for Automatic Segmentation and Labeling of Individual Ribs on Chest {X}-rays},
+  booktitle = {Medical Imaging with Deep Learning ({MIDL})},
+  year      = {2021},
+  note      = {Short paper; arXiv:2107.01327},
+  eprint    = {2107.01327},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://api.crossref.org/works/10.1038/s41551-025-01599-y (Nature Biomedical Engineering 10(8):1610-1628, online 2026-02-12) and https://arxiv.org/abs/2403.17834 (30 authors)
+% the preprint (2024) introduced the CT-RATE data set; the arXiv title of v1 was "Developing Generalist Foundation Models from a Multimodal Dataset for 3D Computed Tomography"
+@article{hamamci2026ctrate,
+  author  = {Hamamci, Ibrahim Ethem and Er, Sezgin and Wang, Chenyu and Almas, Furkan and Simsek, Ayse Gulnihan and Esirgun, Sevval Nil and others},
+  title   = {Generalist foundation models from a multimodal dataset for {3D} computed tomography},
+  journal = {Nature Biomedical Engineering},
+  year    = {2026},
+  volume  = {10},
+  number  = {8},
+  pages   = {1610--1628},
+  doi     = {10.1038/s41551-025-01599-y},
+  eprint  = {2403.17834},
+  archivePrefix = {arXiv},
+  note    = {Preprint: arXiv:2403.17834 (2024)}
+}
+
+% =====================================================================================================================
+% Bone suppression and dual-energy data
+% =====================================================================================================================
+
+% checked: https://arxiv.org/abs/2412.15670 (abstract names the SZCH-X-Rays data set; accepted by IEEE JBHI 2025-07-04) and Crossref/OpenAlex for 10.1109/JBHI.2025.3588138
+% (Crossref: published-print 2026-01, vol. 30 no. 1, pp. 376-387; OpenAlex: online 2025-07-14)
+@article{sun2026bsldm,
+  author  = {Sun, Yifei and Chen, Zhanghao and Zheng, Hao and Deng, Wenming and Liu, Jin and Min, Wenwen and Elazab, Ahmed and Wan, Xiang and Wang, Changmiao and Ge, Ruiquan},
+  title   = {{BS-LDM}: Effective Bone Suppression in High-Resolution Chest {X}-Ray Images With Conditional Latent Diffusion Models},
+  journal = {{IEEE} Journal of Biomedical and Health Informatics},
+  year    = {2026},
+  volume  = {30},
+  number  = {1},
+  pages   = {376--387},
+  doi     = {10.1109/JBHI.2025.3588138},
+  eprint  = {2412.15670},
+  archivePrefix = {arXiv},
+  note    = {Online 14 July 2025}
+}
+
+% checked: https://arxiv.org/abs/2508.03357 (comment: accepted by MICCAI 2025; abstract names SZCH-X-Rays)
+@misc{sun2025gllcm,
+  author        = {Sun, Yifei and Chen, Zhanghao and Zheng, Hao and Lu, Yuqing and Duan, Lixin and Fan, Fenglei and Elazab, Ahmed and Wan, Xiang and Wang, Changmiao and Ge, Ruiquan},
+  title         = {{GL-LCM}: Global-Local Latent Consistency Models for Fast High-Resolution Bone Suppression in Chest {X}-Ray Images},
+  year          = {2025},
+  howpublished  = {arXiv preprint arXiv:2508.03357},
+  eprint        = {2508.03357},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.2508.03357},
+  note          = {Accepted at MICCAI 2025}
+}
+
+% checked: https://arxiv.org/abs/2311.15328 (comment: accepted by IEEE ISBI 2024)
+@misc{chen2024bsdiff,
+  author        = {Chen, Zhanghao and Sun, Yifei and Qin, Wenjian and Ge, Ruiquan and Pan, Cheng and Deng, Wenming and Liu, Zhou and Min, Wenwen and Elazab, Ahmed and Wan, Xiang and Wang, Changmiao},
+  title         = {{BS-Diff}: Effective Bone Suppression Using Conditional Diffusion Models from Chest {X}-Ray Images},
+  year          = {2024},
+  howpublished  = {arXiv preprint arXiv:2311.15328},
+  eprint        = {2311.15328},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.2311.15328},
+  note          = {Accepted at IEEE ISBI 2024}
+}
+
+% checked: https://arxiv.org/abs/2610.19466 (v1 14 Oct 2026; abstract: SZCH-X-Rays released, 741 pairs) and https://github.com/diaoquesang/DeBoneDiT (data set under CC BY-NC 4.0, code Apache-2.0)
+@misc{sun2026debonedit,
+  author        = {Sun, Yifei and Fan, Fenglei and Jia, Junhao and Deng, Wenming and Xu, Hongxia and Wang, Changmiao and Ge, Ruiquan},
+  title         = {{DeBoneDiT}: Depth-Driven Conditional Bridge Diffusion Transformers for Bone Suppression in Chest {X}-Ray Images},
+  year          = {2026},
+  howpublished  = {arXiv preprint arXiv:2610.19466},
+  eprint        = {2610.19466},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  doi           = {10.48550/arXiv.2610.19466}
+}
+
+% checked: PubMed search by DOI (PMID 16608057: authors, IEEE TMI 25(4):406-416, 2006 Apr) and a web search that returned the same citation
+@article{suzuki2006mtann,
+  author  = {Suzuki, Kenji and Abe, Hiroyuki and MacMahon, Heber and Doi, Kunio},
+  title   = {Image-processing technique for suppressing ribs in chest radiographs by means of massive training artificial neural network ({MTANN})},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2006},
+  volume  = {25},
+  number  = {4},
+  pages   = {406--416},
+  doi     = {10.1109/TMI.2006.871549}
+}
+
+% checked: PubMed (PMID 27589577; print date 2017 Jan, vol. 35, pp. 421-433) and OpenAlex
+@article{yang2017cascade,
+  author  = {Yang, Wei and Chen, Yingyin and Liu, Yunbi and Zhong, Liming and Qin, Genggeng and Lu, Zhentai and Feng, Qianjin and Chen, Wufan},
+  title   = {Cascade of multi-scale convolutional neural networks for bone suppression of chest radiographs in gradient domain},
+  journal = {Medical Image Analysis},
+  year    = {2017},
+  volume  = {35},
+  pages   = {421--433},
+  doi     = {10.1016/j.media.2016.08.004}
+}
+
+% checked: OpenAlex record for 10.1109/CIBCB.2017.8058543 (the record's raw name of the fourth author is "Adin Ramirez Rivera")
+@inproceedings{gusarev2017deep,
+  author    = {Gusarev, Maxim and Kuleev, Ramil and Khan, Adil and Ramirez Rivera, Adin and Khattak, Asad Masood},
+  title     = {Deep learning models for bone suppression in chest radiographs},
+  booktitle = {{IEEE} Conference on Computational Intelligence in Bioinformatics and Computational Biology ({CIBCB})},
+  year      = {2017},
+  pages     = {1--7},
+  doi       = {10.1109/CIBCB.2017.8058543}
+}
+
+% checked: OpenAlex record for 10.1148/radiol.11100153 (Radiology 260(1):265-273, 2011)
+@article{freedman2011lung,
+  author  = {Freedman, Matthew T. and Lo, Shih-Chung Benedict and Seibel, John C. and Bromley, Christina M.},
+  title   = {Lung Nodules: Improved Detection with Software That Suppresses the Rib and Clavicle on Chest Radiographs},
+  journal = {Radiology},
+  year    = {2011},
+  volume  = {260},
+  number  = {1},
+  pages   = {265--273},
+  doi     = {10.1148/radiol.11100153}
+}
+
+% checked: OpenAlex record for 10.1148/radiol.14131315 (Radiology 272(1):252-261, 2014)
+@article{schalekamp2014cad,
+  author  = {Schalekamp, Steven and van Ginneken, Bram and Koedam, Emmeline and Snoeren, Miranda M. and Tiehuis, Audrey M. and Wittenberg, Rianne and Karssemeijer, Nico and Schaefer-Prokop, Cornelia M.},
+  title   = {Computer-aided Detection Improves Detection of Pulmonary Nodules in Chest Radiographs beyond the Support by Bone-suppressed Images},
+  journal = {Radiology},
+  year    = {2014},
+  volume  = {272},
+  number  = {1},
+  pages   = {252--261},
+  doi     = {10.1148/radiol.14131315}
+}
+
+% checked 2026-11-03: Crossref record for 10.1148/rg.261055034 (RadioGraphics 26(1):79-92, 2006-01) and PubMed PMID 16418245 (publication type: Review)
+@article{kuhlman2006des,
+  author  = {Kuhlman, Janet E. and Collins, Jannette and Brooks, Gregory N. and Yandow, Donald R. and Broderick, Lynn S.},
+  title   = {Dual-Energy Subtraction Chest Radiography: What to Look for beyond Calcified Nodules},
+  journal = {RadioGraphics},
+  year    = {2006},
+  volume  = {26},
+  number  = {1},
+  pages   = {79--92},
+  doi     = {10.1148/rg.261055034}
+}
+
+% checked 2026-11-03: Crossref record for 10.1109/TMI.2013.2274212 (IEEE TMI 32(11):2099-2113, 2013-11) and PubMed PMID 23880041 (abstract: nodules extracted
+% from CT were simulated close to the clavicles in 100 chest radiographs and their contrast was measured before and after clavicle suppression)
+@article{hogeweg2013suppression,
+  author  = {Hogeweg, Laurens and Sanchez, Clara I. and van Ginneken, Bram},
+  title   = {Suppression of Translucent Elongated Structures: Applications in Chest Radiography},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2013},
+  volume  = {32},
+  number  = {11},
+  pages   = {2099--2113},
+  doi     = {10.1109/TMI.2013.2274212}
+}
+
+% checked 2026-11-03: Crossref record for 10.1007/s00330-019-06375-6 (Eur Radiol 30(1):571-580, 2020-01) and PubMed PMID 31385049 (abstract: anthropomorphic
+% phantom with a 12-mm simulated nodule at 66 positions; nodule contrast and CNR compared between original and bone-suppressed radiographs;
+% the abstract does not name the bone-suppression software)
+@article{takagi2020dose,
+  author  = {Takagi, Satoshi and Yaegashi, Tatsuya and Ishikawa, Masayori},
+  title   = {Dose reduction and image quality improvement of chest radiography by using bone-suppression technique and low tube voltage: a phantom study},
+  journal = {European Radiology},
+  year    = {2020},
+  volume  = {30},
+  number  = {1},
+  pages   = {571--580},
+  doi     = {10.1007/s00330-019-06375-6}
+}
+
+% =====================================================================================================================
+% Data sets used for training, lesion libraries and evaluation
+% =====================================================================================================================
+
+% checked: https://pubmed.ncbi.nlm.nih.gov/21452728/ (PMID 21452728; 55 authors, first six listed)
+@article{armato2011lidc,
+  author  = {Armato, III, Samuel G. and McLennan, Geoffrey and Bidaut, Luc and McNitt-Gray, Michael F. and Meyer, Charles R. and Reeves, Anthony P. and others},
+  title   = {The {Lung Image Database Consortium (LIDC)} and {Image Database Resource Initiative (IDRI)}: A completed reference database of lung nodules on {CT} scans},
+  journal = {Medical Physics},
+  year    = {2011},
+  volume  = {38},
+  number  = {2},
+  pages   = {915--931},
+  doi     = {10.1118/1.3528204}
+}
+
+% checked: https://www.cancerimagingarchive.net/collection/lidc-idri/ (licence CC BY 3.0; attribution must include the data DOI)
+@misc{armato2015lidctcia,
+  author       = {Armato, III, Samuel G. and others},
+  title        = {Data From {LIDC-IDRI}},
+  year         = {2015},
+  howpublished = {The Cancer Imaging Archive},
+  doi          = {10.7937/K9/TCIA.2015.LO9QL9SX},
+  note         = {Licence: CC BY 3.0}
+}
+
+% checked: Crossref record for 10.1007/s10278-013-9622-7 (J Digit Imaging 26(6):1045-1057, print 2013-12; 12 authors)
+@article{clark2013tcia,
+  author  = {Clark, Kenneth and Vendt, Bruce and Smith, Kirk and Freymann, John and Kirby, Justin and Koppel, Paul and Moore, Stephen and Phillips, Stanley and Maffitt, David and Pringle, Michael and Tarbox, Lawrence and Prior, Fred},
+  title   = {The {Cancer Imaging Archive (TCIA)}: Maintaining and Operating a Public Information Repository},
+  journal = {Journal of Digital Imaging},
+  year    = {2013},
+  volume  = {26},
+  number  = {6},
+  pages   = {1045--1057},
+  doi     = {10.1007/s10278-013-9622-7}
+}
+
+% checked: OpenAlex record for 10.1016/j.media.2017.06.015 (Med Image Anal 42:1-13; 32 authors, first six listed)
+@article{setio2017luna16,
+  author  = {Setio, Arnaud A. A. and Traverso, Alberto and de Bel, Thomas and Berens, Moira S. N. and van den Bogaard, Cas and Cerello, P. and others},
+  title   = {Validation, comparison, and combination of algorithms for automatic detection of pulmonary nodules in computed tomography images: The {LUNA16} challenge},
+  journal = {Medical Image Analysis},
+  year    = {2017},
+  volume  = {42},
+  pages   = {1--13},
+  doi     = {10.1016/j.media.2017.06.015}
+}
+
+% checked: OpenAlex record for 10.2214/ajr.174.1.1740071 (AJR 174(1):71-74, 2000; the record gives the third author as "J Ikezoe"). The subtitle and the same author list
+% come from the reference lists of two patents returned by a web search (OpenAlex shows the main title only).
+@article{shiraishi2000jsrt,
+  author  = {Shiraishi, Junji and Katsuragawa, Shigehiko and Ikezoe, J. and Matsumoto, Tsuneo and Kobayashi, Takeshi and Komatsu, Ken-ichi and Matsui, Mitate and Fujita, Hiroshi and Kodera, Yoshie and Doi, Kunio},
+  title   = {Development of a Digital Image Database for Chest Radiographs With and Without a Lung Nodule: Receiver Operating Characteristic Analysis of Radiologists' Detection of Pulmonary Nodules},
+  journal = {American Journal of Roentgenology},
+  year    = {2000},
+  volume  = {174},
+  number  = {1},
+  pages   = {71--74},
+  doi     = {10.2214/ajr.174.1.1740071}
+}
+
+% checked: https://arxiv.org/abs/1705.02315 (comments: CVPR 2017; journal reference: IEEE CVPR 2017, pp. 2097-2106; related DOI 10.1109/CVPR.2017.369).
+% 2026-11-03: pages corrected to 3462-3471, as printed by the Crossref record for 10.1109/CVPR.2017.369 and by README_CHESTXRAY.pdf on the NIH download
+% site (https://nihcc.app.box.com/v/ChestXray-NIHCC); the arXiv journal reference gives 2097-2106 (source of the difference not checked).
+% The data set released afterwards (v2 of the preprint) has 14 findings and is known as ChestX-ray14.
+@inproceedings{wang2017chestxray,
+  author    = {Wang, Xiaosong and Peng, Yifan and Lu, Le and Lu, Zhiyong and Bagheri, Mohammadhadi and Summers, Ronald M.},
+  title     = {{ChestX-ray8}: Hospital-scale Chest {X}-ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases},
+  booktitle = {{IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2017},
+  pages     = {3462--3471},
+  doi       = {10.1109/CVPR.2017.369},
+  eprint    = {1705.02315},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/2401.02192 (19 authors) and OpenAlex record for 10.1109/TMI.2024.3382042 (IEEE TMI 43(8):2839-2853, online 2024-03-26)
+@article{sogancioglu2024node21,
+  author  = {Sogancioglu, Ecem and van Ginneken, Bram and Behrendt, Finn and Bengs, Marcel and Schlaefer, Alexander and Radu, Miron and Xu, Di and Sheng, Ke and Scalzo, Fabien and Marcus, Eric and Papa, Samuele and Teuwen, Jonas and Scholten, Ernst Th. and Schalekamp, Steven and Hendrix, Nils and Jacobs, Colin and Hendrix, Ward and S{\'a}nchez, Clara I. and Murphy, Keelin},
+  title   = {Nodule Detection and Generation on Chest {X}-Rays: {NODE21} Challenge},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2024},
+  volume  = {43},
+  number  = {8},
+  pages   = {2839--2853},
+  doi     = {10.1109/TMI.2024.3382042},
+  eprint  = {2401.02192},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://mlanthology.org/cvpr/2020/liu2020cvpr-rethinking/ (BibTeX, DOI) and OpenAlex record for 10.1109/CVPR42600.2020.00272 (pages 2643-2652, from OpenAlex only)
+@inproceedings{liu2020tbx11k,
+  author    = {Liu, Yun and Wu, Yu-Huan and Ban, Yunfeng and Wang, Huifang and Cheng, Ming-Ming},
+  title     = {Rethinking Computer-Aided Tuberculosis Diagnosis},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2020},
+  pages     = {2643--2652},
+  doi       = {10.1109/CVPR42600.2020.00272}
+}
+
+% checked: https://arxiv.org/abs/2111.00595 and https://proceedings.mlr.press/v172/cohen22a.html (PMLR 172:231-249, 2022)
+@inproceedings{cohen2022torchxrayvision,
+  author    = {Cohen, Joseph Paul and Viviano, Joseph D. and Bertin, Paul and Morrison, Paul and Torabian, Parsa and Guarrera, Matteo and Lungren, Matthew P. and Chaudhari, Akshay and Brooks, Rupert and Hashir, Mohammad and Bertrand, Hadrien},
+  title     = {{TorchXRayVision}: A library of chest {X}-ray datasets and models},
+  booktitle = {Proceedings of The 5th International Conference on Medical Imaging with Deep Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {172},
+  pages     = {231--249},
+  year      = {2022},
+  editor    = {Konukoglu, Ender and Menze, Bjoern and Venkataraman, Archana and Baumgartner, Christian and Dou, Qi and Albarqouni, Shadi},
+  publisher = {PMLR},
+  eprint    = {2111.00595},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/2104.10326 (comment: accepted by IEEE TMI) and Crossref search result (IEEE TMI 40(8):2042-2052, 2021-08, DOI 10.1109/TMI.2021.3070847).
+% 2026-11-03: cite this as the SOURCE of the pre-trained PSPNet, not as its training data. The TorchXRayVision docstring
+% (torchxrayvision/baseline_models/chestx_det/__init__.py, class PSPNet) names the ChestX-Det repository and this paper; the weights file
+% pspnet_chestxray_best_model_4 is the one released in Deepwise-AILab/ChestX-Det-Dataset/pre-trained_PSPNet. The paper (arXiv PDF, "Anatomical Structure Relation Module") says the
+% segmentation model "is trained on 1000 chest images labeled with 5 parts from external data"; ChestX-Det itself has disease labels only.
+@article{lian2021chestxdet,
+  author  = {Lian, Jie and Liu, Jingyu and Zhang, Shu and Gao, Kai and Liu, Xiaoqing and Zhang, Dingwen and Yu, Yizhou},
+  title   = {A Structure-Aware Relation Network for Thoracic Diseases Detection and Segmentation},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2021},
+  volume  = {40},
+  number  = {8},
+  pages   = {2042--2052},
+  doi     = {10.1109/TMI.2021.3070847},
+  eprint  = {2104.10326},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-03: https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection (Overview > Citation gives exactly these six
+% names, the title, the URL and the year 2020; host Vingroup Big Data Institute; 18,000 scans from Hospital 108 and Hanoi Medical University Hospital;
+% the Overview points to the VinDr-CXR paper (nguyen2022vindrcxr) for how the data set was built). Rules: "Non-commercial, Research/Academic Use Only".
+@misc{vinbigdata2020kaggle,
+  author       = {Nguyen, Duc and {DungNB} and Nguyen, Ha Q. and Elliott, Julia and {NguyenThanhNhan} and Culliton, Phil},
+  title        = {{VinBigData} Chest {X}-ray Abnormalities Detection},
+  year         = {2020},
+  howpublished = {Kaggle competition},
+  url          = {https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection},
+  note         = {Accessed 2026-11-03}
+}
+
+% checked 2026-11-03: figshare API record https://api.figshare.com/v2/articles/32086362 (title, eight authors with first/last name fields, published
+% 2026-04-30, version 1, licence CC BY 4.0; 3,257 paediatric CXRs, classes Normal / Bacterial Pneumonia / Viral Pneumonia, Dr. M.R. Khan Shishu Hospital,
+% Dhaka). The seventh author is split by figshare as first name "Sultana", last name "Amena Ferdoucy"; kept as given.
+@misc{durjoy2026bdcxr,
+  author       = {Durjoy, Sabbir Hossain and Shikder, Md. Emon and Bijoy, Md. Hasan Imam and Shoib, Md. Mehedi Hasan and Rahman, Ashiqur and Hasan, Md. Zahid and {Amena Ferdoucy}, Sultana and Islam, Shekh Mohammed Moinul},
+  title        = {{BDCXR-3257}: A Comprehensive Chest Radiography Dataset with Multi-Etiological Pneumonia Labels from a Clinical Setting},
+  year         = {2026},
+  howpublished = {figshare, dataset},
+  doi          = {10.6084/m9.figshare.32086362.v1},
+  note         = {Version 1; licence CC BY 4.0}
+}
+
+% checked 2026-11-03: Crossref record for 10.1016/j.cell.2018.02.010 (Cell 172(5):1122-1131.e9, 2018-02; 39 authors, first six listed) and PubMed PMID 29474911.
+% The abstract confirms paediatric pneumonia chest X-rays; the bacterial/viral split is NOT stated in the abstract and the full text (cell.com) was
+% behind a bot check, so do not cite this for bacterial/viral labels until the full text has been read.
+@article{kermany2018identifying,
+  author  = {Kermany, Daniel S. and Goldbaum, Michael and Cai, Wenjia and Valentim, Carolina C. S. and Liang, Huiying and Baxter, Sally L. and others},
+  title   = {Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning},
+  journal = {Cell},
+  year    = {2018},
+  volume  = {172},
+  number  = {5},
+  pages   = {1122--1131.e9},
+  doi     = {10.1016/j.cell.2018.02.010}
+}
+
+% =====================================================================================================================
+% Architecture, encoders, optimiser
+% =====================================================================================================================
+
+% checked 2026-11-04: https://arxiv.org/abs/2010.11929 (12 authors; comment: "ICLR camera-ready version") and OpenAlex record W3119786062
+% (venue International Conference on Learning Representations, 2021, landing page https://openreview.net/pdf?id=YicbFdNTTy).
+% OpenReview itself showed a bot check and was not read.
+@inproceedings{dosovitskiy2021vit,
+  author    = {Dosovitskiy, Alexey and Beyer, Lucas and Kolesnikov, Alexander and Weissenborn, Dirk and Zhai, Xiaohua and Unterthiner, Thomas and Dehghani, Mostafa and Minderer, Matthias and Heigold, Georg and Gelly, Sylvain and Uszkoreit, Jakob and Houlsby, Neil},
+  title     = {An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale},
+  booktitle = {International Conference on Learning Representations ({ICLR})},
+  year      = {2021},
+  eprint    = {2010.11929},
+  archivePrefix = {arXiv},
+  url       = {https://openreview.net/forum?id=YicbFdNTTy}
+}
+
+% checked 2026-11-04: https://arxiv.org/abs/2103.14030 and Crossref record for 10.1109/ICCV48922.2021.00986 (ICCV 2021, pp. 9992-10002, 2021-10)
+@inproceedings{liu2021swin,
+  author    = {Liu, Ze and Lin, Yutong and Cao, Yue and Hu, Han and Wei, Yixuan and Zhang, Zheng and Lin, Stephen and Guo, Baining},
+  title     = {Swin Transformer: Hierarchical Vision Transformer using Shifted Windows},
+  booktitle = {Proceedings of the {IEEE/CVF} International Conference on Computer Vision ({ICCV})},
+  year      = {2021},
+  pages     = {9992--10002},
+  doi       = {10.1109/ICCV48922.2021.00986},
+  eprint    = {2103.14030},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-04: https://arxiv.org/abs/2201.03545 (comment: CVPR 2022) and Crossref record for 10.1109/CVPR52688.2022.01167 (pp. 11966-11976, 2022-06)
+@inproceedings{liu2022convnext,
+  author    = {Liu, Zhuang and Mao, Hanzi and Wu, Chao-Yuan and Feichtenhofer, Christoph and Darrell, Trevor and Xie, Saining},
+  title     = {A {ConvNet} for the 2020s},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2022},
+  pages     = {11966--11976},
+  doi       = {10.1109/CVPR52688.2022.01167},
+  eprint    = {2201.03545},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/2111.09883 (journal reference CVPR2022) and OpenAlex record for 10.1109/CVPR52688.2022.01170 (pages 11999-12009)
+@inproceedings{liu2022swinv2,
+  author    = {Liu, Ze and Hu, Han and Lin, Yutong and Yao, Zhuliang and Xie, Zhenda and Wei, Yixuan and Ning, Jia and Cao, Yue and Zhang, Zheng and Dong, Li and Wei, Furu and Guo, Baining},
+  title     = {Swin Transformer {V2}: Scaling Up Capacity and Resolution},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2022},
+  pages     = {11999--12009},
+  doi       = {10.1109/CVPR52688.2022.01170},
+  eprint    = {2111.09883},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/1807.10165 (comments: accepted by the 4th DLMIA workshop) and OpenAlex record for 10.1007/978-3-030-00889-5_1 (LNCS 11045, pp. 3-11)
+% DOI of the Springer version: 10.1007/978-3-030-00889-5_1 (given as url because of the underscore)
+@inproceedings{zhou2018unetpp,
+  author    = {Zhou, Zongwei and Rahman Siddiquee, Md Mahfuzur and Tajbakhsh, Nima and Liang, Jianming},
+  title     = {{UNet++}: A Nested {U-Net} Architecture for Medical Image Segmentation},
+  booktitle = {Deep Learning in Medical Image Analysis and Multimodal Learning for Clinical Decision Support ({DLMIA} 2018)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11045},
+  pages     = {3--11},
+  year      = {2018},
+  publisher = {Springer},
+  eprint    = {1807.10165},
+  archivePrefix = {arXiv},
+  url       = {https://doi.org/10.1007/978-3-030-00889-5_1}
+}
+
+% checked: https://arxiv.org/abs/1807.06521 (comments: accepted to ECCV 2018) and OpenAlex record for 10.1007/978-3-030-01234-2_1 (pp. 3-19)
+% DOI of the Springer version: 10.1007/978-3-030-01234-2_1 (given as url because of the underscore)
+@inproceedings{woo2018cbam,
+  author    = {Woo, Sanghyun and Park, Jongchan and Lee, Joon-Young and Kweon, In So},
+  title     = {{CBAM}: Convolutional Block Attention Module},
+  booktitle = {Computer Vision -- {ECCV} 2018},
+  series    = {Lecture Notes in Computer Science},
+  pages     = {3--19},
+  year      = {2018},
+  publisher = {Springer},
+  eprint    = {1807.06521},
+  archivePrefix = {arXiv},
+  url       = {https://doi.org/10.1007/978-3-030-01234-2_1}
+}
+
+% checked: https://arxiv.org/abs/2301.00808 and OpenAlex record for 10.1109/CVPR52729.2023.01548 (CVPR 2023, pp. 16133-16142)
+@inproceedings{woo2023convnextv2,
+  author    = {Woo, Sanghyun and Debnath, Shoubhik and Hu, Ronghang and Chen, Xinlei and Liu, Zhuang and Kweon, In So and Xie, Saining},
+  title     = {{ConvNeXt V2}: Co-designing and Scaling {ConvNets} with Masked Autoencoders},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2023},
+  pages     = {16133--16142},
+  doi       = {10.1109/CVPR52729.2023.01548},
+  eprint    = {2301.00808},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/2508.10104 (v1 13 Aug 2025; 26 authors, first six listed; no venue listed)
+@misc{simeoni2025dinov3,
+  author        = {Sim{\'e}oni, Oriane and Vo, Huy V. and Seitzer, Maximilian and Baldassarre, Federico and Oquab, Maxime and Jose, Cijo and others},
+  title         = {{DINOv3}},
+  year          = {2025},
+  howpublished  = {arXiv preprint arXiv:2508.10104},
+  eprint        = {2508.10104},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.2508.10104}
+}
+
+% checked: https://arxiv.org/abs/2401.10815 (journal reference: Nature Machine Intelligence 2025) and OpenAlex record for 10.1038/s42256-024-00965-w (vol. 7 no. 1, pp. 119-130)
+@article{perezgarcia2025raddino,
+  author  = {P{\'e}rez-Garc{\'\i}a, Fernando and Sharma, Harshita and Bond-Taylor, Sam and Bouzid, Kenza and Salvatelli, Valentina and Ilse, Maximilian and Bannur, Shruthi and Castro, Daniel C. and Schwaighofer, Anton and Lungren, Matthew P. and Wetscherek, Maria Teodora and Codella, Noel and Hyland, Stephanie L. and Alvarez-Valle, Javier and Oktay, Ozan},
+  title   = {Exploring scalable medical image encoders beyond text supervision},
+  journal = {Nature Machine Intelligence},
+  year    = {2025},
+  volume  = {7},
+  number  = {1},
+  pages   = {119--130},
+  doi     = {10.1038/s42256-024-00965-w},
+  eprint  = {2401.10815},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/1711.05101 (comments: published as a conference paper at ICLR 2019)
+@inproceedings{loshchilov2019adamw,
+  author    = {Loshchilov, Ilya and Hutter, Frank},
+  title     = {Decoupled Weight Decay Regularization},
+  booktitle = {International Conference on Learning Representations ({ICLR})},
+  year      = {2019},
+  eprint    = {1711.05101},
+  archivePrefix = {arXiv},
+  url       = {https://arxiv.org/abs/1711.05101}
+}
+
+% checked: Crossref record for 10.1109/TPAMI.2016.2577031 (IEEE TPAMI 39(6):1137-1149, print 2017-06) and https://arxiv.org/abs/1506.01497
+@article{ren2017fasterrcnn,
+  author  = {Ren, Shaoqing and He, Kaiming and Girshick, Ross and Sun, Jian},
+  title   = {Faster {R-CNN}: Towards Real-Time Object Detection with Region Proposal Networks},
+  journal = {{IEEE} Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2017},
+  volume  = {39},
+  number  = {6},
+  pages   = {1137--1149},
+  doi     = {10.1109/TPAMI.2016.2577031},
+  eprint  = {1506.01497},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://arxiv.org/abs/1608.06993 (comments: CVPR 2017) and OpenAlex record for 10.1109/CVPR.2017.243 (pp. 2261-2269)
+@inproceedings{huang2017densenet,
+  author    = {Huang, Gao and Liu, Zhuang and van der Maaten, Laurens and Weinberger, Kilian Q.},
+  title     = {Densely Connected Convolutional Networks},
+  booktitle = {{IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2017},
+  pages     = {2261--2269},
+  doi       = {10.1109/CVPR.2017.243},
+  eprint    = {1608.06993},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-03: Crossref record for 10.1109/CVPR.2009.5206848 (pp. 248-255, 2009-06; the record gives the last two authors as "Kai Li" and "Li Fei-Fei")
+@inproceedings{deng2009imagenet,
+  author    = {Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Li, Kai and Fei-Fei, Li},
+  title     = {{ImageNet}: A large-scale hierarchical image database},
+  booktitle = {{IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2009},
+  pages     = {248--255},
+  doi       = {10.1109/CVPR.2009.5206848}
+}
+
+% checked 2026-11-03: the "Citing" section of https://github.com/huggingface/pytorch-image-models (README) and its CITATION.cff (author Ross Wightman,
+% year 2019, DOI 10.5281/zenodo.4414861). The project's recommended citation is used. DataCite resolves that DOI to the Zenodo software record
+% (latest version listed there: v0.8.10dev0, 2023, many creators).
+@misc{wightman2019timm,
+  author       = {Wightman, Ross},
+  title        = {{PyTorch} Image Models},
+  year         = {2019},
+  publisher    = {GitHub},
+  howpublished = {\url{https://github.com/rwightman/pytorch-image-models}},
+  doi          = {10.5281/zenodo.4414861}
+}
+
+% =====================================================================================================================
+% Physics, image-quality metrics, classical comparators
+% =====================================================================================================================
+
+% checked: OpenAlex record for 10.1002/mp.14945 (Med Phys 48(7):3630-3637, 2021)
+@article{poludniowski2021spekpy,
+  author  = {Poludniowski, Gavin G. and Omar, Artur and Bujila, Robert and Andreo, Pedro},
+  title   = {Technical Note: {SpekPy} v2.0---a software toolkit for modeling x-ray tube spectra},
+  journal = {Medical Physics},
+  year    = {2021},
+  volume  = {48},
+  number  = {7},
+  pages   = {3630--3637},
+  doi     = {10.1002/mp.14945}
+}
+
+% checked 2026-11-03: https://www.nist.gov/pml/xcom-photon-cross-sections-database (eight authors, DOI 10.18434/T48G6X, last data update November 2010)
+% and https://physics.nist.gov/PhysRefData/Xcom/Text/version.shtml ("Example of how to reference this online database": Berger et al. (2010),
+% XCOM: Photon Cross Section Database (version 1.5), http://physics.nist.gov/xcom, access date, NIST, Gaithersburg, MD). This is NIST's recommended form.
+@misc{berger2010xcom,
+  author       = {Berger, M. J. and Hubbell, J. H. and Seltzer, S. M. and Chang, J. and Coursey, J. S. and Sukumar, R. and Zucker, D. S. and Olsen, K.},
+  title        = {{XCOM}: Photon Cross Section Database (version 1.5)},
+  year         = {2010},
+  howpublished = {National Institute of Standards and Technology, Gaithersburg, MD. \url{http://physics.nist.gov/xcom}},
+  doi          = {10.18434/T48G6X},
+  note         = {Accessed 2026-11-03}
+}
+
+% checked 2026-11-04: https://www.nist.gov/pml/x-ray-mass-attenuation-coefficients (NIST Standard Reference Database 126, J. H. Hubbell and S. M. Seltzer,
+% DOI 10.18434/T4D01F, last update to data content July 2004) and https://www.nist.gov/pml/nist-x-ray-mass-attenuation-coefficients-version-history
+% ("Example of how to reference this online database": Hubbell and Seltzer (2004), version 1.4, http://physics.nist.gov/xaamdi, access date, NIST,
+% Gaithersburg, MD; optional: originally published as NISTIR 5632, 1995). DataCite record of the DOI: creator Seltzer, publication year 1995.
+% These are the Table 4 pages that tools/build_xray_tables.py downloads.
+@misc{hubbell2004xraymass,
+  author       = {Hubbell, J. H. and Seltzer, S. M.},
+  title        = {Tables of {X}-Ray Mass Attenuation Coefficients and Mass Energy-Absorption Coefficients (version 1.4)},
+  year         = {2004},
+  howpublished = {National Institute of Standards and Technology, Gaithersburg, MD. \url{http://physics.nist.gov/xaamdi}},
+  doi          = {10.18434/T4D01F},
+  note         = {NIST Standard Reference Database 126; originally published as NISTIR 5632 (1995). Accessed 2026-11-03}
+}
+
+% checked 2026-11-04: https://shop.lww.com/The-Essential-Physics-of-Medical-Imaging/p/9781975103224 (4th edition, four authors, ISBN 9781975103224,
+% publication date November 4, 2020; chapter 3 "Interaction of Radiation with Matter") and https://openlibrary.org/isbn/9781975103224.json
+% (publisher LWW, Nov 17, 2020; LC class RC78.7.D53 E87 2021, i.e. library catalogues date it 2021). Year from the publisher page.
+@book{bushberg2020essential,
+  author    = {Bushberg, Jerrold T. and Seibert, J. Anthony and Leidholdt, Jr., Edwin M. and Boone, John M.},
+  title     = {The Essential Physics of Medical Imaging},
+  edition   = {4th},
+  publisher = {Wolters Kluwer / Lippincott Williams \& Wilkins},
+  year      = {2020},
+  isbn      = {9781975103224}
+}
+
+% checked 2026-11-04: Crossref record for 10.1097/00005382-200307000-00004 (J Thorac Imaging 18(3):148-164, 2003-07) and PubMed PMID 12867812
+% (abstract: look-up table operations, unsharp masking, multi-scale frequency processing of digital chest radiographs)
+@article{prokop2003processing,
+  author  = {Prokop, Mathias and Neitzel, Ulrich and Schaefer-Prokop, Cornelia},
+  title   = {Principles of Image Processing in Digital Chest Radiography},
+  journal = {Journal of Thoracic Imaging},
+  year    = {2003},
+  volume  = {18},
+  number  = {3},
+  pages   = {148--164},
+  doi     = {10.1097/00005382-200307000-00004}
+}
+
+% checked 2026-11-04: Crossref record for 10.1007/s00330-008-0948-3 (Eur Radiol 18(9):1818-1830, print 2008-09, online 2008-04-23), PubMed PMID 18431577
+% and the open full text PMC2516181. Full text: most vendors use multi-frequency processing (MUSICA, UNIQUE, MFP); single-exposure dual-layer DES has
+% modest energy separation and higher noise but no misregistration; dual-exposure DES (two exposures about 200 ms apart) has better energy
+% separation but "suffers from slight misregistration artifacts".
+@article{schaeferprokop2008digital,
+  author  = {Schaefer-Prokop, Cornelia and Neitzel, Ulrich and Venema, Henk W. and Uffmann, Martin and Prokop, Mathias},
+  title   = {Digital chest radiography: an update on modern technology, dose containment and control of image quality},
+  journal = {European Radiology},
+  year    = {2008},
+  volume  = {18},
+  number  = {9},
+  pages   = {1818--1830},
+  doi     = {10.1007/s00330-008-0948-3}
+}
+
+% checked 2026-11-04: Crossref record for 10.1148/radiology.213.3.r99dc19727 (Radiology 213(3):727-734, 1999-12) and PubMed PMID 10580946
+% (conclusion of the abstract: detection of subtle lung nodules on chest radiographs is limited by anatomic noise)
+@article{samei1999detection,
+  author  = {Samei, Ehsan and Flynn, Michael J. and Eyler, William R.},
+  title   = {Detection of Subtle Lung Nodules: Relative Influence of Quantum and Anatomic Noise on Chest Radiographs},
+  journal = {Radiology},
+  year    = {1999},
+  volume  = {213},
+  number  = {3},
+  pages   = {727--734},
+  doi     = {10.1148/radiology.213.3.r99dc19727}
+}
+
+% SUPERSEDED by berger2010xcom (NIST's recommended citation); kept only because data.tex still cites this key. Replace the key in data.tex, then delete.
+% checked: DataCite record for 10.18434/t48g6x (creator listed: Seltzer, Stephen; publication year 1987).
+@misc{seltzer1987xcom,
+  author       = {Seltzer, Stephen},
+  title        = {{XCOM}-Photon Cross Sections Database, {NIST} Standard Reference Database 8},
+  year         = {1987},
+  howpublished = {National Institute of Standards and Technology},
+  doi          = {10.18434/T48G6X}
+}
+
+% checked 2026-11-03: Crossref record for 10.1109/ACSSC.2003.1292216 (pp. 1398-1402; no date) and the IEEE Xplore record
+% https://ieeexplore.ieee.org/document/1292216 (publication year 2003, vol. 2, pp. 1398-1402, Pacific Grove, CA; "date added to IEEE Xplore"
+% 04 May 2004, which is where OpenAlex's 2004 comes from). Year settled as 2003. Both records spell the volume title "Thrity-Seventh"; corrected here.
+@inproceedings{wang2003msssim,
+  author    = {Wang, Zhou and Simoncelli, Eero P. and Bovik, Alan C.},
+  title     = {Multiscale structural similarity for image quality assessment},
+  booktitle = {The Thirty-Seventh Asilomar Conference on Signals, Systems \& Computers},
+  year      = {2003},
+  volume    = {2},
+  pages     = {1398--1402},
+  doi       = {10.1109/ACSSC.2003.1292216}
+}
+
+% checked 2026-11-03: Crossref record for 10.1016/B978-0-12-336156-1.50061-6 (chapter, pp. 474-485, 1994, ISBN 9780123361561) and the Open Library
+% record for that ISBN (https://openlibrary.org/isbn/9780123361561.json: "Graphics gems IV", edited by Paul S. Heckbert, AP Professional, Boston, 1994)
+@incollection{zuiderveld1994clahe,
+  author    = {Zuiderveld, Karel},
+  title     = {Contrast Limited Adaptive Histogram Equalization},
+  booktitle = {Graphics Gems {IV}},
+  editor    = {Heckbert, Paul S.},
+  publisher = {AP Professional},
+  address   = {Boston},
+  year      = {1994},
+  pages     = {474--485},
+  doi       = {10.1016/B978-0-12-336156-1.50061-6}
+}
+
+% checked 2026-11-03: Crossref record for 10.1093/jicru/os23.1.Report44 (Journal of the ICRU os23(1), 1989-01-15; persons listed: D. R. White, J. Booz,
+% R. V. Griffith, J. J. Spokas, I. J. Wilson) and https://www.icru.org/report/tissue-substitutes-in-radiation-dosimetry-and-measurement-report-44/ (title)
+@techreport{icru1989report44,
+  author      = {{International Commission on Radiation Units and Measurements}},
+  title       = {Tissue Substitutes in Radiation Dosimetry and Measurement},
+  institution = {International Commission on Radiation Units and Measurements},
+  type        = {{ICRU} Report},
+  number      = {44},
+  year        = {1989},
+  doi         = {10.1093/jicru/os23.1.Report44},
+  note        = {Journal of the ICRU, vol. os23, no. 1}
+}
+
+% checked: OpenAlex record for 10.1109/TIP.2003.819861 (IEEE TIP 13(4):600-612, 2004)
+@article{wang2004ssim,
+  author  = {Wang, Zhou and Bovik, Alan Conrad and Sheikh, Hamid R. and Simoncelli, Eero P.},
+  title   = {Image quality assessment: from error visibility to structural similarity},
+  journal = {{IEEE} Transactions on Image Processing},
+  year    = {2004},
+  volume  = {13},
+  number  = {4},
+  pages   = {600--612},
+  doi     = {10.1109/TIP.2003.819861}
+}
+
+% checked: https://arxiv.org/abs/1801.03924 (comments: accepted to CVPR 2018) and OpenAlex record for 10.1109/CVPR.2018.00068 (pp. 586-595)
+@inproceedings{zhang2018lpips,
+  author    = {Zhang, Richard and Isola, Phillip and Efros, Alexei A. and Shechtman, Eli and Wang, Oliver},
+  title     = {The Unreasonable Effectiveness of Deep Features as a Perceptual Metric},
+  booktitle = {Proceedings of the {IEEE/CVF} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+  year      = {2018},
+  pages     = {586--595},
+  doi       = {10.1109/CVPR.2018.00068},
+  eprint    = {1801.03924},
+  archivePrefix = {arXiv}
+}
+
+% checked: OpenAlex record for 10.1109/PROC.1968.6570 (Proc. IEEE 56(8):1264-1291, 1968)
+@article{oppenheim1968homomorphic,
+  author  = {Oppenheim, Alan V. and Schafer, Ronald W. and Stockham, Thomas G.},
+  title   = {Nonlinear filtering of multiplied and convolved signals},
+  journal = {Proceedings of the {IEEE}},
+  year    = {1968},
+  volume  = {56},
+  number  = {8},
+  pages   = {1264--1291},
+  doi     = {10.1109/PROC.1968.6570}
+}
+
+% =====================================================================================================================
+% Statistics, detection metric, uncertainty, reporting
+% =====================================================================================================================
+
+% checked: PubMed (PMID 3203132; Biometrics 44(3):837-45) and OpenAlex record for 10.2307/2531595
+@article{delong1988auc,
+  author  = {DeLong, Elizabeth R. and DeLong, David M. and Clarke-Pearson, Daniel L.},
+  title   = {Comparing the Areas under Two or More Correlated Receiver Operating Characteristic Curves: A Nonparametric Approach},
+  journal = {Biometrics},
+  year    = {1988},
+  volume  = {44},
+  number  = {3},
+  pages   = {837--845},
+  doi     = {10.2307/2531595}
+}
+
+% checked: Crossref record for 10.1109/TMI.2010.2072789 (IEEE TMI 30(2):215-223, print 2011-02).
+% 2026-11-03: the abstract (OpenAlex / PubMed PMID 20813633) does NOT mention the CPM. LUNA16 (setio2017luna16, arXiv 1612.08012, Sec. on evaluation)
+% says the metric "was introduced in the ANODE09 challenge and is referred to as the Competition Performance Metric (CPM) in Niemeijer et al. (2011)".
+% Cite the CPM as \citep{vanginneken2010anode09,niemeijer2011cpm} or via setio2017luna16, not as "defined by" Niemeijer et al. alone.
+@article{niemeijer2011cpm,
+  author  = {Niemeijer, Meindert and Loog, Marco and Abr{\`a}moff, Michael D. and Viergever, Max A. and Prokop, Mathias and van Ginneken, Bram},
+  title   = {On Combining Computer-Aided Detection Systems},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2011},
+  volume  = {30},
+  number  = {2},
+  pages   = {215--223},
+  doi     = {10.1109/TMI.2010.2072789}
+}
+
+% checked 2026-11-03: Crossref record for 10.1016/j.media.2010.05.005 (Med Image Anal 14(6):707-722, 2010-12; 24 authors, first six listed because
+% the record splits some later names ambiguously, e.g. given "Francesco De" / family "Carlo"; use the publisher page for the full list)
+@article{vanginneken2010anode09,
+  author  = {van Ginneken, Bram and Armato, Samuel G. and de Hoop, Bartjan and van Amelsvoort-van de Vorst, Saskia and Duindam, Thomas and Niemeijer, Meindert and others},
+  title   = {Comparing and combining algorithms for computer-aided detection of pulmonary nodules in computed tomography scans: The {ANODE09} study},
+  journal = {Medical Image Analysis},
+  year    = {2010},
+  volume  = {14},
+  number  = {6},
+  pages   = {707--722},
+  doi     = {10.1016/j.media.2010.05.005}
+}
+
+% checked: https://arxiv.org/abs/1612.01474 (comments: NIPS 2017) and https://proceedings.neurips.cc/paper_files/paper/2017/hash/9ef2ed4b7fd2c810847ffa5fa85bce38-Abstract.html (Advances in Neural Information Processing Systems 30)
+@inproceedings{lakshminarayanan2017ensembles,
+  author    = {Lakshminarayanan, Balaji and Pritzel, Alexander and Blundell, Charles},
+  title     = {Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  year      = {2017},
+  eprint    = {1612.01474},
+  archivePrefix = {arXiv},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2017/hash/9ef2ed4b7fd2c810847ffa5fa85bce38-Abstract.html}
+}
+
+% checked: Crossref record for 10.1561/2200000101 (Found. Trends Mach. Learn. 16(4):494-591, print 2023-03-27) and https://arxiv.org/abs/2107.07511
+% the arXiv title is "A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification"
+@article{angelopoulos2023conformal,
+  author  = {Angelopoulos, Anastasios N. and Bates, Stephen},
+  title   = {Conformal Prediction: A Gentle Introduction},
+  journal = {Foundations and Trends in Machine Learning},
+  year    = {2023},
+  volume  = {16},
+  number  = {4},
+  pages   = {494--591},
+  doi     = {10.1561/2200000101},
+  eprint  = {2107.07511},
+  archivePrefix = {arXiv},
+  note    = {Preprint title: A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification}
+}
+
+% checked: https://arxiv.org/abs/1604.04173 and Crossref record for 10.1080/01621459.2017.1307116 (JASA 113(523):1094-1111, print 2018-07)
+@article{lei2018conformal,
+  author  = {Lei, Jing and G'Sell, Max and Rinaldo, Alessandro and Tibshirani, Ryan J. and Wasserman, Larry},
+  title   = {Distribution-Free Predictive Inference for Regression},
+  journal = {Journal of the American Statistical Association},
+  year    = {2018},
+  volume  = {113},
+  number  = {523},
+  pages   = {1094--1111},
+  doi     = {10.1080/01621459.2017.1307116},
+  eprint  = {1604.04173},
+  archivePrefix = {arXiv}
+}
+
+% checked: https://pubmed.ncbi.nlm.nih.gov/38809149/ (PMID 38809149; Radiol Artif Intell 6(4):e240300; collective author CLAIM 2024 Update Panel)
+@article{tejani2024claim,
+  author  = {Tejani, Ali S. and Klontzas, Michail E. and Gatti, Anthony A. and Mongan, John T. and Moy, Linda and Park, Seong Ho and Kahn, Jr, Charles E. and {CLAIM 2024 Update Panel}},
+  title   = {Checklist for Artificial Intelligence in Medical Imaging ({CLAIM}): 2024 Update},
+  journal = {Radiology: Artificial Intelligence},
+  year    = {2024},
+  volume  = {6},
+  number  = {4},
+  pages   = {e240300},
+  doi     = {10.1148/ryai.240300}
+}
+
+% checked 2026-11-03: https://www.jstor.org/stable/4615733 (Sture Holm; Scandinavian Journal of Statistics 6(2):65-70, 1979; published by Wiley; no DOI shown)
+@article{holm1979simple,
+  author  = {Holm, Sture},
+  title   = {A Simple Sequentially Rejective Multiple Test Procedure},
+  journal = {Scandinavian Journal of Statistics},
+  year    = {1979},
+  volume  = {6},
+  number  = {2},
+  pages   = {65--70},
+  url     = {https://www.jstor.org/stable/4615733}
+}
+
+% checked 2026-11-04: Crossref record for 10.1177/0956797611417632 (title and subtitle; Psychol Sci 22(11):1359-1366, print 2011-11, online 2011-10-17;
+% abstract: flexibility in data collection, analysis and reporting raises actual false-positive rates)
+@article{simmons2011falsepositive,
+  author  = {Simmons, Joseph P. and Nelson, Leif D. and Simonsohn, Uri},
+  title   = {False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant},
+  journal = {Psychological Science},
+  year    = {2011},
+  volume  = {22},
+  number  = {11},
+  pages   = {1359--1366},
+  doi     = {10.1177/0956797611417632}
+}
+
+% checked 2026-11-04: Crossref record for 10.1038/s41746-022-00592-y (npj Digit Med 5(1), article 48, 2022-04-12), PubMed PMID 35413988 and the full text
+% PMC9005663 (Europe PMC XML): discusses "overfitting by observer", the winner's curse in challenges, and an implicit multiple-comparison problem
+% from reusing the same data sets
+@article{varoquaux2022failures,
+  author  = {Varoquaux, Ga{\"e}l and Cheplygina, Veronika},
+  title   = {Machine learning for medical imaging: methodological failures and recommendations for the future},
+  journal = {npj Digital Medicine},
+  year    = {2022},
+  volume  = {5},
+  pages   = {48},
+  doi     = {10.1038/s41746-022-00592-y}
+}
+
+% checked 2026-11-03: Crossref record for 10.2307/3001968 and https://www.jstor.org/stable/3001968 (Biometrics Bulletin 1(6):80-83, Dec. 1945)
+@article{wilcoxon1945individual,
+  author  = {Wilcoxon, Frank},
+  title   = {Individual Comparisons by Ranking Methods},
+  journal = {Biometrics Bulletin},
+  year    = {1945},
+  volume  = {1},
+  number  = {6},
+  pages   = {80--83},
+  doi     = {10.2307/3001968}
+}
+
+% checked 2026-11-03: Crossref record for 10.1007/978-1-4899-4541-9 (book, Efron and Tibshirani, Springer US, Boston, MA, 1993)
+@book{efron1993bootstrap,
+  author    = {Efron, Bradley and Tibshirani, Robert J.},
+  title     = {An Introduction to the Bootstrap},
+  publisher = {Springer US},
+  address   = {Boston, MA},
+  year      = {1993},
+  doi       = {10.1007/978-1-4899-4541-9}
+}
+
+% =====================================================================================================================
+% Lesion removal / hallucination by learned image-to-image models and insertion-based evaluation (novelty search 2026-11-03)
+% =====================================================================================================================
+
+% checked 2026-11-03: https://arxiv.org/abs/1805.08841 (journal reference: MICCAI 2018) and Crossref record for 10.1007/978-3-030-00928-1_60 (LNCS, pp. 529-536)
+% DOI given as url because of the underscore
+@inproceedings{cohen2018distribution,
+  author    = {Cohen, Joseph Paul and Luck, Margaux and Honari, Sina},
+  title     = {Distribution Matching Losses Can Hallucinate Features in Medical Image Translation},
+  booktitle = {Medical Image Computing and Computer Assisted Intervention -- {MICCAI} 2018},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer},
+  year      = {2018},
+  pages     = {529--536},
+  eprint    = {1805.08841},
+  archivePrefix = {arXiv},
+  url       = {https://doi.org/10.1007/978-3-030-00928-1_60}
+}
+
+% checked 2026-11-03: https://arxiv.org/abs/1902.05300 (journal reference: PNAS 2020) and Crossref record for 10.1073/pnas.1907377117 (117(48):30088-30095, 2020-12)
+@article{antun2020instabilities,
+  author  = {Antun, Vegard and Renna, Francesco and Poon, Clarice and Adcock, Ben and Hansen, Anders C.},
+  title   = {On instabilities of deep learning in image reconstruction and the potential costs of {AI}},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2020},
+  volume  = {117},
+  number  = {48},
+  pages   = {30088--30095},
+  doi     = {10.1073/pnas.1907377117},
+  eprint  = {1902.05300},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-03: https://arxiv.org/abs/2012.00646 and Crossref record for 10.1109/TMI.2021.3077857 (IEEE TMI 40(11):3249-3260, 2021-11)
+@article{bhadra2021hallucinations,
+  author  = {Bhadra, Sayantan and Kelkar, Varun A. and Brooks, Frank J. and Anastasio, Mark A.},
+  title   = {On Hallucinations in Tomographic Image Reconstruction},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2021},
+  volume  = {40},
+  number  = {11},
+  pages   = {3249--3260},
+  doi     = {10.1109/TMI.2021.3077857},
+  eprint  = {2012.00646},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-03: https://proceedings.mlr.press/v121/cheng20a.html (Proceedings of the Third Conference on Medical Imaging with Deep Learning, PMLR 121:121-135, 2020)
+@inproceedings{cheng2020addressing,
+  author    = {Cheng, Kaiyang and Caliv{\'a}, Francesco and Shah, Rutwik and Han, Misung and Majumdar, Sharmila and Pedoia, Valentina},
+  title     = {Addressing The False Negative Problem of Deep Learning {MRI} Reconstruction Models by Adversarial Attacks and Robust Training},
+  booktitle = {Proceedings of the Third Conference on Medical Imaging with Deep Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {121},
+  pages     = {121--135},
+  year      = {2020},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v121/cheng20a.html}
+}
+
+% checked 2026-11-03: https://arxiv.org/abs/2104.14037 (signal-known-exactly binary detection tasks) and Crossref record for 10.1109/TMI.2021.3076810 (IEEE TMI 40(9):2295-2305, 2021-09)
+@article{li2021assessing,
+  author  = {Li, Kaiyan and Zhou, Weimin and Li, Hua and Anastasio, Mark A.},
+  title   = {Assessing the Impact of Deep Neural Network-Based Image Denoising on Binary Signal Detection Tasks},
+  journal = {{IEEE} Transactions on Medical Imaging},
+  year    = {2021},
+  volume  = {40},
+  number  = {9},
+  pages   = {2295--2305},
+  doi     = {10.1109/TMI.2021.3076810},
+  eprint  = {2104.14037},
+  archivePrefix = {arXiv}
+}
+
+% checked 2026-11-03: https://arxiv.org/abs/2407.12780 and Crossref record for 10.1007/978-3-031-72117-5_42 (MICCAI 2024, LNCS, pp. 449-458). DOI as url (underscore)
+@inproceedings{tivnan2024hallucination,
+  author    = {Tivnan, Matthew and Yoon, Siyeop and Chen, Zhennong and Li, Xiang and Wu, Dufan and Li, Quanzheng},
+  title     = {Hallucination Index: An Image Quality Metric for Generative Reconstruction Models},
+  booktitle = {Medical Image Computing and Computer Assisted Intervention -- {MICCAI} 2024},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer},
+  year      = {2024},
+  pages     = {449--458},
+  eprint    = {2407.12780},
+  archivePrefix = {arXiv},
+  url       = {https://doi.org/10.1007/978-3-031-72117-5_42}
+}
+
+% ---- added 2026-11-08 for the classifier paper (main_cls.tex); fields read from Crossref, arXiv and Open Library (REFS_TODO.md round 4)
+@inproceedings{chattopadhay2018gradcampp,
+  author    = {Chattopadhay, Aditya and Sarkar, Anirban and Howlader, Prantik and Balasubramanian, Vineeth N.},
+  title     = {{Grad-CAM++}: Generalized Gradient-Based Visual Explanations for Deep Convolutional Networks},
+  booktitle = {2018 IEEE Winter Conference on Applications of Computer Vision (WACV)},
+  year      = {2018},
+  pages     = {839--847},
+  doi       = {10.1109/WACV.2018.00097}
+}
+@article{zhang2018topdown,
+  author  = {Zhang, Jianming and Bargal, Sarah Adel and Lin, Zhe and Brandt, Jonathan and Shen, Xiaohui and Sclaroff, Stan},
+  title   = {Top-Down Neural Attention by Excitation Backprop},
+  journal = {International Journal of Computer Vision},
+  year    = {2018},
+  volume  = {126},
+  number  = {10},
+  pages   = {1084--1102},
+  doi     = {10.1007/s11263-017-1059-x}
+}
+@article{rajaraman2021bone,
+  author  = {Rajaraman, Sivaramakrishnan and Zamzmi, Ghada and Folio, Les and Alderson, Philip and Antani, Sameer},
+  title   = {Chest {X}-ray Bone Suppression for Improving Classification of Tuberculosis-Consistent Findings},
+  journal = {Diagnostics},
+  year    = {2021},
+  volume  = {11},
+  number  = {5},
+  pages   = {840},
+  doi     = {10.3390/diagnostics11050840}
+}
+@inproceedings{ridnik2023mldecoder,
+  author    = {Ridnik, Tal and Sharir, Gilad and Ben-Cohen, Avi and Ben-Baruch, Emanuel and Noy, Asaf},
+  title     = {{ML-Decoder}: Scalable and Versatile Classification Head},
+  booktitle = {2023 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year      = {2023},
+  pages     = {32--41},
+  doi       = {10.1109/WACV56688.2023.00012}
+}
+@book{vovk2005algorithmic,
+  author    = {Vovk, Vladimir and Gammerman, Alex and Shafer, Glenn},
+  title     = {Algorithmic Learning in a Random World},
+  publisher = {Springer},
+  year      = {2005},
+  doi       = {10.1007/b106715}
+}
+@misc{sundararajan2017axiomatic,
+  author        = {Sundararajan, Mukund and Taly, Ankur and Yan, Qiqi},
+  title         = {Axiomatic Attribution for Deep Networks},
+  year          = {2017},
+  howpublished  = {arXiv preprint arXiv:1703.01365},
+  eprint        = {1703.01365},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.1703.01365}
+}
+@misc{liu2021query2label,
+  author        = {Liu, Shilong and Zhang, Lei and Yang, Xiao and Su, Hang and Zhu, Jun},
+  title         = {{Query2Label}: A Simple Transformer Way to Multi-Label Classification},
+  year          = {2021},
+  howpublished  = {arXiv preprint arXiv:2107.10834},
+  eprint        = {2107.10834},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.2107.10834}
+}
+@misc{angelopoulos2022crc,
+  author        = {Angelopoulos, Anastasios N. and Bates, Stephen and Fisch, Adam and Lei, Lihua and Schuster, Tal},
+  title         = {Conformal Risk Control},
+  year          = {2022},
+  howpublished  = {arXiv preprint arXiv:2208.02814},
+  eprint        = {2208.02814},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.2208.02814}
+}
+@misc{geifman2017selective,
+  author        = {Geifman, Yonatan and El-Yaniv, Ran},
+  title         = {Selective Classification for Deep Neural Networks},
+  year          = {2017},
+  howpublished  = {arXiv preprint arXiv:1705.08500},
+  eprint        = {1705.08500},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.1705.08500}
+}
+@misc{geifman2019bias,
+  author        = {Geifman, Yonatan and Uziel, Guy and El-Yaniv, Ran},
+  title         = {Bias-Reduced Uncertainty Estimation for Deep Neural Classifiers},
+  year          = {2019},
+  howpublished  = {International Conference on Learning Representations (ICLR); arXiv preprint arXiv:1805.08206},
+  eprint        = {1805.08206},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.1805.08206}
+}
+% checked 2026-11-10: arXiv API (export.arxiv.org/api/query?id_list=1503.02531): title, authors, 2015, comment "NIPS 2014 Deep Learning Workshop"
+@misc{hinton2015distilling,
+  author        = {Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},
+  title         = {Distilling the Knowledge in a Neural Network},
+  year          = {2015},
+  howpublished  = {NIPS 2014 Deep Learning Workshop; arXiv preprint arXiv:1503.02531},
+  eprint        = {1503.02531},
+  archivePrefix = {arXiv},
+  doi           = {10.48550/arXiv.1503.02531}
+}
+% checked 2026-11-10: Crossref (DOI 10.1109/cvpr.2016.309) and arXiv 1507.00448: authors, title, CVPR 2016, pages 2827-2836
+@inproceedings{gupta2016crossmodal,
+  author    = {Gupta, Saurabh and Hoffman, Judy and Malik, Jitendra},
+  title     = {Cross Modal Distillation for Supervision Transfer},
+  booktitle = {2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {2827--2836},
+  year      = {2016},
+  doi       = {10.1109/CVPR.2016.309}
+}

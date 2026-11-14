@@ -1,0 +1,271 @@
+\section{Results}
+\label{sec:results}
+% RULE: every number in this section is read from a generated table or figure (tools/final_stats.py, tools/paper_extras.py,
+% tools/bdcxr_stats.py -> paper/tables/, tools/fig_*.py and tools/paper_extras.py -> paper/figures/). Nothing is typed by hand without a source
+% in results/final/stats_held.json or results/bdcxr/stats.json. Failed hypotheses are stated as failed with the numbers.
+All numbers in this section are read from generated tables and figures. Of the pre-specified hypotheses, H1$'$ (dose-response) passes;
+H2$'$ passes for bone-region PSNR against the reference model and against the no-twin control and fails for SSIM, as the analysis plan
+anticipated; H3$'$ passes for both contrasts on VinDr-RibCXR; H4$'$a is mixed (ours above the reference model on JSRT and below it on Node21,
+above the no-twin control on both); H4$'$b shows no downstream benefit of the soft-tissue image used alone; H5$'$ holds on synthetic data with
+exact truth and fails under the shift to real radiographs. The v1 hypothesis H1 of the first analysis plan passes. All analysis changes made
+after the freeze are listed in the deviations log of the repository.
+
+\subsection{Fidelity on held-out paired radiographs (\texorpdfstring{H2$'$}{H2'})}
+On the 51 held-out SZCH-X-Rays pairs (Table~\ref{tab:szch_heldout}) the bone-region PSNR$_{cal}$ of ours is 21.46\,dB and that of the
+reference model 21.51\,dB. The paired difference is $-0.06$\,dB with a one-sided 95\,\% lower bound of $-0.15$\,dB, inside the
+non-inferiority margin of $-0.5$\,dB (Table~\ref{tab:h2}). Against the no-twin control the difference is $+0.01$\,dB (lower bound
+$-0.02$\,dB, margin $-0.25$\,dB): the twin regulariser costs no measurable bone-region fidelity. SSIM$_{cal}$ fails its margin: ours is
+lower by 0.021 (lower bound $-0.023$, margin $-0.01$). The gap sits in fine texture. With a band limit of $\sigma=4$ the SSIM of ours and of
+the reference model are 0.946 and 0.948, and the high-frequency energy of the non-bone region, relative to the dual-energy soft-tissue image,
+is 1.09 for ours and 0.99 for the reference model; LPIPS is 0.234 and 0.166. BS-LDM, which was trained on dual-energy pairs from the same
+hospital, reaches 28.57\,dB; it is shown for orientation and is not part of a pre-specified comparison. Figure~\ref{fig:pareto} places
+fidelity against lesion absorption, and Figure~\ref{fig:qualitative} shows three held-out cases.
+\begin{table}[htbp]
+\centering\small
+\caption{Held-out SZCH-X-Rays pairs: bone-region and whole-image metrics for ours and the comparators, calibrated (primary) and raw.}
+\label{tab:szch_heldout}
+\fittable{tables/szch_heldout.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{H2$'$ non-inferiority on the 51 held-out SZCH-X-Rays pairs (paired differences, image bootstrap, one-sided 95\,\% lower bound).}
+\label{tab:h2}
+\fittable{tables/h2_noninferiority.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/pareto.pdf}
+\caption{Lesion absorption on VinDr-RibCXR against bone-region PSNR$_{cal}$ on the 51 held-out SZCH-X-Rays pairs. Line: the SwinV2-T family at
+twin weights $w=0\ldots64$ (single seeds light, seed means dark). Markers: ours and the no-twin control (ConvNeXt-V2-T, $K=3$), the reference
+model, the v1 model and the identity. Lower absorption at equal fidelity is better.}
+\label{fig:pareto}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/qualitative_szch.png}
+\caption{Held-out SZCH-X-Rays cases (CC BY-NC 4.0, \citealp{sun2026bsldm}): radiograph, dual-energy soft-tissue reference, the soft-tissue
+estimates of ours and of the reference model, and the bone estimate of ours. The three cases are not hand-picked: they are the held-out images at
+the 25th, 50th and 75th percentile of the bone-region PSNR$_{cal}$ of ours.}
+\label{fig:qualitative}
+\end{figure}
+
+\subsection{Dose-response and ablation of the twin regulariser (\texorpdfstring{H1$'$}{H1'})}
+\label{sec:res_twin}
+In the SwinV2-T family (3, 2, 2, 4, 2 and 2 seeds at $w=0,4,8,16,32,64$; Table~\ref{tab:dose_response}, Figure~\ref{fig:dose_response}) the
+mean absorption on VinDr-RibCXR falls from 0.183 at $w=0$ to 0.043 at $w=64$. The slope of $A$ on $\log_2(1+w)$ is $-0.0233$
+$[-0.0249,-0.0217]$; its upper bound is below zero, so H1$'$ passes. On the Qure-projection test split with exact truth the slope is
+$-0.0174$ $[-0.0190,-0.0160]$, with $A$ levelling off above $w=16$ (0.118, 0.122 and 0.112 at $w=16,32,64$). Bone-region PSNR$_{cal}$ on the
+held-out pairs stays between 21.22 and 21.28\,dB up to $w=16$ and drops to 20.92 and 21.01\,dB at $w=32$ and 64, which is why $w=16$ is the
+working point (Figure~\ref{fig:pareto}).
+
+The ablation (Table~\ref{tab:ablation_twin}) is development evidence: it uses the audit on all 75 SZCH images and the 24 development pairs.
+At $w=16$ the full regulariser gives $A=0.067$ against 0.190 without it. Three variants lose the effect: a stop-gradient on the branch without
+the pasted lesion (0.185), a consistency term over the whole image instead of the lesion support (0.197), and lesion insertion without the twin
+term (CLIA, 0.191). Dilating the support by 31\,px keeps part of it (0.137); up to four lesions per twin instead of up to two keep all of it (0.074).
+The effect therefore needs gradients through both branches and a consistency term confined to where the lesion was pasted; showing the model
+lesions during training is not enough.
+
+The v1 hypothesis H1 of the first plan was tested on synthetic LIDC test CTs with exact truth on 27 October 2026, three seeds per arm
+(Table~\ref{tab:v1_h1}), and passes: CLIA absorbs less than the recipe arm ($-0.022$ $[-0.032,-0.013]$, Holm $p<0.001$) with non-inferior bone
+MAE. The lesion-weighted loss also lowers absorption ($-0.019$) and is non-inferior on the test CTs, although it missed the margin on the
+validation CTs that decided the selection; combining both lowers absorption most ($-0.066$) but misses the margin. The 300k-sample finals of
+CLIA and recipe replicate the contrast ($-0.024$ $[-0.034,-0.014]$). On real radiographs the v1 models remain far above the v2 models
+($A=0.289$ and 0.308 on VinDr-RibCXR).
+\begin{table}[htbp]
+\centering\small
+\caption{Dose-response of the lesion absorption on the twin weight (SwinV2-T family): seeds per weight, mean $A$ on VinDr-RibCXR and on the
+Qure-projection test split, and the pre-specified slope with its image-cluster bootstrap interval.}
+\label{tab:dose_response}
+\fittable{tables/dose_response.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/dose_response.pdf}
+\caption{Dose-response of the lesion absorption $A$ on VinDr-RibCXR on the twin weight $w$ (SwinV2-T), one marker per seed, with the
+pre-specified slope on $\log_2(1+w)$.}
+\label{fig:dose_response}
+\end{figure}
+\begin{table}[htbp]
+\centering\small
+\caption{Ablation of the twin regulariser at $w=16$ (SwinV2-T, 300k samples, mean over seeds): one factor changed per row. Development
+evidence: audit on all 75 SZCH images, bone PSNR$_{cal}$ on the 24 development pairs.}
+\label{tab:ablation_twin}
+\fittable{tables/ablation_twin.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{First analysis plan, H1 (v1 family): lesion-aware arms against the recipe arm on synthetic LIDC test CTs with exact truth (three
+seeds each), and the 300k-sample finals as a replication. Holm over the seven contrasts of the v1 ablation.}
+\label{tab:v1_h1}
+\fittable{tables/v1_h1.tex}
+\end{table}
+
+\subsection{Confirmatory audit on VinDr-RibCXR (\texorpdfstring{H3$'$}{H3'})}
+On 1,470 sites in 245 VinDr-RibCXR images (Tables~\ref{tab:audit_ribcxr} and~\ref{tab:audit_contrasts}) ours absorbs $A=0.051$
+$[0.045,0.057]$ of an inserted lesion, the reference model 0.149 $[0.138,0.160]$ and the no-twin control 0.178 $[0.167,0.188]$. The paired
+differences are $-0.098$ $[-0.108,-0.089]$ against the reference model and $-0.127$ $[-0.134,-0.119]$ against the no-twin control
+(Holm-adjusted $p<0.001$ for both), so H3$'$ passes. The advantage does not depend on rib overlap here: the interaction between sites with at
+least 15\,\% overlap with an annotated rib and the other sites is $0.003$ $[-0.017,0.027]$ against the reference model. On JSRT (secondary)
+the pattern repeats ($A$ 0.048, 0.118 and 0.121; differences $-0.070$ and $-0.073$) with a larger advantage at bone-overlapping sites
+(interaction $-0.060$ $[-0.074,-0.046]$); there the overlap was defined by the reference model's bone map, not by the consensus map the plan
+names. The SZCH audit (development evidence) agrees ($A$ 0.054, 0.130 and 0.195). Figure~\ref{fig:audit_maps} shows one site.
+
+Absorption must be read beside suppression strength, because doing nothing gives $A=0$ (Table~\ref{tab:rib_benchmark}). The reference model
+removes more edge energy, both on the rib boundaries (48\,\% against 30\,\% for ours) and on the other lung pixels (22\,\% against 8\,\%);
+its selectivity is 0.264 against 0.220 and the AUC separating rib from non-rib pixels is the same (0.671 and 0.672). Ours suppresses ribs
+less strongly, but its absorption is a third of the reference model's while its rib-edge removal is about 60\,\% of it, and its bone-region
+fidelity is non-inferior (H2$'$).
+\begin{table}[htbp]
+\centering\small
+\caption{Counterfactual lesion audit on VinDr-RibCXR: mean absorption per method with image-cluster bootstrap intervals (lower is better).}
+\label{tab:audit_ribcxr}
+\fittable{tables/audit_ribcxr.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{H3$'$ paired site-level contrasts on the three audit sets, Holm over the two contrasts, and the interaction with bone overlap
+($\geq$15\,\% vs.\ $<$15\,\%). SZCH is development evidence; the JSRT overlap comes from the reference model's bone map.}
+\label{tab:audit_contrasts}
+\fittable{tables/audit_contrasts.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/audit_maps.pdf}
+\caption{The audit on one held-out SZCH-X-Rays image (CC BY-NC 4.0): a 7\,mm nodule from a LIDC test CT is added to the radiograph; the change
+of each bone estimate (red = lesion signal moved into the bone image) and the resulting soft-tissue image. Not hand-picked: eight placements
+over the bone-overlapping lung field were drawn with a fixed seed and the one with the median $A(\text{ours})-A(\text{reference})$ is shown.}
+\label{fig:audit_maps}
+\end{figure}
+\begin{table}[htbp]
+\centering\small
+\caption{Rib benchmark on VinDr-RibCXR (metrics only): gradient-energy reduction on rib-boundary pixels and on other lung pixels, selectivity
+and AUC.}
+\label{tab:rib_benchmark}
+\fittable{tables/rib_benchmark.tex}
+\end{table}
+
+\subsection{Real nodules without lesion insertion (\texorpdfstring{H4$'$a}{H4'a})}
+Real nodules give a mixed answer (Table~\ref{tab:nodule_cnr}). On JSRT (154 nodules) the contrast-to-noise ratio rises by 0.041 with ours
+and by 0.018 with the reference model; the difference is $+0.023$ $[0.008,0.041]$, and $+0.032$ $[0.014,0.052]$ for the 123 nodules with at
+least 15\,\% bone overlap. On Node21 (1,474 boxes) the reference model raises contrast more: $+0.103$ against $+0.078$, a difference of
+$-0.025$ $[-0.033,-0.018]$, and $-0.017$ $[-0.026,-0.009]$ for the 1,109 bone-overlapping boxes. Against the no-twin control ours raises
+real-nodule contrast in all four comparisons ($+0.007$ to $+0.027$, all intervals above zero; Holm within data set $p<0.001$).
+\begin{table}[htbp]
+\centering\small
+\caption{Contrast-to-noise change of real nodules on JSRT and Node21 (soft-tissue image minus original), all lesions and lesions with at least
+15\,\% bone overlap; image-cluster bootstrap intervals.}
+\label{tab:nodule_cnr}
+\fittable{tables/nodule_cnr.tex}
+\end{table}
+
+\subsection{Downstream tasks (\texorpdfstring{H4$'$b}{H4'b})}
+The soft-tissue image used alone does not help downstream models (Tables~\ref{tab:downstream_cls} and~\ref{tab:downstream_det},
+Figure~\ref{fig:downstream_forest}). On NIH ChestX-ray14 the macro-AUROC of the three-seed ensemble is 0.818 with the original image and
+0.817 with ours ($-0.001$ $[-0.004,0.003]$, patient-cluster bootstrap); per class, ours is lower for effusion, infiltration and pleural
+thickening ($-0.004$, $-0.007$, $-0.013$) and higher for nodule ($+0.011$; Holm-adjusted DeLong $p<0.05$ for these four). Adding the soft image
+as a second channel helps slightly ($+0.006$ $[0.003,0.008]$), as does the reference model's soft image ($+0.004$ $[0.002,0.007]$). In
+detection the change in CPM with ours alone is $+0.001$ $[-0.023,0.023]$ on Node21, $+0.006$ $[-0.009,0.020]$ on TBX11K and $-0.009$
+$[-0.016,-0.002]$ on VinBigData; the three-channel input (original, soft and bone) gains $+0.028$ $[0.009,0.047]$ on Node21 and $+0.008$
+$[0.002,0.014]$ on VinBigData, and the reference model's soft image gains $+0.029$ $[0.016,0.043]$ on TBX11K. No difference in differences of
+the recall at two false positives per image between bone-overlapping and other lesions excludes zero (Node21 $-0.006$ $[-0.071,0.061]$,
+VinBigData $+0.009$ $[-0.034,0.053]$). On TBX11K it cannot be estimated, because every test box overlaps bone by at least 20\,\%.
+\begin{table}[htbp]
+\centering\small
+\caption{Downstream classification on NIH ChestX-ray14: macro-AUROC of the three-seed ensemble, per-seed mean $\pm$ SD and the difference to
+the original image (patient-cluster bootstrap).}
+\label{tab:downstream_cls}
+\fittable{tables/downstream_cls.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{Downstream detection on Node21, TBX11K and VinBigData: CPM and mAP@50 (mean $\pm$ SD over three seeds), differences to the original
+image and the difference in differences (DiD) of recall at two false positives per image (image bootstrap).}
+\label{tab:downstream_det}
+\fittable{tables/downstream_det.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/downstream_forest.pdf}
+\caption{Downstream effects of each input against the original image with 95\,\% intervals: macro-AUROC on NIH ChestX-ray14, CPM on the
+detection sets.}
+\label{fig:downstream_forest}
+\end{figure}
+
+\subsection{Reliability (\texorpdfstring{H5$'$}{H5'})}
+On the Qure-projection test split with exact truth the split-conformal intervals of the three-model ensemble cover 0.900 $[0.897,0.903]$ of
+the pixels at a nominal 0.90, and the ensemble spread ranks the absolute bone error well (Spearman 0.76; Table~\ref{tab:reliability},
+Figure~\ref{fig:reliability}). On the 51 held-out SZCH-X-Rays pairs, measured against a pseudo-truth bone image from the dual-energy pair, the
+same intervals cover only 0.139 $[0.134,0.145]$ and the spread ranks the error weakly (Spearman 0.11 $[0.07,0.15]$). The uncertainty is
+calibrated in the training domain and does not transfer to real radiographs without recalibration.
+\begin{table}[htbp]
+\centering\small
+\caption{Ensemble spread and split-conformal intervals ($K=3$, nominal coverage 0.90), with image-bootstrap intervals.}
+\label{tab:reliability}
+\fittable{tables/reliability.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/reliability.pdf}
+\caption{Left: per-image coverage of the conformal intervals on the Qure-projection test split and on the held-out SZCH-X-Rays pairs (bars:
+means; dashed: nominal 0.90). Right: per-image Spearman correlation of ensemble spread and absolute error on SZCH-X-Rays (line: mean).}
+\label{fig:reliability}
+\end{figure}
+
+An exploratory analysis, added after this result was known and therefore post hoc on already-seen pairs, recalibrated the intervals on the
+24 SZCH-X-Rays development pairs and tested them on the 51 held-out pairs (Table~\ref{tab:bone_recal}, Figure~\ref{fig:bone_recal}). Pooled
+coverage was 0.886 with one global calibration and 0.895 with a separate calibration per stratum of predicted bone overlap and ensemble spread
+(Mondrian), whose intervals were less than half as wide (mean width 0.215 against 0.447). A few real pairs thus restore nominal coverage on
+average, while the coverage of single images still varies.
+\begin{table}[htbp]
+\centering\small
+\caption{Exploratory recalibration on real pairs (post hoc): bone-image intervals calibrated on the 24 SZCH-X-Rays development pairs and tested
+on the 51 held-out pairs at nominal 0.90. Mondrian: calibration per stratum of predicted bone overlap and ensemble spread.}
+\label{tab:bone_recal}
+\fittable{tables/v3_bone_intervals.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_bone_uncertainty.pdf}
+\caption{Exploratory recalibration on real pairs (post hoc). (a) Per-image coverage on the 51 held-out SZCH-X-Rays pairs for global and
+Mondrian calibration, with quantiles pooled over pixels or taken per image; dashed: nominal 0.90. (b) Reliability of the Mondrian intervals
+across nominal levels; cross: the synthetic calibration. (c) Sparsification of the absolute bone error by the ensemble spread, with the
+error-sorted oracle.}
+\label{fig:bone_recal}
+\end{figure}
+\subsection{Encoders (exploratory)}
+The twin effect replicates across three encoders trained under the same recipe (Table~\ref{tab:encoders}). On VinDr-RibCXR the twin lowers
+$A$ by 0.127 for ConvNeXt-V2-T, 0.114 for SwinV2-T and 0.112 for RAD-DINO, and on JSRT by 0.073, 0.061 and 0.064. ConvNeXt-V2-T was chosen
+as ``ours'' on development data before the freeze (Section~\ref{sec:experiments}); RAD-DINO reaches the same absorption ($A=0.053$ on
+VinDr-RibCXR).
+\begin{table}[htbp]
+\centering\small
+\caption{Twin regulariser per encoder (exploratory): absorption difference to the matched no-twin control and its interaction with bone
+overlap.}
+\label{tab:encoders}
+\fittable{tables/encoders.tex}
+\end{table}
+
+\subsection{External validation on paediatric radiographs (BDCXR-3257)}
+\label{sec:bdcxr}
+On 3,257 paediatric radiographs from a hospital in Dhaka (Table~\ref{tab:bdcxr_cls}), five-fold cross-validated pneumonia classification
+(normal, bacterial, viral) reaches a pooled out-of-fold macro-AUROC of 0.814 on the original image and 0.816 on the soft-tissue image of
+ours. The difference, $+0.002$ $[-0.005,0.010]$, meets the pre-specified non-inferiority margin of 0.01 and shows no superiority; the
+reference model's soft image gives $+0.001$ $[-0.008,0.010]$ and CLAHE $-0.006$ $[-0.012,0.001]$, which misses the margin. In the lesion audit
+on 300 of these images (Table~\ref{tab:bdcxr_audit}) ours absorbs $A=0.084$, the reference model 0.217 and the no-twin control 0.251
+(differences $-0.134$ $[-0.144,-0.124]$ and $-0.167$ $[-0.175,-0.160]$), with a larger advantage at bone-overlapping sites. The inserted
+lesions come from adult CTs, so this is a stress test rather than a clinical finding. The ensemble disagreement on these children is 2.7 times
+that on the adult SZCH-X-Rays pairs (median lung-field spread 0.0076 against 0.0028) and is larger in younger children (Spearman with age
+$-0.22$).
+\begin{table}[htbp]
+\centering\small
+\caption{BDCXR-3257: pneumonia classification (normal, bacterial, viral), five folds over near-duplicate groups $\times$ three seeds;
+pooled out-of-fold macro-AUROC, per-fold mean $\pm$ SD and the difference to the original image (group bootstrap).}
+\label{tab:bdcxr_cls}
+\fittable{tables/bdcxr_cls.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{BDCXR-3257: lesion audit on a fixed class-stratified subset of 300 images (1,800 sites).}
+\label{tab:bdcxr_audit}
+\fittable{tables/bdcxr_audit.tex}
+\end{table}

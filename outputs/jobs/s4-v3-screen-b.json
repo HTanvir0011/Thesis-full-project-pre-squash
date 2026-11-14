@@ -1,0 +1,1 @@
+[[0, "hyb", "nih", "orig", 0, 10, "--arch", "hf:microsoft/rad-dino"], [1, "hyb", "nih", "orig", 0, 10, "--arch", "swinv2_base_window16_256.ms_in1k", "--accum", "4"]]

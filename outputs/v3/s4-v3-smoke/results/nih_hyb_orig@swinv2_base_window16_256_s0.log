@@ -1,0 +1,62 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/input/datasets/ac_6/s4-code/s4/cls_hybrid.py", line 240, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/input/datasets/ac_6/s4-code/s4/cls_hybrid.py", line 208, in main
+    loss = masked_bce(model(batch_aug(x, gen)).float(), y)  # one geometry for X, S and B of a sample
+                      ~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/kaggle/input/datasets/ac_6/s4-code/s4/cls_hybrid.py", line 114, in forward
+    f = self.proj(self.enc(inp)[-1])  # [nS*B, d, g, g]
+                  ~~~~~~~~^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/kaggle/input/datasets/ac_6/s4-code/s4/cls_hybrid.py", line 53, in forward
+    return [f.permute(0, 3, 1, 2).contiguous() for f in self.m(x)]
+                                                        ~~~~~~^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/_features.py", line 345, in forward
+    return list(self._collect(x).values())
+                ~~~~~~~~~~~~~^^^
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/_features.py", line 299, in _collect
+    x = module(x)
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/swin_transformer_v2.py", line 707, in forward
+    x = blk(x)
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/swin_transformer_v2.py", line 527, in forward
+    x = x + self.drop_path1(self.norm1(self._attn(x)))
+                                       ~~~~~~~~~~^^^
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/swin_transformer_v2.py", line 511, in _attn
+    attn_windows = self.attn(x_windows, mask=attn_mask)  # nW*B, window_size*window_size, C
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/timm/models/swin_transformer_v2.py", line 273, in forward
+    attn = attn + relative_position_bias.unsqueeze(0)
+           ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 128.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 126.81 MiB is free. Including non-PyTorch memory, this process has 14.44 GiB memory in use. Of the allocated memory 14.27 GiB is allocated by PyTorch, and 24.19 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

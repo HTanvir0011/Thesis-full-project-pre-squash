@@ -1,0 +1,13 @@
+[{"stream_name":"stdout","time":3.065786513,"data":"jobs: [[0, 'clia', 1, 300000, 8, 0.0002], [1, 'recipe', 1, 300000, 8, 0.0002]]\n"}
+,{"stream_name":"stdout","time":24432.537356013,"data":"clia_s1 train rc 0 16:06:11\n"}
+,{"stream_name":"stdout","time":24517.851342652,"data":"clia_s1 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":25674.237516075,"data":"recipe_s1 train rc 0 16:26:53\n"}
+,{"stream_name":"stdout","time":25754.0653334,"data":"recipe_s1 eval rc 0 0\n"}
+,{"stream_name":"stdout","time":25754.095816701,"data":"ALL DONE\n"}
+,{"stream_name":"stderr","time":25756.272547807,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":25756.272574234,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":25756.557838739,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":25756.557860098,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":25757.386851965,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":25758.427778443,"data":"[NbConvertApp] Writing 293321 bytes to __results__.html\n"}
+]

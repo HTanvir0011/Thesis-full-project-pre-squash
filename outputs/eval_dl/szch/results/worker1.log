@@ -1,0 +1,20 @@
+== recipe_v1: python -m s4.eval_real --method ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --lpips --out results/final/szch/recipe_v1.csv
+ "lpips_raw": "0.2214 +- 0.0195",
+ "lpips_cal": "0.2233 +- 0.0215"
+}
+== qure: python -m s4.eval_real --method qure:data/qure/weights/bone_suppression.ts --lpips --out results/final/szch/qure.csv
+ "lpips_raw": "0.1668 +- 0.0183",
+ "lpips_cal": "0.1673 +- 0.0194"
+}
+== identity: python -m s4.eval_real --method identity --lpips --out results/final/szch/identity.csv
+ "lpips_raw": "0.2688 +- 0.0222",
+ "lpips_cal": "0.2661 +- 0.0238"
+}
+== clahe: python -m s4.eval_real --method clahe --lpips --out results/final/szch/clahe.csv
+ "lpips_raw": "0.3361 +- 0.0517",
+ "lpips_cal": "0.3348 +- 0.0497"
+}
+== homomorphic: python -m s4.eval_real --method homomorphic --lpips --out results/final/szch/homomorphic.csv
+ "lpips_raw": "0.6046 +- 0.1626",
+ "lpips_cal": "0.3718 +- 0.0279"
+}

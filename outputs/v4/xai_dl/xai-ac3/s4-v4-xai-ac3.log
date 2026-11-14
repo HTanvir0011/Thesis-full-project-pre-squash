@@ -1,0 +1,13 @@
+[{"stream_name":"stdout","time":25.905474766,"data":"4 runs: nih_hyb_orig@swinv2_tiny_window8_256+xray_s3 nih_hyb_orig@swinv2_tiny_window8_256+xray_s4 nih_hyb_orig@swinv2_tiny_window8_256_s3 nih_hyb_orig@swinv2_tiny_window8_256_s4 | data /kaggle/input/notebooks/ac_3/s4-prep-nih/nih/split.npy | boxes /kaggle/input/datasets/nih-chest-xrays/data/BBox_List_2017.csv\n"}
+,{"stream_name":"stdout","time":1723.53659809,"data":"nih_hyb_orig@swinv2_tiny_window8_256+xray_s3 rc 0 1698s\n"}
+,{"stream_name":"stdout","time":1723.636584732,"data":"nih_hyb_orig@swinv2_tiny_window8_256+xray_s4 rc 0 1698s\n"}
+,{"stream_name":"stdout","time":3155.238004974,"data":"nih_hyb_orig@swinv2_tiny_window8_256_s4 rc 0 1432s\n"}
+,{"stream_name":"stdout","time":3166.418984174,"data":"nih_hyb_orig@swinv2_tiny_window8_256_s3 rc 0 1443s\n"}
+,{"stream_name":"stdout","time":3166.419719049,"data":"ALL DONE; failed: [] | expected, no finished model mounted: []\n"}
+,{"stream_name":"stderr","time":3168.531850316,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":3168.531880678,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":3168.763398927,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":3168.763426909,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":3169.564854398,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":3170.480604334,"data":"[NbConvertApp] Writing 282140 bytes to __results__.html\n"}
+]

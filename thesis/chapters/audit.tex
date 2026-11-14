@@ -1,0 +1,74 @@
+% Audit chapter: the paper section is input, then thesis-only implementation notes, validation and the confirmatory results (generated tables).
+\input{../paper/sections/audit}
+
+\section{Implementation notes}
+The audit is implemented in \path{s4/audit_real.py}. For each radiograph it draws six sites with a random generator seeded once (seed 7):
+for every site a lesion is drawn from the library and a centre is drawn among the pixels of the eroded lung mask; the lesion patch, rendered
+at $512$~px from a LIDC-IDRI test CT, is scaled to the $1024$~px frame and added in image units. The sites depend only on the image, its lung
+mask, the library and the seed, so every model, run separately, is scored on the same sites, and the paired differences between models are
+site by site. A site whose support (pixels above 2\,\% of the lesion maximum) has fewer than 30 pixels is skipped. For each model the bone
+estimate of the radiograph is computed once, and for each site the estimate of the radiograph with the lesion; $A$ is the regression slope of
+Equation~\ref{eq:absorption} over the support, and a leak term records the change of the bone estimate far from the lesion. The bone overlap of
+a site is the fraction of its support that lies on bone: the radiologist rib masks on VinDr-RibCXR, the strongest 20\,\% of the dual-energy
+bone signal on SZCH-X-Rays, and a thresholded bone map of the reference model on JSRT and BDCXR-3257.
+
+Two practical points matter for reproducibility. First, the lung masks come from a neural network whose output differs slightly between GPUs,
+which moves the sites; evaluations that ran on cloud GPUs therefore read the lung masks exported on the machine that produced the final
+tables, and the identity of the sites was checked file by file (Chapter~\ref{ch:ethics}). Second, the audit of a three-model ensemble runs
+the three members on each modified image, so it is the most expensive evaluation of the study; on one T4 GPU a batch of four models, two of them
+ensembles, took 16 minutes for the 245 VinDr-RibCXR images.
+
+\section{Validation of the audit}
+\paragraph{Controls.} The identity has $A=0$ by construction, at every site and on every data set, which the tables confirm. It also removes
+no bone, which is why absorption is always shown next to a suppression measure.
+
+\paragraph{Exact truth.} On the Qure-projection test split the lesion is added to the soft component and the true bone image is known
+(Table~\ref{tab:app_qp}). The ranking of the models is the same as on real radiographs: ours absorbs 0.102, the matched control 0.220 and the
+reference model 0.199, and the contrast of the lesion in our soft estimate is 0.99 of its true contrast against 0.94 for the control. The cost
+of the regulariser shows here as well: the bone error of ours (0.0041) is higher than that of the control (0.0029), though lower than that of
+the reference model on these images (0.0082).
+
+\paragraph{Linearity.} On the development SZCH sites the amplitude of the inserted lesion was varied over $\alpha\in\{0.25,0.5,1,2,4\}$
+(Table~\ref{tab:app_amplitude}). Up to $\alpha=1$ the absorption is flat for every model (v1 0.301--0.306, no twin 0.215--0.218, reference
+model 0.134--0.136), so $A$ measures a property of the model, not of the lesion amplitude; above that it falls for all of them, where the
+added signal begins to saturate at the top of the intensity range. The audit is run at $\alpha=1$.
+
+\section{Confirmatory audit on VinDr-RibCXR}
+On the 1,470 sites of VinDr-RibCXR (Tables~\ref{tab:audit_ribcxr} and~\ref{tab:audit_contrasts}) ours absorbs $A=0.051$ $[0.045,0.057]$,
+the reference model 0.149 $[0.138,0.160]$ and the no-twin control 0.178 $[0.167,0.188]$. The paired differences are $-0.098$
+$[-0.108,-0.089]$ and $-0.127$ $[-0.134,-0.119]$, Holm-adjusted $p<0.001$ for both: H3$'$ passes. The interaction between sites on an annotated
+rib and the other sites is $0.003$ $[-0.017,0.027]$ against the reference model, so the advantage is the same with and without rib overlap. On
+JSRT the same pattern holds ($A$ 0.048, 0.118 and 0.121) with a larger advantage at bone-overlapping sites ($-0.060$ $[-0.074,-0.046]$), but
+there the overlap was defined by the reference model's own bone map. The SZCH audit, development evidence, agrees (0.054, 0.130 and 0.195).
+Figure~\ref{fig:audit_maps} shows one site on a held-out SZCH image, chosen by a fixed rule.
+\begin{table}[htbp]
+\centering\small
+\caption{Counterfactual lesion audit on VinDr-RibCXR: mean absorption per method with image-cluster bootstrap intervals (lower is better).}
+\label{tab:audit_ribcxr}
+\fittable{tables/audit_ribcxr.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{Paired site-level contrasts on the three audit sets, Holm over the two contrasts, and the interaction with bone overlap
+($\geq$15\,\% vs.\ $<$15\,\%). SZCH is development evidence; the JSRT overlap comes from the reference model's bone map.}
+\label{tab:audit_contrasts}
+\fittable{tables/audit_contrasts.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/audit_maps.pdf}
+\caption{The audit on one held-out SZCH-X-Rays image (CC BY-NC 4.0): a 7\,mm nodule from a LIDC test CT is added; the change of each bone
+estimate (red = lesion signal moved into the bone image) and the resulting soft-tissue image. Eight placements were drawn with a fixed seed and
+the one with the median difference between ours and the reference model is shown.}
+\label{fig:audit_maps}
+\end{figure}
+
+\section{Failure cases and limits of the audit}
+The audit measures the leak of an added signal under a linear, additive model of image formation. Real lesions change attenuation inside the
+patient, interact with scatter and with the tone curve of the detector, and may differ in texture from the CT patches used here; $A$ is
+therefore a property of the suppressor for additive signals, not a measure of clinical detectability. Lesions near the lung edge can extend
+beyond the eroded lung mask, very small lesions have supports near the 30-pixel limit where the regression slope is noisy, and saturated pixels
+clip the added signal, which is why the amplitude is kept at $\alpha=1$. The bone overlap of a site is only as good as its reference: rib masks
+on VinDr-RibCXR, the dual-energy signal on SZCH, and a model's bone map elsewhere. Finally, the audit and the twin regulariser both insert
+lesions; the audit uses lesions from CTs never seen in training and real radiographs never used for training, and Chapter~\ref{ch:benchmark}
+reports evidence that uses no insertion at all, but a model that learned to recognise pasted signal in general could still score well.

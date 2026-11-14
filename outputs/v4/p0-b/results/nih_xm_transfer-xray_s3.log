@@ -1,0 +1,1 @@
+{"run": "/kaggle/working/results/qp_xm_xray_s3", "dataset": "nih", "n": 25596, "per_class": {"lung_opacity": 0.5416284646497435, "pleural_effusion": 0.7098414081181265, "atelectasis": 0.6211275515598433, "cardiomegaly": 0.7661727136544088, "consolidation": 0.620638208871749, "lung_lesion": 0.4835053957683567}, "mean": 0.6238189571037046}

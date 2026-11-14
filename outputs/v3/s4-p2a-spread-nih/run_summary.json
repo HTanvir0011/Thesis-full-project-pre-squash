@@ -1,0 +1,1 @@
+{"weights": "/kaggle/input/datasets/ac_6/s4-wts3/cnx_t16_s0.pt+/kaggle/input/datasets/ac_6/s4-wts3/cnx_t16_s1.pt+/kaggle/input/datasets/ac_6/s4-wts3/cnx_t16_s2.pt", "nih_root": "/kaggle/input/datasets/nih-chest-xrays/data", "prep": "/kaggle/input/notebooks/ac_6/s4-prep-nih/nih", "gpus": 2, "rc": [0, 0], "test": 25596, "rows": 25596, "seconds": 5149}

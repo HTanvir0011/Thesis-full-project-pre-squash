@@ -1,0 +1,8 @@
+# Hugging Face Space demo (site/app.py). The Space repository must also contain the s4/ package (s4/infer.py, s4/model.py) next to app.py.
+# gradio: any current release; Blocks needs the delete_cache argument.
+gradio
+torch
+timm
+opencv-python-headless
+huggingface_hub
+numpy

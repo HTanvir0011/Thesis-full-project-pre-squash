@@ -1,0 +1,18 @@
+{
+ "id": "ac_1/s4-refq",
+ "title": "s4-refq",
+ "code_file": "refq.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": false,
+ "enable_tpu": false,
+ "enable_internet": false,
+ "dataset_sources": [
+  "nih-chest-xrays/data",
+  "ac_1/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

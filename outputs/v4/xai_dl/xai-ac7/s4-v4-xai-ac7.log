@@ -1,0 +1,11 @@
+[{"stream_name":"stdout","time":13.602633391,"data":"2 runs: nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s3 nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s4 | data /kaggle/input/notebooks/ac_7/s4-prep-nih/nih/split.npy | boxes /kaggle/input/datasets/nih-chest-xrays/data/BBox_List_2017.csv\n"}
+,{"stream_name":"stdout","time":1623.735095588,"data":"nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s4 rc 0 1610s\n"}
+,{"stream_name":"stdout","time":1623.834691557,"data":"nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s3 rc 0 1610s\n"}
+,{"stream_name":"stdout","time":1623.835357457,"data":"ALL DONE; failed: [] | expected, no finished model mounted: []\n"}
+,{"stream_name":"stderr","time":1625.95673938,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1625.956771227,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1626.238253787,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1626.238292605,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1627.084108162,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1628.119024366,"data":"[NbConvertApp] Writing 281964 bytes to __results__.html\n"}
+]

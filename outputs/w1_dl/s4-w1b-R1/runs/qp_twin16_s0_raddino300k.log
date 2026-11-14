@@ -1,0 +1,20 @@
+arm=qp_twin16 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 16.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} bank-free (lesion library from /kaggle/input/datasets/ac_5/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 2302.73it/s]
+/kaggle/input/datasets/ac_5/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 2116s loss 0.0895 {'qp': {'mae': 0.009859947487711906, 'psnr': 35.34306335449219}}
+4000 4236s loss 0.1047 {'qp': {'mae': 0.008842529729008675, 'psnr': 36.600929260253906}}
+6000 6360s loss 0.0994 {'qp': {'mae': 0.008248857222497463, 'psnr': 37.18610382080078}}
+8000 8490s loss 0.0473 {'qp': {'mae': 0.01177745871245861, 'psnr': 33.50667190551758}}
+10000 10618s loss 0.0673 {'qp': {'mae': 0.008126655593514442, 'psnr': 37.53987121582031}}
+12000 12752s loss 0.0429 {'qp': {'mae': 0.007076812908053398, 'psnr': 38.34370803833008}}
+14000 14878s loss 0.0430 {'qp': {'mae': 0.005625327583402395, 'psnr': 40.8628044128418}}
+16000 16994s loss 0.0579 {'qp': {'mae': 0.00592138571664691, 'psnr': 39.43833923339844}}
+18000 19109s loss 0.0371 {'qp': {'mae': 0.0052917152643203735, 'psnr': 40.990447998046875}}
+20000 21225s loss 0.0386 {'qp': {'mae': 0.005310822743922472, 'psnr': 40.16764831542969}}
+22000 23359s loss 0.0341 {'qp': {'mae': 0.004979155957698822, 'psnr': 41.05821228027344}}
+time budget reached; checkpoint saved, rerun to resume

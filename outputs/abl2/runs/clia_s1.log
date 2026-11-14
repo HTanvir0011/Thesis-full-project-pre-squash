@@ -1,0 +1,33 @@
+arm=clia cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0} train CT=588 val CT=64 lesion library=1057
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/kaggle/input/datasets/ac_2/s4-code/s4/train.py:149: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1197s loss 0.1718 {'mae': 0.016397899016737938, 'psnr': 32.12773132324219, 'ssim': 0.9142017960548401, 'lcr': 1.4803999662399292}
+4000 2394s loss 0.1079 {'mae': 0.01092993188649416, 'psnr': 35.609893798828125, 'ssim': 0.9415236711502075, 'lcr': 1.123732328414917}
+6000 3593s loss 0.1050 {'mae': 0.0103679858148098, 'psnr': 36.15461730957031, 'ssim': 0.9444168210029602, 'lcr': 0.6578614115715027}
+8000 4790s loss 0.0853 {'mae': 0.009258383885025978, 'psnr': 36.89894104003906, 'ssim': 0.952312707901001, 'lcr': 0.96038818359375}
+10000 5988s loss 0.0629 {'mae': 0.010735681280493736, 'psnr': 35.54231262207031, 'ssim': 0.9516863822937012, 'lcr': 0.5397745370864868}
+12000 7187s loss 0.0864 {'mae': 0.008445040322840214, 'psnr': 37.30213165283203, 'ssim': 0.9572335481643677, 'lcr': 0.25093603134155273}
+14000 8387s loss 0.0732 {'mae': 0.00795814860612154, 'psnr': 38.05783462524414, 'ssim': 0.9599423408508301, 'lcr': 0.5968244075775146}
+16000 9586s loss 0.0655 {'mae': 0.0077096158638596535, 'psnr': 38.60383605957031, 'ssim': 0.9615195393562317, 'lcr': 0.3274596929550171}
+18000 10784s loss 0.0574 {'mae': 0.007470404263585806, 'psnr': 38.831871032714844, 'ssim': 0.9629839658737183, 'lcr': 0.3836941719055176}
+20000 11985s loss 0.0485 {'mae': 0.007246586959809065, 'psnr': 39.02070999145508, 'ssim': 0.9637160301208496, 'lcr': 0.31970298290252686}
+22000 13184s loss 0.0566 {'mae': 0.007125395350158215, 'psnr': 39.18993377685547, 'ssim': 0.9641118049621582, 'lcr': 0.29867270588874817}
+24000 14383s loss 0.0544 {'mae': 0.007201991975307465, 'psnr': 39.108245849609375, 'ssim': 0.9644695520401001, 'lcr': 0.33277809619903564}
+25000 14983s loss 0.0672 {'mae': 0.007246172986924648, 'psnr': 39.063575744628906, 'ssim': 0.9645258188247681, 'lcr': 0.3838416337966919}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.008086391689279411, 'psnr': 38.43479436560522, 'ssim': 0.9614185672017592, 'lcr': 3.2537865415662526, 'absorption': 0.35737269782965814}
+{
+ "method": "ours:/kaggle/working/runs/clia_s1/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.3186 +- 0.7291",
+ "mse_raw": "0.0038 +- 0.0006",
+ "ssim_raw": "0.8564 +- 0.0171",
+ "psnr_cal": "26.0718 +- 0.7388",
+ "mse_cal": "0.0025 +- 0.0005",
+ "ssim_cal": "0.8518 +- 0.0276",
+ "psnr_cal_bone": "22.0155 +- 1.6388",
+ "psnr_cal_nonbone": "26.9846 +- 0.8852",
+ "ssim_cal_bone": "0.7816 +- 0.0415",
+ "ssim_cal_nonbone": "0.8596 +- 0.0305"
+}

@@ -1,0 +1,100 @@
+\subsection{Study III: knowledge transfer from CT (H11--H15)}
+\label{sec:xm_results}
+% Numbers copied from tables/v4_*.tex (tools/xm_tables.py) and results/final_xm_stats.json.
+All 32 training runs of Study III finished: seven CT teachers, ten projection models and 15 NIH classifiers. One zero-shot evaluation first
+failed because it started before its model had been written and was repeated unchanged.
+
+\paragraph{CT teacher and projection models} The seed ensemble of the CT teacher reached a test macro-AUROC of 0.821 on the 297 CT subset
+volumes (Table~\ref{tab:xm_transfer}): high for cardiomegaly (0.951) and pleural effusion (0.942), low for lung lesions (0.608). The recipe
+was unstable across seeds: one of seven teachers collapsed, another learned only in its last epochs, and the five teachers used ranged from
+0.737 to 0.822 (Supplementary Table~S1 and Fig.~S4). On the projections, distillation lowered accuracy slightly: 0.806 for the P1 ensemble against
+0.814 for P0, with P1 below P0 in every seed (Supplementary Table~S2 and Fig.~S6). Without training on real radiographs, the projection models
+transferred moderately to VinBigData (P0 0.739, P1 0.732) and weakly to NIH (0.648 and 0.640).
+
+\begin{table}[htbp]
+\centering\small
+\caption{CT teacher, projection models and zero-shot transfer: test AUROC of the seed ensembles for the six findings and their mean
+(descriptive). NIH lung opacity is the approximate mapping to Infiltration.}
+\label{tab:xm_transfer}
+\fittable{tables/v4_transfer.tex}
+\end{table}
+
+\paragraph{Distillation and real radiographs (H11, H12)} Distillation from CT did not improve the classification of real radiographs
+(Table~\ref{tab:xm_hyp}). On the five shared findings F$_\mathrm{p1}$ differed from F$_\mathrm{in}$ by $-0.0001$ $[-0.0016, 0.0014]$
+(Holm $p=0.912$), which excludes gains larger than 0.0014. F$_\mathrm{p1}$ did not differ from F$_\mathrm{p0}$ ($-0.0008$
+$[-0.0022, 0.0006]$, Holm $p=0.742$), nor F$_\mathrm{p0}$ from F$_\mathrm{in}$ ($+0.0007$ $[-0.0008, 0.0023]$, Holm $p=0.742$), and no
+per-finding difference survived correction (Supplementary Table~S3; forest plot in Supplementary Fig.~S5). Over the 14 diseases the three classifiers reached macro-AUROCs of
+0.819 (F$_\mathrm{in}$), 0.822 (F$_\mathrm{p0}$) and 0.821 (F$_\mathrm{p1}$).
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Study III hypotheses: differences of the seed ensembles with 95\,\% bootstrap intervals (\num{10000} resamples). Holm: H11 with the
+two H12 contrasts. The P0 row of H14 is descriptive.}
+\label{tab:xm_hyp}
+\fittable{tables/v4_hypotheses.tex}
+\end{table}
+
+\paragraph{Swin against DenseNet-121 (H13)} DenseNet-121 exceeded F$_\mathrm{in}$ over the 14 diseases by 0.0049 $[0.0015, 0.0085]$
+($p=0.005$). The per-class tests place almost all of this difference in hernia, the rarest NIH class (86 positive test images), where
+DenseNet-121 reached 0.901 against 0.833 (Holm $p=0.0008$; Supplementary Table~S6 and Fig.~S12); this class alone accounts for $-0.0049$ of the
+14-class mean. Infiltration also favoured DenseNet-121 ($-0.0062$, Holm $p=0.003$), and the other 12 classes differed by less than 0.007 in
+either direction. H13 is not a clean comparison of encoders: the DenseNet-121 reference was trained for twice as many epochs (20 against
+10) at four times the encoder learning rate, which may matter most for a rare class such as hernia.
+
+\paragraph{Cross-modal agreement (H14)} The CT and X-ray Grad-CAM++ maps did not agree. Over 419 maps from 227 test scans, the matched CT and P1
+maps correlated at $-0.052$ on average and the mismatched maps at $-0.060$, a difference of $+0.0076$ $[-0.0068, 0.0223]$ ($p=0.301$); with
+P0 the difference was $-0.0087$ $[-0.0228, 0.0056]$. All per-finding mean correlations were negative, and the sign of the matched-minus-mismatched
+difference changed between findings (Supplementary Table~S4 and Fig.~S7). The mean maps explain the result (Fig.~\ref{fig:xm_maps}). The projected
+CT maps vary almost only in the craniocaudal direction, in horizontal bands that follow the importance of individual slices, whereas the X-ray
+maps of most findings concentrate along the edges of the lung box; only the cardiomegaly maps peak near the heart. Maps with such different
+structure are unlikely to correlate positively in any patient.
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_maps.pdf}
+\caption{Mean heat maps over the CT subset test scans positive for each finding: the teacher's Grad-CAM++ summed along the anteroposterior axis
+(top) and the Grad-CAM++ maps of P1 and P0 on the paired projections, cropped to the lung box at $32\times32$ and scaled to sum to one; each
+panel has its own colour scale. Only averages over scans are shown.}
+\label{fig:xm_maps}
+\end{figure}
+
+\paragraph{Hallucination tests (H15)} Rib emphasis flipped 13.7\,\% of the finding-free test images for F$_\mathrm{in}$ and 12.9\,\% for
+F$_\mathrm{p1}$, a difference of $-0.0080$ $[-0.0159, -0.0003]$ ($p=0.044$; H15 is secondary and was not corrected for multiplicity). The
+effect is not specific to distillation: F$_\mathrm{p0}$, pretrained on the same projections without the teacher, flipped 12.7\,\% and
+DenseNet-121 12.8\,\% (Fig.~\ref{fig:xm_halluc}, Supplementary Table~S8). Noise separated the encoders most clearly: it flipped 78.1\,\% of
+the images for DenseNet-121 and 27.3--29.3\,\% for the Swin classifiers, whereas a gamma change flipped about 6\,\% for all four. Inserted
+nodules were rarely detected (sensitivity 2.8--3.2\,\%), and the score change grew with nodule size, from practically zero below 6.2\,mm to
+between $+0.015$ and $+0.019$ above 8.5\,mm (Supplementary Table~S7). Between 62\,\% (DenseNet-121) and 73\,\% (F$_\mathrm{p0}$) of the Grad-CAM++ mass of positive
+lung-finding predictions lay outside the lung fields.
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_halluc.pdf}
+\caption{Hallucination tests. (a) Share of finding-free NIH test images in which some class crosses its threshold after a perturbation that
+adds no disease. (b) Mean change of the Mass/Nodule score after inserting a nodule, by size tertile. (c) Share of Grad-CAM++ mass outside
+the lung fields for positive lung-finding predictions.}
+\label{fig:xm_halluc}
+\end{figure}
+
+\paragraph{Pointing game and uncertainty} Grad-CAM++ maps of the Swin classifiers rarely pointed into the expert boxes (0.151--0.185 of the
+984 targets) compared with DenseNet-121 (0.385), whereas decoder attention (0.479--0.572) and Integrated Gradients (0.615--0.645) did much
+better and differed little between models (Table~\ref{tab:xm_pointing}, Supplementary Fig.~S8). All maps hit masses and nodules less often than the other boxes,
+and Swin Grad-CAM++ often spread along the image borders (Fig.~\ref{fig:xm_xai}). Conformal risk control kept the test false-negative rate
+of the three Swin classifiers at 0.068--0.070 against a nominal 0.10, with 6.33--6.45 of the 14 labels per image
+(Supplementary Table~S5 and Fig.~S9).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Pointing game on the 984 NIH expert boxes (164 focal: Mass, Nodule): hit rate averaged over the five seeds, with a 95\,\%
+image-cluster bootstrap interval (descriptive).}
+\label{tab:xm_pointing}
+\fittable{tables/v4_pointing.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_xai_examples.pdf}
+\caption{Heat maps of the seed-0 models on NIH test images with expert boxes (white): the first image of each box class among the 24
+targets whose maps were saved (these contain no mass or nodule box). The NIH images are public.}
+\label{fig:xm_xai}
+\end{figure}

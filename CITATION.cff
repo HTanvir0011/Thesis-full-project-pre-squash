@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite them as below."
+type: software
+title: "Explainable and hallucination-aware cross-modality learning from chest CT for X-ray disease classification: lesion-faithful bone suppression and Swin transformer knowledge transfer"
+abstract: "Code, pre-specified analysis plans, Kaggle kernels, saved results, manuscript and thesis of three studies of CT-supervised models of chest radiographs: a counterfactual lesion audit and a twin lesion-invariance regulariser for bone suppression, a capacity-controlled test of bone-suppressed classifier inputs, and distillation of a 2.5D Swin CT teacher into Swin radiograph classifiers with heat-map, localisation and hallucination tests."
+authors:
+  - family-names: Hossin
+    given-names: Tanvir
+    affiliation: "Daffodil International University, Dhaka, Bangladesh"
+repository-code: "https://github.com/HTanvir0011/Thesis-full-project"
+license: MIT
+keywords:
+  - chest radiography
+  - bone suppression
+  - knowledge distillation
+  - Swin transformer
+  - explainability
+  - hallucination
+  - counterfactual evaluation

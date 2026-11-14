@@ -1,0 +1,2 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+checkpoint after epoch 1; exit 75 (resume with --resume /kaggle/working/results/nih_hyb_hybrid@densenet121_s0/ckpt.pt)

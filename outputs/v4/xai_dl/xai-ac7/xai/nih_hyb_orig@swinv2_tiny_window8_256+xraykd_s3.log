@@ -1,0 +1,13 @@
+{
+ "run": "/kaggle/input/notebooks/ac_7/s4-v4-p1-b/results/nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s3",
+ "config": "orig",
+ "arch": "swinv2_tiny_window8_256.ms_in1k",
+ "tol": 15.0,
+ "n_targets": 984,
+ "hit_rate_cam_0": 0.10365853658536585,
+ "hit_rate_attn": 0.6026422764227642,
+ "hit_rate_ig_X": 0.6128048780487805,
+ "hit_rate_ig_S": 0.0,
+ "hit_rate_ig_B": 0.0,
+ "hit_rate_ig_all": 0.6128048780487805
+}

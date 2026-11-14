@@ -1,0 +1,14 @@
+{
+ "run": "/kaggle/input/datasets/ac_1/s4-xm-xray/results/qp_xm_xraykd_s0",
+ "dataset": "vin",
+ "n": 2943,
+ "per_class": {
+  "lung_opacity": 0.5635363340738595,
+  "pleural_effusion": 0.8538353294349418,
+  "atelectasis": 0.5768313458262351,
+  "cardiomegaly": 0.884290912533599,
+  "consolidation": 0.7520941299175385,
+  "lung_lesion": 0.5838302797285103
+ },
+ "mean": 0.7024030552524474
+}

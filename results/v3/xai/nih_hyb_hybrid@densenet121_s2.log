@@ -1,0 +1,15 @@
+{
+ "run": "/kaggle/input/notebooks/ac_4/s4-p2a-nih-dn-04/results/nih_hyb_hybrid@densenet121_s2",
+ "config": "hybrid",
+ "arch": "densenet121.ra_in1k",
+ "tol": 15.0,
+ "n_targets": 984,
+ "hit_rate_cam_0": 0.3638211382113821,
+ "hit_rate_cam_1": 0.41565040650406504,
+ "hit_rate_cam_2": 0.13516260162601626,
+ "hit_rate_attn": 0.5050813008130082,
+ "hit_rate_ig_X": 0.592479674796748,
+ "hit_rate_ig_S": 0.6036585365853658,
+ "hit_rate_ig_B": 0.16361788617886178,
+ "hit_rate_ig_all": 0.633130081300813
+}

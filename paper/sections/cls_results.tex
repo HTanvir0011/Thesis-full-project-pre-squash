@@ -1,0 +1,139 @@
+\section{Results}
+\label{sec:cls_results}
+All 175 runs finished; Table~\ref{tab:cls_macro} gives the test metrics of the seed ensembles.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Test macro-AUROC and macro-AUPRC of the seed ensembles (five seeds; BDCXR-3257: out-of-fold over five folds). Descriptive; the
+tests are in Tables~\ref{tab:cls_primary} and~\ref{tab:cls_groups}. orig: radiograph; soft: soft-tissue image; early: three images as
+channels; hybrid: three streams; ctrl: radiograph in three streams.}
+\label{tab:cls_macro}
+\fittable{tables/v3_macro.tex}
+\end{table}
+
+\subsection{Overall performance (H6, H7)}
+The hybrid did not improve on the radiograph alone on any dataset (Table~\ref{tab:cls_primary}, Fig.~\ref{fig:cls_forest}). On NIH the
+macro-AUROC difference was $+0.0001$ $[-0.0022,0.0024]$ (Holm $p=0.967$), so a gain larger than 0.0024 is not compatible with the data; on
+VinBigData it was $+0.0024$ $[-0.0004,0.0053]$ (Holm $p=0.28$) and on BDCXR-3257 $-0.0042$ $[-0.0108,0.0021]$ (Holm $p=0.39$). The
+AUPRC differences agreed in direction and none excluded zero. The hybrid did not differ from the capacity control on any dataset (Holm
+$p=1$). Against channel stacking it was nominally worse on NIH ($-0.0031$ $[-0.0055,-0.0007]$, Holm $p=0.066$; AUPRC $-0.0055$
+$[-0.0100,-0.0012]$) and no different elsewhere.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{H6 (primary) and H7: differences of the seed ensembles with 95\,\% cluster-bootstrap intervals (\num{10000} resamples). Holm: H6
+over the three datasets, H7 over its six tests.}
+\label{tab:cls_primary}
+\fittable{tables/v3_primary.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_hypothesis_forest_densenet121.pdf}
+\caption{Pre-specified contrasts with 95\,\% cluster-bootstrap intervals. (a) H6 and H7: macro-AUROC differences per dataset. (b) H8:
+differences in the mean AUROC of each finding group's classes. Filled markers: Holm $p<0.05$; right: Holm-adjusted $p$.}
+\label{fig:cls_forest}
+\end{figure}
+
+\subsection{Finding groups and classes (H8)}
+The effect of the inputs depended on the finding group (Table~\ref{tab:cls_groups}, Fig.~\ref{fig:cls_forest}b). On NIH the soft-tissue
+image raised the mean AUROC of the focal findings by $+0.0089$ $[0.0040,0.0140]$ (Holm $p=0.0024$) and the hybrid by $+0.0063$
+$[0.0005,0.0117]$ (Holm $p=0.101$). Diffuse findings lost with both inputs (hybrid $-0.0052$ $[-0.0077,-0.0027]$, Holm $p=0.0024$; soft
+$-0.0032$ $[-0.0057,-0.0008]$, Holm $p=0.039$), and boundary findings did not change. On VinBigData the focal estimates had the same direction
+and size (hybrid $+0.0085$ $[-0.0023,0.0196]$; soft $+0.0083$ $[-0.0044,0.0202]$) but wide intervals, the diffuse estimates were close to
+zero (hybrid $+0.0011$, soft $+0.0003$), and no group difference survived the correction.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{H8: difference in the mean per-class AUROC of each finding group, with 95\,\% cluster-bootstrap intervals; Holm within dataset over
+groups and contrasts.}
+\label{tab:cls_groups}
+\fittable{tables/v3_groups.tex}
+\end{table}
+
+Per class (Table~\ref{tab:cls_per_class}, Fig.~\ref{fig:cls_per_class}), two NIH classes differed between the hybrid and the
+radiograph after correction: nodule gained ($+0.0129$, Holm $p=0.00121$) and infiltration lost ($-0.0160$, Holm $p<0.001$; also $-0.0128$
+against channel stacking). Mass did not change ($-0.0004$). No class differed on VinBigData or BDCXR-3257.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{H8 per class: test AUROC of the radiograph and hybrid seed ensembles and the paired DeLong contrasts of the hybrid against the
+radiograph and against channel stacking; Holm within dataset over classes and both contrasts.}
+\label{tab:cls_per_class}
+\fittable{tables/v3_per_class.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_auroc_per_class_densenet121.pdf}
+\caption{NIH ChestX-ray14: test AUROC per class and per finding group for each configuration, and each configuration minus the radiograph,
+with 95\,\% patient-cluster bootstrap bands.}
+\label{fig:cls_per_class}
+\end{figure}
+
+\subsection{Where the streams point (H10)}
+Across 984 targets (164 focal) on 880 test images, Grad-CAM++ maps of the radiograph stream hit focal targets less often than other targets
+(0.213 against 0.374), whereas soft-tissue stream maps hit both about equally (0.385 against 0.401) (Table~\ref{tab:cls_pointing},
+Fig.~\ref{fig:cls_pointing}). The soft-minus-radiograph difference was therefore larger for focal targets ($+0.172$) than for the others
+($+0.027$): interaction $+0.145$ $[0.092,0.199]$, $p=0.0002$. Integrated Gradients ranked the two streams the same way (focal: 0.580
+soft-tissue against 0.505 radiograph; other: 0.621 against 0.645). Bone-stream maps rarely hit any target (0.049 and 0.167).
+Fig.~\ref{fig:cls_maps} shows examples.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{H10: pointing-game hit rates on the NIH expert boxes, means over targets of the per-target means over the five hybrid models;
+tolerance 15\,px at 256\,px. Last row: soft-tissue minus radiograph stream (Grad-CAM++) and the interaction with its 95\,\% image-cluster
+bootstrap interval.}
+\label{tab:cls_pointing}
+\fittable{tables/v3_pointing.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_pointing_game_densenet121.pdf}
+\caption{Pointing game per NIH box class and per group. (a) Hit rate of each map. (b) Decoder routing: share of each class query's
+attention on each stream. (c) Share of the Integrated-Gradients attribution per input. Brackets: number of targets.}
+\label{fig:cls_pointing}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_xai_comparison_densenet121.pdf}
+\caption{Attribution maps of one hybrid model (seed 0) on NIH ChestX-ray14 test images: the three inputs, Grad-CAM++ per stream and the
+decoder attention, with the expert boxes. Rows: targets (row label: the box class).}
+\label{fig:cls_maps}
+\end{figure}
+
+\subsection{Uncertainty}
+Conformal risk control held the NIH false-negative rate at 0.060--0.069 on the test split for nominal 0.10, but the label sets held 6.33--6.78
+of 14 labels on average (Table~\ref{tab:cls_unc}). On BDCXR-3257 the Mondrian sets covered 0.897--0.900 of the images at nominal 0.90 with
+1.76--1.81 of 3 classes per set. In selective classification (Table~\ref{tab:cls_selective}, Fig.~\ref{fig:cls_selective}), adding the
+suppressor's spread to the confidence score raised the AURC in every configuration: NIH 0.0352--0.0358 with the entropy alone against
+0.0372--0.0375 with the spread (same images), BDCXR-3257 0.1754--0.1938 against 0.2138--0.2260.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Conformal prediction at nominal 0.90: Mondrian sets on BDCXR-3257 (coverage, mean set size of 3 classes) and false-negative risk
+control on NIH (test false-negative rate, mean set size of 14 labels).}
+\label{tab:cls_unc}
+\fittable{tables/v3_conformal.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Selective classification: area under the risk--coverage curve (AURC; lower is better) with score A (one minus the ensemble
+entropy), score A on the images that have a spread value, and score B (entropy and suppressor spread).}
+\label{tab:cls_selective}
+\fittable{tables/v3_selective.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_selective_classification_densenet121.pdf}
+\caption{Risk--coverage curves for (a) BDCXR-3257 (top-1 error) and (b) NIH ChestX-ray14 (Brier score), keeping the most confident images
+first. Solid: score A; dashed: score B with the suppressor spread. Legend: AURC of score A.}
+\label{fig:cls_selective}
+\end{figure}
+
+The appendix shows every single run next to the seed ensembles (Fig.~\ref{fig:cls_seeds}), the conformal sets per class
+(Fig.~\ref{fig:cls_conformal}) and the Integrated-Gradients maps (Fig.~\ref{fig:cls_ig}).

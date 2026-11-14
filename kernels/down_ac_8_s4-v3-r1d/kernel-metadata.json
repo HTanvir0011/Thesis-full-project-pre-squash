@@ -1,0 +1,21 @@
+{
+ "id": "ac_8/s4-v3-r1d",
+ "title": "s4-v3-r1d",
+ "code_file": "run_down.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_8/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_8/s4-prep-bdcxr",
+  "ac_8/s4-v3-r1c"
+ ],
+ "model_sources": []
+}

@@ -1,0 +1,1 @@
+{"jobs": [[0, "qp", 1, 300000, 8, 0.0002, "_cnx2_300k", "--backbone convnextv2_tiny.fcmae_ft_in22k_in1k --enc_lr_mult 0.25"], [1, "qp", 2, 300000, 8, 0.0002, "_cnx2_300k", "--backbone convnextv2_tiny.fcmae_ft_in22k_in1k --enc_lr_mult 0.25"]], "done": ["qp_s1_cnx2_300k", "qp_s2_cnx2_300k"]}

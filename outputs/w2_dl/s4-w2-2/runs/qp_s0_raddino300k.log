@@ -1,0 +1,19 @@
+arm=qp cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 0, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 0.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} bank-free (lesion library from /kaggle/input/datasets/ac_5/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 2455.23it/s]
+/kaggle/input/datasets/ac_5/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1983s loss 0.0563 {'qp': {'mae': 0.007482736371457577, 'psnr': 38.585052490234375}}
+4000 3963s loss 0.0399 {'qp': {'mae': 0.00629465701058507, 'psnr': 39.73539733886719}}
+6000 5939s loss 0.0328 {'qp': {'mae': 0.007332291454076767, 'psnr': 38.274322509765625}}
+8000 7921s loss 0.0308 {'qp': {'mae': 0.007286790292710066, 'psnr': 38.49064636230469}}
+10000 9901s loss 0.0261 {'qp': {'mae': 0.007717030588537455, 'psnr': 38.201175689697266}}
+12000 11885s loss 0.0254 {'qp': {'mae': 0.006666188593953848, 'psnr': 39.401676177978516}}
+14000 13851s loss 0.0257 {'qp': {'mae': 0.005343698430806398, 'psnr': 41.14217758178711}}
+16000 15814s loss 0.0220 {'qp': {'mae': 0.00433513056486845, 'psnr': 42.85144805908203}}
+18000 17784s loss 0.0225 {'qp': {'mae': 0.003658104222267866, 'psnr': 44.155975341796875}}
+20000 19760s loss 0.0238 {'qp': {'mae': 0.0036754871252924204, 'psnr': 44.318817138671875}}
+22000 21734s loss 0.0218 {'qp': {'mae': 0.0034905080683529377, 'psnr': 44.67279052734375}}
+time budget reached; checkpoint saved, rerun to resume

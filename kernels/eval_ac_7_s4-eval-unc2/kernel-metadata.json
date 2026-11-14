@@ -1,0 +1,22 @@
+{
+ "id": "ac_7/s4-eval-unc2",
+ "title": "s4-eval-unc2",
+ "code_file": "run_eval.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_7/s4-code",
+  "ac_7/s4-wte",
+  "raddar/nodules-in-chest-xrays-jsrt"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_7/s4-qpprep"
+ ],
+ "model_sources": []
+}

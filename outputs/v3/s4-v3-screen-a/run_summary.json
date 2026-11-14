@@ -1,0 +1,1 @@
+{"jobs": [[0, "hyb", "nih", "orig", 0, 10, "--arch", "densenet121.ra_in1k"], [1, "hyb", "nih", "orig", 0, 10, "--arch", "convnextv2_tiny.fcmae_ft_in22k_in1k"]], "done": ["nih_hyb_orig@convnextv2_tiny_s0", "nih_hyb_orig@densenet121_s0"]}

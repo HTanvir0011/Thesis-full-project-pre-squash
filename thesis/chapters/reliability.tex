@@ -1,0 +1,66 @@
+% Reliability chapter (H5'). Numbers from results/final/unc_heldout.json and stats_held.json (H5 with image-bootstrap intervals); the
+% exploratory recalibration (SAP_v3 H9) from paper/tables/v3_bone_intervals.tex (tools/hybrid_stats.py --tables_from).
+\section{Design}
+The deep ensemble of Chapter~\ref{ch:v2} gives, for every pixel, the mean $\bar f$ of the three bone estimates and their standard deviation
+$\sigma$, the spread. Two questions follow (H5$'$). Does the spread rank the actual error, so that pixels where the members disagree are the
+pixels where the bone estimate is wrong? And can the spread be turned into intervals that cover the true bone value at a stated rate? For the
+second, a split-conformal scale $q$ is calibrated on the Qure-projection validation CTs, where the bone image is exact, so that
+$[\bar f-q(\sigma+\varepsilon),\,\bar f+q(\sigma+\varepsilon)]$ has nominal coverage 0.90. Coverage is measured on the Qure-projection test
+split (exact truth) and, as a measurement under domain shift, on the 51 held-out SZCH pairs against a pseudo-truth bone image: the radiograph
+minus the dual-energy soft-tissue image after a least-squares gain and offset. The method is described in Section~\ref{sec:method_v2}.
+
+\section{Results}
+On the Qure-projection test split the intervals cover 0.900 $[0.897,0.903]$ of the pixels at the nominal 0.90, with a mean width of 0.018, and
+the spread ranks the absolute error well (Spearman 0.76; Table~\ref{tab:reliability}). The calibration holds where it was made. On the held-out
+SZCH pairs it does not: the same intervals cover 0.139 $[0.134,0.145]$ of the pixels, and the spread ranks the error only weakly (mean
+per-image Spearman 0.11 $[0.07,0.15]$; Figure~\ref{fig:reliability}). Every one of the 51 images has coverage far below the nominal level, so
+the failure is systematic rather than driven by a few images. H5$'$ holds on synthetic data and fails under the shift to real radiographs.
+\begin{table}[htbp]
+\centering\small
+\caption{Ensemble spread and split-conformal intervals ($K=3$, nominal coverage 0.90), with image-bootstrap intervals.}
+\label{tab:reliability}
+\fittable{tables/reliability.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/reliability.pdf}
+\caption{Left: per-image coverage of the conformal intervals on the Qure-projection test split and on the held-out SZCH-X-Rays pairs (bars:
+means; dashed: nominal 0.90). Right: per-image Spearman correlation of ensemble spread and absolute error on SZCH-X-Rays (line: mean).}
+\label{fig:reliability}
+\end{figure}
+
+\section{Recalibration on real pairs (exploratory)}
+After this failure was known, the third analysis plan (H9, Chapter~\ref{ch:classifier}) added a post hoc check on the same, already-seen
+pairs: the intervals were recalibrated on the 24 SZCH development pairs and tested on the 51 held-out pairs. One variant uses a single global
+calibration; a Mondrian variant calibrates separately per stratum of predicted bone overlap and spread tercile. Pooled coverage was 0.886
+with the global calibration and 0.895 with the Mondrian calibration, whose intervals were less than half as wide (mean width 0.215 against
+0.447; Table~\ref{tab:bone_recal}); the median image reached 0.886 and 0.894. Figure~\ref{fig:bone_recal} also shows a per-image variant that
+takes the calibration quantile over per-image quantiles. A few real pairs therefore restore nominal coverage on average. The check is
+exploratory: it was designed after the failure was seen, it uses pairs from one hospital, and the coverage of single images still varies.
+\begin{table}[htbp]
+\centering\small
+\caption{Exploratory recalibration on real pairs (post hoc): bone-image intervals calibrated on the 24 SZCH-X-Rays development pairs and tested
+on the 51 held-out pairs at nominal 0.90. Mondrian: calibration per stratum of predicted bone overlap and ensemble spread.}
+\label{tab:bone_recal}
+\fittable{tables/v3_bone_intervals.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_bone_uncertainty.pdf}
+\caption{Exploratory recalibration on real pairs (post hoc). (a) Per-image coverage on the 51 held-out SZCH-X-Rays pairs for global and
+Mondrian calibration, with quantiles pooled over pixels or taken per image; dashed: nominal 0.90. (b) Reliability of the Mondrian intervals
+across nominal levels; cross: the synthetic calibration. (c) Sparsification of the absolute bone error by the ensemble spread, with the
+error-sorted oracle.}
+\label{fig:bone_recal}
+\end{figure}
+
+\section{Interpretation and limits}
+Three things explain why the intervals fail on real images, and they cannot be separated with the data at hand. First, the spread rises only
+modestly on real radiographs (mean interval width 0.026 against 0.018) while the error rises far more: the members agree with each other more
+than they agree with the dual-energy reference, because they share their training data and their biases. Second, the pseudo-truth bone image is not the true bone image;
+it carries the differences in tone and texture between a radiograph and a dual-energy soft-tissue image, so part of the measured error is
+reference error. Third, split-conformal calibration guarantees coverage only for data exchangeable with the calibration data, and only marginally
+over pixels, not per image; rendered projections and real radiographs are not exchangeable. The spread is still useful as a flag: on the
+paediatric radiographs of Chapter~\ref{ch:external} it is 2.7 times its value on adult pairs. Calibrated intervals on real radiographs need
+calibration data with real truth; the exploratory recalibration above shows that 24 dual-energy pairs from one site were enough there, not
+whether they would transfer to other sites.

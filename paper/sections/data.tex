@@ -1,0 +1,84 @@
+\section{Data}
+\label{sec:data}
+% PLAN (about 1 page and one table). Physics and rendering are in methods.tex; this section lists what data are used for what, under which licence,
+% and which sets are locked.
+%   3.1 Training sources: LIDC-IDRI (v1 renders; lesion library for the twin pastes; synthetic test CTs) and the public Qure ct2xr-projections
+%       (v2 source; exactly additive components, see Section method_v2). Licence consequence: weights trained on the projections inherit CC BY-NC-SA 4.0.
+%   3.2 Real evaluation data: SZCH-X-Rays (paired DES), VinDr-RibCXR (rib masks, licensed, local only), JSRT, Node21, TBX11K, VinBigData, NIH ChestX-ray14.
+%   3.3 Data discipline: development versus locked sets, split rules, what was seen before the freeze (DEVIATIONS.md 2026-10-27, SAP_v2.md).
+%   Table~data: dataset, role, licence or access. Licences are copied only from pages that were read; everything else stays a \todo.
+% Counts below are copied from SAP_v2.md, methods.tex and DEVIATIONS.md; regenerate them from results/ when the tables are final.
+Table~\ref{tab:data} lists every data set with its role in this study and its licence or access condition.
+
+\subsection{Training sources}
+\paragraph{LIDC-IDRI.} The LIDC-IDRI collection \citep{armato2011lidc,armato2015lidctcia,clark2013tcia}, with some series read from the LUNA16 copy
+\citep{setio2017luna16}, supplies the v1 renders, the lesion library used to paste lesions into training images, and the synthetic test CTs. The
+selection, the usable-CT rules and the patient-level split are given in Section~\ref{sec:methods}, together with the detector physics (attenuation
+tables from the NIST X-ray mass attenuation coefficient database \citep{hubbell2004xraymass}, tube spectra from SpekPy \citep{poludniowski2021spekpy}).
+
+\paragraph{Qure.ai CT projections.} The v2 models are trained on the public Qure.ai \path{ct2xr-projections} data \citep{angaitkar2026anatomy}, which
+hold, for each CT volume, a composite image and translated bone, soft-tissue and lung projections. The composite is an exact linear combination of
+the components up to rounding, so the bone image of every training sample is known exactly (Section~\ref{sec:method_v2}).
+The release holds \num{21887} projections, one per CT volume; the volume names are those of CT-RATE \citep{hamamci2026ctrate}. We split them by
+patient (\num{14374} patients) into \num{21051} training, 406 validation and 430 test projections (\path{tools/qp_prep.py}).
+
+\subsection{Real radiographs}
+\paragraph{SZCH-X-Rays.} Paired radiographs and dual-energy soft-tissue images from one partner hospital \citep{sun2026bsldm,sun2026debonedit}. We use the
+75-pair test subset; its 75 images are split into a development part (24 images) and a held-out part (51 images) by a hash of the file name
+(\path{tools/szch_split.py}). The 75 images are the published test split of the 741-pair version of the data set (592/74/75), acquired with dual-exposure DES on a GE
+Discovery XR656 \citep{sun2026debonedit}; an earlier version of 818 pairs was used for BS-LDM \citep{sun2026bsldm}, and the papers do not
+explain the difference.
+
+\paragraph{VinDr-RibCXR.} 245 radiographs with per-rib masks \citep{nguyen2021ribcxr}. The data are licensed and are processed only on the licence
+holder's own computer and private cloud account; only metrics leave them.
+
+\paragraph{Nodule and detection sets.} JSRT \citep{shiraishi2000jsrt} (154 nodules), Node21 \citep{sogancioglu2024node21} (1\,476 nodule boxes),
+TBX11K \citep{liu2020tbx11k} and VinBigData (the Kaggle competition data; related to VinDr-CXR \citep{nguyen2022vindrcxr}) are used for real-lesion contrast
+and for downstream detection; NIH ChestX-ray14 \citep{wang2017chestxray} is used for downstream classification with its official lists.
+NIH uses the official test list (\num{25596} images) and a patient-level split of the remaining images into \num{77890} training and \num{8634}
+validation images. The detection sets are split by a fixed hash of the image identifier: Node21 \num{3440}/\num{512}/\num{930}, TBX11K
+\num{6200}/\num{688}/\num{2088} (its official validation set serves as test set) and VinBigData \num{10433}/\num{1469}/\num{2943} images for
+training, validation and test. VinBigData boxes are kept where at least two radiologists marked the same finding; images with only single-reader
+findings are left out. No image of any set was unreadable. VinBigData is the Kaggle competition built on the VinDr-CXR images \citep{vinbigdata2020kaggle}; its rules allow non-commercial research use.
+
+\paragraph{BDCXR-3257 (external validation).} 3,257 paediatric chest radiographs (JPEG) from the Radiology and Imaging Department of
+Dr.~M~R~Khan Shishu Hospital \& Institute of Child Health, Dhaka, collected in routine care and anonymised, with one label each: normal (880),
+bacterial pneumonia (1,477) or viral pneumonia (900) \citep{durjoy2026bdcxr}, a task studied before on other paediatric sets \citep{kermany2018identifying}. Most children are under five years old
+(1,132 images under one year). The data were used under the ethical approval REC-FSIT-2025/No:~11928 (Daffodil International University) and
+the data use agreement between the hospital and the authors' research group; no radiograph of this set is shown in this paper. There are no
+patient identifiers, so near-duplicate images are grouped by their correlation at $64$~px ($r\ge0.93$; 48 pairs, the rest single images) and
+a group never spans two folds.
+
+\subsection{Development and locked sets}
+SAP.md fixed the locked sets before any locked-set evaluation. After the v1 ablation the SZCH pairs were looked at (DEVIATIONS.md, 2026-10-27), so SZCH
+became a development set for decisions about the v2 recipe, and SAP\_v2.md was written and frozen before any held-out or locked evaluation of a v2
+model. Decisions used the 24 development images, the synthetic validation data and the real-image audit on all 75 SZCH images; the audit on SZCH is
+therefore development evidence only, and the confirmatory audit runs on VinDr-RibCXR (not opened by any model run before the plan was written) and
+JSRT. Paired fidelity claims use the 51 held-out SZCH pairs. Before the freeze, screening tools printed held-out PSNR and SSIM next to the
+development numbers for v1-family and screening runs; no rule, table or decision used them, and the tool was changed to print development
+numbers only.
+
+\begin{table}[htbp]
+\centering\small
+\renewcommand{\arraystretch}{1.15}
+\caption{Data sets, their role in this study and the licence or access condition, as stated on the providers' pages (read on
+3 November 2026).}
+\label{tab:data}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.35\linewidth}p{0.33\linewidth}@{}}
+\toprule
+Data set & Role here & Licence or access \\
+\midrule
+LIDC-IDRI (TCIA) & v1 renders, lesion library, synthetic test CTs & CC BY 3.0; attribution with the data DOI \\
+Qure.ai ct2xr-projections & v2 training source & CC BY-NC-SA 4.0 \\
+CT-RATE & CT source of the projections (not used directly) & CC BY-NC-SA 4.0, gated \\
+SZCH-X-Rays & paired DES evaluation (24 development, 51 held-out) & CC BY-NC 4.0 \\
+VinDr-RibCXR & locked audit and rib benchmark (245 images) & licensed; local use, metrics only \\
+JSRT & audit and nodule contrast & free after registration; not public domain, no redistribution or commercial use \\
+Node21 & nodule contrast, detection & CC BY-NC-ND 4.0 \\
+TBX11K & detection & CC BY 4.0 (data) \\
+VinBigData / VinDr-CXR & detection & competition rules: non-commercial research use \\
+NIH ChestX-ray14 & classification & unrestricted use with attribution (NIH Clinical Center) \\
+BDCXR-3257 & external validation (pneumonia classification, audit) & CC BY 4.0 (figshare); used under the providers' data use agreement \\
+\bottomrule
+\end{tabular}
+\end{table}

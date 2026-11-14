@@ -1,0 +1,9 @@
+name,patient,split,usable,excluded_because,n_nodules,source,dz,manufacturer,lung_cm3,bone_cm3
+LIDC-IDRI-0001_20603192,LIDC-IDRI-0001,train,0,apex_or_base_cut;padded,1,mount,2.5,GE MEDICAL SYSTEMS,3824,2283
+LIDC-IDRI-0002_49104919,LIDC-IDRI-0002,train,0,apex_or_base_cut;padded,1,mount,1.25,GE MEDICAL SYSTEMS,5405,1384
+LIDC-IDRI-0003_80003264,LIDC-IDRI-0003,test,0,apex_or_base_cut;padded,3,mount,2.5,GE MEDICAL SYSTEMS,6035,3787
+LIDC-IDRI-0601_28256685,LIDC-IDRI-0601,train,0,padded,5,luna,1.0,,4437,1166
+LIDC-IDRI-0602_76593724,LIDC-IDRI-0602,train,0,apex_or_base_cut;padded,2,luna,1.0,,3598,1851
+LIDC-IDRI-0603_50294647,LIDC-IDRI-0603,train,0,apex_or_base_cut;padded,0,luna,2.5,,5296,4823
+LIDC-IDRI-0611_61390326,LIDC-IDRI-0611,train,0,apex_or_base_cut;padded,0,tcia,3.0,SIEMENS,3291,1204
+LIDC-IDRI-0635_70610043,LIDC-IDRI-0635,test,0,apex_or_base_cut;padded,1,tcia,3.0,TOSHIBA,5238,1821

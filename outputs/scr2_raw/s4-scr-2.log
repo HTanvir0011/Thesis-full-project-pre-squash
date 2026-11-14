@@ -1,0 +1,13 @@
+[{"stream_name":"stdout","time":128.839444689,"data":"jobs: [[0, 'mix', 0, 100000, 8, 0.0002], [1, 'mix_clia', 0, 100000, 8, 0.0002]]\n"}
+,{"stream_name":"stdout","time":8563.144093806,"data":"mix_s0 train rc 0 17:09:37\n"}
+,{"stream_name":"stdout","time":8568.244318793,"data":"mix_clia_s0 train rc 0 17:09:42\n"}
+,{"stream_name":"stdout","time":8719.253387586,"data":"mix_clia_s0 eval rc 0 0 audit 1 qp 0\n"}
+,{"stream_name":"stdout","time":8731.520277656,"data":"mix_s0 eval rc 0 0 audit 1 qp 0\n"}
+,{"stream_name":"stdout","time":8731.55709828,"data":"ALL DONE\n"}
+,{"stream_name":"stderr","time":8734.113035685,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":8734.113056857,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":8734.547219796,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":8734.547247085,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":8735.45947585,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":8736.904770656,"data":"[NbConvertApp] Writing 299664 bytes to __results__.html\n"}
+]

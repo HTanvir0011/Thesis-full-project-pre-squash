@@ -1,0 +1,4 @@
+== identity: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods identity --out results/final/audit_jsrt/identity.csv
+identity: n=1482 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000
+== identity: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods identity --out results/final/audit_szch/identity.csv
+identity: n=450 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000

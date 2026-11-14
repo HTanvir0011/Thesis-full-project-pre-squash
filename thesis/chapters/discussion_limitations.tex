@@ -1,0 +1,37 @@
+% Discussion chapter: the paper's discussion and limitations are input, then thesis-only material.
+\input{../paper/sections/discussion}
+
+\input{../paper/sections/limitations}
+
+\section{Threats to validity}
+\paragraph{Internal validity.} The operating point, the training source and the encoder were chosen on development data: the 24 SZCH
+development pairs, the audit on all 75 SZCH images and synthetic validation data. The confirmatory sets (VinDr-RibCXR, JSRT, the 51 held-out
+SZCH pairs, the downstream test sets and BDCXR-3257) were evaluated only after the plans were frozen, and the screening tools that had printed
+held-out SZCH numbers next to development numbers were changed and the episode disclosed. Seeds were fixed per arm, and every final contrast
+pairs models on identical images and sites; where cloud and local GPUs were mixed, the audit sites were pinned to the same lung masks and the
+remaining floating-point difference was measured (at most 0.0024\,dB). The selection of ConvNeXt-V2-T over RAD-DINO was made by a pre-declared
+tie-break at two seeds and was not reopened when the third seeds moved the gap just outside the band.
+
+\paragraph{External validity.} Paired real truth comes from one hospital and one dual-energy set-up. Training data are adult CT projections,
+and the external validation covers one paediatric hospital. The audit uses nodules only; consolidations, masses, effusions and lines were not
+inserted. Lateral, portable and supine radiographs were not studied.
+
+\paragraph{Construct validity.} Absorption measures how much of an added, linear lesion signal moves into the bone estimate. It is not
+clinical detectability, and a model that suppresses less absorbs less for that reason alone; it is therefore read with the rib benchmark and
+bone-region fidelity. Real-nodule contrast and downstream performance were added because they do not use insertion, and they agree with the
+audit against the matched control but not uniformly against the reference model.
+
+\paragraph{Statistical conclusion validity.} Holm correction is applied to the $p$-values within each hypothesis family; confidence intervals
+are unadjusted. Bootstrap intervals resample whole images, patients or near-duplicate groups as the plans require; per-class DeLong tests on
+NIH ignore the clustering of images within patients, which the macro-level patient bootstrap does not. An independent check after the first
+locked run found and fixed several analysis errors, among them a resampling error that had narrowed the interaction intervals and detection
+metrics that depended on the order of tied scores; no pre-specified verdict changed, and every correction is listed in
+Appendix~\ref{app:deviations}.
+
+\section{Future work}
+Five directions follow from the results. Prediction at $1024$~px would show whether the remaining SSIM gap to the reference model is a matter of
+resolution. Combining CT-derived supervision with real dual-energy pairs, where available, could raise fidelity without giving up the twin
+term, and real pairs from the target site would allow conformal calibration that holds on real images. The audit should be extended to
+lesion types other than nodules, such as consolidation, which the paediatric pneumonia set points to. Paediatric training data would test
+whether the higher absorption and uncertainty on children can be reduced. Finally, a reader study would measure what the audit cannot:
+whether radiologists find more lesions on images from a suppressor with low absorption.

@@ -1,0 +1,31 @@
+\section{Reproducibility, data and code availability}
+\label{sec:repro}
+% PLAN (about 0.5 page). Say exactly what is released, under which licence, and how every table and figure is regenerated.
+%   R1 Pre-specified plans and freeze: SAP.md, SAP_v2.md, freeze.json, freeze_v2.json (hashes of plan, split lists, weights, code commit); dates.
+%   R2 Generated outputs: all tables and figures come from saved result files; commands in RUNPLAN.md section 6 (tools/final_local.sh,
+%      tools/final_stats.py, tools/fig_*.py).
+%   R3 Randomness: seeds, paired sites drawn once with a fixed seed, bootstrap seeds.
+%   R4 Compute: Kaggle T4 for training, a single consumer GPU for the local evaluation; wall-clock budget.
+%   R5 Data access: which data are public, which are licensed (VinDr-RibCXR: metrics only, never redistributed), which links.
+%   R6 Release: weights (three checkpoints) and code, licence, model card, demo; nothing derived from licensed images.
+%   R7 Reporting checklist: CLAIM 2024 (tejani2024claim), Appendix~\ref{app:claim}.
+The analysis plans (SAP.md and SAP\_v2.md), the split files, the weights and the code commit were hashed into \path{freeze.json} and
+\path{freeze_v2.json} before any held-out or locked evaluation: \path{freeze.json} on 27 October 2026 (code commit \texttt{8e9e3be}) and
+\path{freeze_v2.json} on 1 November 2026 (commit \texttt{dd52b6a}); the BDCXR-3257 addendum was committed on 3 November 2026 before any model
+saw those images. The plans were kept in the project's version control, not deposited in a public registry; they and the hash files are
+supplementary material. Every table and figure is produced by a script from saved result files; no number in the text is typed by hand. From the saved
+results, \texttt{python} \path{tools/final_stats.py} writes \path{results/final/stats_held.json} and the main tables, \texttt{python} \path{tools/paper_extras.py} \texttt{--audit-map} the ablation table and the dose-response, audit-map, downstream and reliability figures, \texttt{python} \path{tools/fig_pareto.py} \texttt{final}
+and \path{tools/fig_real_qualitative.py} the remaining figures, and \texttt{python} \path{tools/bdcxr_stats.py} the BDCXR-3257 tables; the
+evaluations themselves are run by \path{tools/final_local.sh} (locally or in cloud kernels). \todo{repository URL and release commit}
+
+Training used Kaggle T4 GPUs: a run of \num{300000} samples took 6 to 7 GPU-hours on one T4 (two runs share a two-GPU session), a screening run
+of \num{100000} samples about 2 GPU-hours; the per-run times are in the training logs. The locked-set evaluation ran on a consumer GPU and on
+cloud T4 GPUs with identical code; the audit sites of every model were pinned to the same lung masks, and model outputs differ between the two
+GPU types by at most 0.0024\,dB.
+The Qure.ai projections, CT-RATE, SZCH-X-Rays, JSRT, Node21, TBX11K and NIH ChestX-ray14 are obtained from their providers under their own terms.
+VinDr-RibCXR is licensed and was processed only on the licence holder's own computer and cloud account; VinBigData was processed only in
+cloud accounts that accepted the competition rules; BDCXR-3257 was used under a data use agreement. Only metrics left these environments, and no
+image, mask, map or model derived from VinDr-RibCXR, VinBigData or BDCXR-3257 images is released.
+The three checkpoints of the ensemble, the inference code and a model card are released for research use under CC BY-NC-SA 4.0, the licence of the
+training projections. \todo{link, revision hash and checksum after release approval}
+The reporting follows the CLAIM 2024 checklist \citep{tejani2024claim} (Appendix~\ref{app:claim}).

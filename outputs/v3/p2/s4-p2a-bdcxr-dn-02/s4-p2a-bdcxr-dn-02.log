@@ -1,0 +1,58 @@
+[{"stream_name":"stdout","time":4.4833096359999995,"data":"warm-up /kaggle/input/notebooks/ac_8/s4-prep-bdcxr/bdcxr/soft.npy [0.21, 1.7]\n"}
+,{"stream_name":"stdout","time":5.224055764,"data":"warm-up /kaggle/input/notebooks/ac_8/s4-prep-bdcxr/bdcxr/orig.npy [0.21, 2.4]\n"}
+,{"stream_name":"stdout","time":5.2242277,"data":"warm-up total 3s\n"}
+,{"stream_name":"stdout","time":385.549737491,"data":"bdcxr_hyb_soft@densenet121_s0_f3 rc 0  380s\n"}
+,{"stream_name":"stdout","time":385.667743509,"data":"bdcxr_hyb_soft@densenet121_s0_f4 rc 0  380s\n"}
+,{"stream_name":"stdout","time":739.186790963,"data":"bdcxr_hyb_soft@densenet121_s1_f0 rc 0  354s\n"}
+,{"stream_name":"stdout","time":739.680967798,"data":"bdcxr_hyb_soft@densenet121_s1_f1 rc 0  354s\n"}
+,{"stream_name":"stdout","time":1091.950757706,"data":"bdcxr_hyb_soft@densenet121_s1_f2 rc 0  353s\n"}
+,{"stream_name":"stdout","time":1092.25139453,"data":"bdcxr_hyb_soft@densenet121_s1_f3 rc 0  353s\n"}
+,{"stream_name":"stdout","time":1443.887822517,"data":"bdcxr_hyb_soft@densenet121_s1_f4 rc 0  352s\n"}
+,{"stream_name":"stdout","time":1445.754748845,"data":"bdcxr_hyb_soft@densenet121_s2_f0 rc 0  353s\n"}
+,{"stream_name":"stdout","time":1796.679949035,"data":"bdcxr_hyb_soft@densenet121_s2_f1 rc 0  353s\n"}
+,{"stream_name":"stdout","time":1800.920717963,"data":"bdcxr_hyb_soft@densenet121_s2_f2 rc 0  355s\n"}
+,{"stream_name":"stdout","time":2150.017053727,"data":"bdcxr_hyb_soft@densenet121_s2_f3 rc 0  353s\n"}
+,{"stream_name":"stdout","time":2155.875727082,"data":"bdcxr_hyb_soft@densenet121_s2_f4 rc 0  355s\n"}
+,{"stream_name":"stdout","time":2501.674310647,"data":"bdcxr_hyb_soft@densenet121_s3_f0 rc 0  352s\n"}
+,{"stream_name":"stdout","time":2508.178231902,"data":"bdcxr_hyb_soft@densenet121_s3_f1 rc 0  352s\n"}
+,{"stream_name":"stdout","time":2853.639310414,"data":"bdcxr_hyb_soft@densenet121_s3_f2 rc 0  352s\n"}
+,{"stream_name":"stdout","time":2859.460282464,"data":"bdcxr_hyb_soft@densenet121_s3_f3 rc 0  351s\n"}
+,{"stream_name":"stdout","time":3206.770558521,"data":"bdcxr_hyb_soft@densenet121_s3_f4 rc 0  353s\n"}
+,{"stream_name":"stdout","time":3213.893363574,"data":"bdcxr_hyb_soft@densenet121_s4_f0 rc 0  354s\n"}
+,{"stream_name":"stdout","time":3559.61269411,"data":"bdcxr_hyb_soft@densenet121_s4_f1 rc 0  353s\n"}
+,{"stream_name":"stdout","time":3571.154202132,"data":"bdcxr_hyb_soft@densenet121_s4_f2 rc 0  357s\n"}
+,{"stream_name":"stdout","time":3913.006911254,"data":"bdcxr_hyb_soft@densenet121_s4_f3 rc 0  353s\n"}
+,{"stream_name":"stdout","time":3928.506182733,"data":"bdcxr_hyb_soft@densenet121_s4_f4 rc 0  357s\n"}
+,{"stream_name":"stdout","time":4266.599737909,"data":"bdcxr_hyb_early@densenet121_s0_f0 rc 0  354s\n"}
+,{"stream_name":"stdout","time":4286.234159605,"data":"bdcxr_hyb_early@densenet121_s0_f1 rc 0  358s\n"}
+,{"stream_name":"stdout","time":4620.533118244,"data":"bdcxr_hyb_early@densenet121_s0_f2 rc 0  354s\n"}
+,{"stream_name":"stdout","time":4643.604328859,"data":"bdcxr_hyb_early@densenet121_s0_f3 rc 0  357s\n"}
+,{"stream_name":"stdout","time":4974.073224589,"data":"bdcxr_hyb_early@densenet121_s0_f4 rc 0  354s\n"}
+,{"stream_name":"stdout","time":5001.387870408,"data":"bdcxr_hyb_early@densenet121_s1_f0 rc 0  358s\n"}
+,{"stream_name":"stdout","time":5327.969762983,"data":"bdcxr_hyb_early@densenet121_s1_f1 rc 0  354s\n"}
+,{"stream_name":"stdout","time":5359.078514427,"data":"bdcxr_hyb_early@densenet121_s1_f2 rc 0  358s\n"}
+,{"stream_name":"stdout","time":5680.638362903,"data":"bdcxr_hyb_early@densenet121_s1_f3 rc 0  353s\n"}
+,{"stream_name":"stdout","time":5716.482991568,"data":"bdcxr_hyb_early@densenet121_s1_f4 rc 0  357s\n"}
+,{"stream_name":"stdout","time":6034.12782456,"data":"bdcxr_hyb_early@densenet121_s2_f0 rc 0  353s\n"}
+,{"stream_name":"stdout","time":6074.03558506,"data":"bdcxr_hyb_early@densenet121_s2_f1 rc 0  358s\n"}
+,{"stream_name":"stdout","time":6386.997487287,"data":"bdcxr_hyb_early@densenet121_s2_f2 rc 0  353s\n"}
+,{"stream_name":"stdout","time":6431.552995727,"data":"bdcxr_hyb_early@densenet121_s2_f3 rc 0  358s\n"}
+,{"stream_name":"stdout","time":6741.309642286,"data":"bdcxr_hyb_early@densenet121_s2_f4 rc 0  354s\n"}
+,{"stream_name":"stdout","time":6789.109112633,"data":"bdcxr_hyb_early@densenet121_s3_f0 rc 0  358s\n"}
+,{"stream_name":"stdout","time":7093.866851467,"data":"bdcxr_hyb_early@densenet121_s3_f1 rc 0  353s\n"}
+,{"stream_name":"stdout","time":7147.636862849,"data":"bdcxr_hyb_early@densenet121_s3_f2 rc 0  359s\n"}
+,{"stream_name":"stdout","time":7447.721073163,"data":"bdcxr_hyb_early@densenet121_s3_f3 rc 0  354s\n"}
+,{"stream_name":"stdout","time":7506.483967207,"data":"bdcxr_hyb_early@densenet121_s3_f4 rc 0  359s\n"}
+,{"stream_name":"stdout","time":7800.929217819,"data":"bdcxr_hyb_early@densenet121_s4_f0 rc 0  353s\n"}
+,{"stream_name":"stdout","time":7864.702366124,"data":"bdcxr_hyb_early@densenet121_s4_f1 rc 0  358s\n"}
+,{"stream_name":"stdout","time":8155.566994597,"data":"bdcxr_hyb_early@densenet121_s4_f2 rc 0  355s\n"}
+,{"stream_name":"stdout","time":8223.182946461,"data":"bdcxr_hyb_early@densenet121_s4_f3 rc 0  358s\n"}
+,{"stream_name":"stdout","time":8507.225412354,"data":"bdcxr_hyb_early@densenet121_s4_f4 rc 0  352s\n"}
+,{"stream_name":"stdout","time":8507.227934944,"data":"ALL DONE\n"}
+,{"stream_name":"stderr","time":8509.426260498,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":8509.426288685,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":8509.727219077,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":8509.727246868,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":8510.561641582,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":8511.70510874,"data":"[NbConvertApp] Writing 339370 bytes to __results__.html\n"}
+]

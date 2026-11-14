@@ -1,0 +1,14 @@
+{
+ "vin": {
+  "orig.npy": "a746339ae7474a1e143eb30571a720d455c332611de63d4b76a6e20f62ac9529",
+  "soft.npy": "dee4e9ab9bfaebd845ffc27992c457bc669eb2ac374c9ca740af129059534fdb",
+  "split.npy": "b004541480a16923b69ea513029399cd809af6a0733793884cf3e4e4dfd9e2c5",
+  "patient.npy": "3e60f2884e7b4117a0e01a01e7dbb18e24a15446702f612ca7d871b4ec3de9a1",
+  "ids.json": "38408cfb07d75a88dadfdd7ca5f2c649c66ae7169d216c195af3b7b16adfe576",
+  "ann.json": "ac06fb61c19a9583488de837657f5ad5ab4bc18e58a81232f1f12fcb17221eb2",
+  "status.json": "a0aea1af84249afc81bb721c4a1866a21155b20389e6a8a33ab217ffef911f81"
+ },
+ "timings": {
+  "vin": 67.7
+ }
+}

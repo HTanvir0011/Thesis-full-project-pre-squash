@@ -1,0 +1,8 @@
+Downloading: "https://download.pytorch.org/models/resnet50-11ad3fa6.pth" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth
+  0%|          | 0.00/97.8M [00:00<?, ?B/s]  7%|▋         | 7.25M/97.8M [00:00<00:01, 75.6MB/s] 26%|██▌       | 25.2M/97.8M [00:00<00:00, 141MB/s]  45%|████▍     | 43.6M/97.8M [00:00<00:00, 164MB/s] 63%|██████▎   | 61.1M/97.8M [00:00<00:00, 172MB/s] 80%|████████  | 78.6M/97.8M [00:00<00:00, 176MB/s]100%|██████████| 97.8M/97.8M [00:00<00:00, 171MB/s]
+/kaggle/input/datasets/ac_9/s4-code/s4/det.py:27: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  g = lambda k: torch.from_numpy(np.asarray(arrs[k][idx])).to(dev).float() / 255  # noqa: E731
+/kaggle/input/datasets/ac_9/s4-code/s4/det.py:117: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(epoch=ep, loss=float(loss), val=m, sec=round(time.time() - t0))) + "\n")
+{"val_cpm": 0.6997016904209479, "test": {"cpm": 0.7385762385762386, "map50": 0.2638751262988182}}

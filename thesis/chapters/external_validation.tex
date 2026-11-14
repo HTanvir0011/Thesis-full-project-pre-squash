@@ -1,0 +1,62 @@
+% External validation on BDCXR-3257 (SAP_bdcxr.md). Numbers from results/bdcxr/stats.json (tools/bdcxr_stats.py). No BDCXR image may appear.
+\label{sec:bdcxr}
+\section{Purpose and data}
+All models of this study were trained on adult data, and every locked set but one is adult. To see how the suppressor behaves on a population
+it was never trained on, it was applied, frozen, to BDCXR-3257: 3,257 chest radiographs of children from the Radiology and Imaging Department of
+Dr.~M~R~Khan Shishu Hospital \& Institute of Child Health, Dhaka, labelled normal (880), bacterial pneumonia (1,477) or viral pneumonia (900)
+\citep{durjoy2026bdcxr}. Most children are under five years old (1,132 images are of children under one year). The data were used under the
+ethical approval REC-FSIT-2025/No:~11928 and a data use agreement between the hospital and the author's research group; no image of this set is
+shown in this thesis (Chapter~\ref{ch:ethics}). The set has no patient identifiers, no lesion boxes and no dual-energy pairs, so fidelity
+cannot be measured on it; it supports a classification task, the lesion audit and the uncertainty signal.
+
+\section{Protocol}
+An addendum to the analysis plan, SAP\_bdcxr.md, was frozen on 3 November 2026 before any model of this study saw a BDCXR-3257 image. It
+fixes three questions. E1 (primary): does the soft-tissue image of ours change pneumonia classification? Five folds stratified by class, three
+seeds per fold and input, the classifier and settings of the downstream protocol of Chapter~\ref{ch:benchmark}, and the pooled out-of-fold
+macro-AUROC; ours is non-inferior to the original image if the lower bound of the 95\,\% interval of the difference exceeds $-0.01$. E2
+(secondary): the lesion audit on a fixed class-stratified subset of 300 images. E3 (descriptive): the ensemble spread over the lung field
+compared with the adult SZCH pairs.
+
+One change was made, before any model ran: the plan grouped near-duplicate images by a 64-bit image hash so that a group never spans two folds,
+but on these images the hash chained 1,891 of the 3,257 images into one group. Near-duplicates were instead grouped by the correlation of the
+$64$~px images ($r\ge0.93$, the lowest threshold of those tried at which no group grew beyond two images). This gave 48 pairs, eight of them
+with different labels, and five folds of 650 to 653 test images each. Because the set has no patient identifiers, repeated images of one
+child taken on different days cannot be detected; the grouping only removes near-identical images.
+
+\section{Results}
+\paragraph{E1: pneumonia classification.} The pooled out-of-fold macro-AUROC is 0.814 with the original image and 0.816 with the soft-tissue
+image of ours (Table~\ref{tab:bdcxr_cls}). The difference, $+0.002$ $[-0.005,0.010]$, meets the non-inferiority margin and shows no superiority;
+none of the per-class DeLong tests is significant after Holm correction. The reference model's soft image gives $+0.001$ $[-0.008,0.010]$,
+original plus ours $-0.001$ $[-0.008,0.005]$, and CLAHE $-0.006$ $[-0.012,0.001]$, which misses the margin. Pneumonia against normal is
+separated better than bacterial against viral pneumonia (AUROC about 0.88 against 0.77 for every input), and the per-fold spread of the
+macro-AUROC (SD about 0.01) is as large as any difference between inputs.
+
+\paragraph{E2: lesion audit.} On 1,800 sites in 300 paediatric images, with no image lost to a failed lung mask, ours absorbs $A=0.084$, the
+reference model 0.217 and the no-twin control 0.251 (Table~\ref{tab:bdcxr_audit}); the paired differences are $-0.134$ $[-0.144,-0.124]$ and
+$-0.167$ $[-0.175,-0.160]$, and the advantage is larger at sites that overlap bone. All three models absorb more than on adult images, and the
+order is the same. The inserted lesions are adult nodules from LIDC-IDRI CTs, placed in children's lungs, so this is a stress test of the
+suppressor rather than a statement about paediatric lesions.
+
+\paragraph{E3: uncertainty.} The median lung-field spread of the ensemble is 0.0076 (interquartile range 0.0067 to 0.0088) on BDCXR-3257 and
+0.0028 (0.0026 to 0.0033) on the adult SZCH pairs, 2.7 times higher, and it is higher in younger children (Spearman with age $-0.22$). The
+ensemble knows, in this coarse sense, that these images are unlike its training data.
+\begin{table}[htbp]
+\centering\small
+\caption{BDCXR-3257: pneumonia classification (normal, bacterial, viral), five folds over near-duplicate groups $\times$ three seeds; pooled
+out-of-fold macro-AUROC, per-fold mean $\pm$ SD and the difference to the original image (group bootstrap).}
+\label{tab:bdcxr_cls}
+\fittable{tables/bdcxr_cls.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{BDCXR-3257: lesion audit on a fixed class-stratified subset of 300 images (1,800 sites).}
+\label{tab:bdcxr_audit}
+\fittable{tables/bdcxr_audit.tex}
+\end{table}
+
+\section{Reading}
+On a population and a hospital the models never saw, suppression costs nothing in pneumonia classification and gains nothing either, which
+matches the adult downstream results: pneumonia is a diffuse finding that bone shadows hide less than they hide a small nodule. The ordering
+of absorption between ours, the reference model and the control carries over to children, and the uncertainty signal rises where it should.
+The set is a single centre with image-level labels and no patient identifiers, so these results describe this set; they do not establish
+paediatric use.

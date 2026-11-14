@@ -1,0 +1,20 @@
+{
+ "id": "ac_8/s4-p2a-bdcxr-dn-01",
+ "title": "s4-p2a-bdcxr-dn-01",
+ "code_file": "run_down.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_8/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_8/s4-prep-bdcxr"
+ ],
+ "model_sources": []
+}

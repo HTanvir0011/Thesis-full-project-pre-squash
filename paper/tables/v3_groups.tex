@@ -1,0 +1,19 @@
+% H8 per taxonomy group (DESIGN_v3.md section 3), Holm within encoder and data set; encoder densenet121
+\begin{tabular}{llll}
+\toprule
+data set & group: contrast & $\Delta$ mean AUROC [95\,\% CI] & Holm $p$ \\
+\midrule
+NIH & focal: hybrid-orig & +0.0063 [+0.0005, +0.0117] & 0.101 \\
+NIH & focal: soft-orig & +0.0089 [+0.0040, +0.0140] & 0.0024 \\
+NIH & diffuse: hybrid-orig & -0.0052 [-0.0077, -0.0027] & 0.0024 \\
+NIH & diffuse: soft-orig & -0.0032 [-0.0057, -0.0008] & 0.0392 \\
+NIH & boundary: hybrid-orig & +0.0020 [-0.0020, +0.0063] & 0.645 \\
+NIH & boundary: soft-orig & +0.0000 [-0.0036, +0.0043] & 0.999 \\
+VinBigData & focal: hybrid-orig & +0.0085 [-0.0023, +0.0196] & 0.595 \\
+VinBigData & focal: soft-orig & +0.0083 [-0.0044, +0.0202] & 0.79 \\
+VinBigData & diffuse: hybrid-orig & +0.0011 [-0.0024, +0.0045] & 1 \\
+VinBigData & diffuse: soft-orig & +0.0003 [-0.0044, +0.0047] & 1 \\
+VinBigData & boundary: hybrid-orig & +0.0027 [-0.0016, +0.0071] & 0.79 \\
+VinBigData & boundary: soft-orig & +0.0068 [+0.0005, +0.0147] & 0.185 \\
+\bottomrule
+\end{tabular}

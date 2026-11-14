@@ -1,0 +1,42 @@
+\section{Limitations}
+\label{sec:limitations}
+% PLAN (about 0.5 page, one short paragraph per item). Items 1-9 are known now from DEVIATIONS.md, DECISIONS.md and SAP_v2.md; add what the final
+% results reveal. State each limitation with its consequence for how the results must be read. Do not soften a limitation that changes a conclusion.
+\begin{enumerate}
+\item \emph{Synthetic supervision and domain gap.} Training uses rendered or translated projections; the bone image of a real radiograph is never
+ observed. Real-image fidelity is measured against dual-energy soft-tissue images, which differ from the radiograph in tone and in high-frequency
+ content, so raw and band-limited metrics are both reported and the calibrated metrics are not absolute.
+\item \emph{One source of paired real data.} SZCH-X-Rays comes from one partner hospital and one acquisition set-up (dual-exposure DES on a GE Discovery XR656).
+\item \emph{The audit is linear and additive.} Lesions are added in image units to a real radiograph; beam hardening, scatter and the tone mapping of
+ the real image are not modelled, so $A$ measures the leak of an added signal and not clinical detectability. $A=0$ is reached by doing nothing, and
+ $A$ is therefore read next to a suppression gain.
+\item \emph{Shared insertion mechanism.} The regulariser and the audit both insert lesions. The confirmatory audit, the real-nodule contrast and the
+ downstream subgroup analysis were added to limit this, but they do not remove it.
+\item \emph{Development use of SZCH.} All 75 SZCH images were used in development (audit) and 24 for paired decisions; only the 51 held-out pairs are
+ clean for fidelity claims, and the SZCH audit is development evidence only. The plan changed once after the SZCH pairs were looked at
+ (SAP\_v2.md, DEVIATIONS.md).
+\item \emph{Resolution and backbone.} Our models predict at 512 px with tiny encoders (ConvNeXt-V2-T for ours, SwinV2-T for the dose-response);
+ the reference model predicts at 1024 px with SwinV2-B. The SSIM gap sits in fine texture: with a band limit of $\sigma=4$ it shrinks from 0.021 to
+ 0.002, and ours keeps about 9\,\% more high-frequency energy than the dual-energy target in non-bone regions (the reference model 1\,\% less). Whether
+ prediction at 1024 px closes the remaining gap was not tested.
+\item \emph{Operating point.} The twin weight trades absorption against fidelity and against bone accuracy on exact-truth data (Section~\ref{sec:discussion}).
+ Only $w=16$ was evaluated with the full protocol; the dose-response shows that $w=32$ and 64 lower bone-region PSNR by about 0.3\,dB.
+\item \emph{Uncertainty.} Conformal calibration treats pixels as exchangeable, so coverage is marginal over pixels, and it is calibrated on synthetic
+ data; coverage on real images is reported as measured under shift. The recalibration on real pairs was chosen after the shift was seen and
+ used 24 pairs from one hospital. Ensemble members share training data.
+\item \emph{Scope.} Training and paired evaluation use adult frontal radiographs; paediatric images enter only the external validation, where no
+ paired truth exists; no lateral images and no reader study. Research use only and not a medical device. The weights are non-commercial because
+ the training data are.
+\item \emph{Overlap maps.} On JSRT the bone overlap of each audit site came from the reference model's bone map, not from the consensus map the
+ plan names, so the JSRT interaction is defined by a comparator; on VinDr-RibCXR it comes from radiologist rib masks and shows no interaction.
+\item \emph{Downstream and external validation.} Downstream models were trained once per seed with fixed settings, not tuned per input; the
+ subgroup analysis by bone overlap is not estimable on TBX11K, where every test box overlaps bone. BDCXR-3257 is a single-centre set with
+ image-level labels and no patient identifiers, so repeated images of one child can only be caught by the near-duplicate grouping; its audit
+ inserts adult nodules into children's radiographs.
+\item \emph{Post-freeze corrections.} Several analysis errors found in an independent check after the first locked run were corrected
+ (a resampling error that narrowed interaction intervals, incomplete downstream statistics, and detection metrics that depended on the order of
+ tied scores by up to 0.00055); some evaluations ran on cloud GPUs whose floating-point results differ from the local ones by at most
+ 0.0024\,dB, with the audit sites pinned to the local lung masks. No pre-specified verdict changed; every change is listed in the deviations log.
+\item \emph{Registration.} The analysis plans were hash-frozen in the project's version control before testing but not deposited in a public
+ registry.
+\end{enumerate}

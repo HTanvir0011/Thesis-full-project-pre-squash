@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/input/datasets/ac_7/s4-code/s4/xm.py", line 320, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/input/datasets/ac_7/s4-code/s4/xm.py", line 312, in main
+    res = transfer(a.run, a.data, a.dataset, dev, a.out)
+  File "/usr/local/lib/python3.13/dist-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/kaggle/input/datasets/ac_7/s4-code/s4/xm.py", line 266, in transfer
+    st = torch.load(Path(run) / "model.pt", map_location="cpu")
+  File "/usr/local/lib/python3.13/dist-packages/torch/serialization.py", line 1530, in load
+    with _open_file_like(f, "rb") as opened_file:
+         ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/serialization.py", line 795, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/usr/local/lib/python3.13/dist-packages/torch/serialization.py", line 776, in __init__
+    super().__init__(open(name, mode))  # noqa: SIM115
+                     ~~~~^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/kaggle/working/results/qp_xm_xraykd_s3/model.pt'

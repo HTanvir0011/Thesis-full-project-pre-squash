@@ -1,0 +1,10 @@
+{"epoch": 0, "val_macro_auc": 0.5396497892968783, "sec": 17}
+{"epoch": 1, "val_macro_auc": 0.6842562805685093, "sec": 32}
+{"epoch": 2, "val_macro_auc": 0.715300070769738, "sec": 47}
+{"epoch": 3, "val_macro_auc": 0.7927826329494726, "sec": 62}
+{"epoch": 4, "val_macro_auc": 0.7909588808784916, "sec": 77}
+{"epoch": 5, "val_macro_auc": 0.8273934808373623, "sec": 93}
+{"epoch": 6, "val_macro_auc": 0.7834941588122527, "sec": 108}
+{"epoch": 7, "val_macro_auc": 0.821637119749811, "sec": 123}
+{"epoch": 8, "val_macro_auc": 0.8079555408556853, "sec": 138}
+{"epoch": 9, "val_macro_auc": 0.8087211354799814, "sec": 153}

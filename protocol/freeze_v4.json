@@ -1,0 +1,62 @@
+{
+ "created": "2026-11-08T14:46:52",
+ "git_commit": "2ebaebe68e4db85ee4636ede5255765bfc7a2b8d",
+ "files": {
+  "SAP_v4.md": "c4c4befd9977671dbcb7c530ed9e9ed7cc943c66a681f6980e05b7317a8e8e86",
+  "DESIGN_v4.md": "86c5b3c3317a27738dcd7909dfd399acaabc83ad687ab1910f8f5a70fbbb07f5",
+  "s4/xm.py": "88496a6e3ca7ab0ef19089375e147a7352bd19704ee6d544beefbd31bcb3c5f6",
+  "s4/xm_labels.py": "967bf2ddb37b20698fd5816f830af5f6aa58aae57cff1a3a5267cc1fad109a52",
+  "s4/ct_prep.py": "4e9791a988aee8e13debe03150191b9548eb8464250cf34977629fdfd68fa855",
+  "s4/xm_xai.py": "62be64dc76c4bed6ea5b1c36e46ee2d3a7e37cccb2113693cb49741746597ba5",
+  "s4/xm_halluc.py": "b1b910459b47a0173737d64f108ee4cd7da9509d1d846fa3de016bf0774ba5a8",
+  "s4/cls_hybrid.py": "c857b49751348d3a464aa77e076659fa5b5c9ad2d8c74749d651045fff2272b9",
+  "s4/runtag.py": "fe476214dc76e3b31cc1d8ccdb75259fca673603d9d9dafc0ed299a58d98b3c8",
+  "tools/xm_stats.py": "14fbc59b8fc7f3e65388395624fec33d32bdaf1f5baeff54b439c8b7ee723f9b",
+  "kernels/down/run_down.py": "d26475963539f20790b282b6e894767563b5e8c972f05bac04be608b0c5f2da9",
+  "kernels/xm_prep/run_xm_prep.py": "4570edc694b288577a6d4c1b8642f47de465836ceb64465c770d90322e8267ac",
+  "s4/data/ct_subset.json": "cb58c0bbdf9b9852d2f44509eb9a9abe45060d0b18425e7a974b889c36fc9f29",
+  "s4/data/ct_skip.txt": "ee473dbb04f6597b2cb7e3eabae14950aab07ece7c2ce97709004aeb26a2d36c",
+  "results/qp_meta.csv": "179a1a68b0b9a60370c26e562bcaa8479df0ad1124f565d663fa29175e2de757"
+ },
+ "splits": {
+  "ac_6-s4-prep-nih/nih/split.npy": "b754892dcf1525f134f9f1da9767405cd6cb1cb1b825df654de9b8ecf04b882b",
+  "ac_6-s4-prep-nih/nih/ids.json": "d12b3863edb51823ba0a8bd6d4be001ff2334724aa9488fb9f3eee4458858fe7",
+  "ac_9-s4-prep-vin/vin/split.npy": "b004541480a16923b69ea513029399cd809af6a0733793884cf3e4e4dfd9e2c5"
+ },
+ "models": {
+  "arch": "swinv2_tiny_window8_256.ms_in1k",
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "size": 256,
+  "lr": 0.0003,
+  "enc_lr": 0.25,
+  "ct": {
+   "epochs": 20,
+   "volumes_per_step": 4,
+   "slices": 24
+  },
+  "xray": {
+   "epochs": 15,
+   "batch": 32,
+   "kd": 1.0,
+   "align": 0.5,
+   "temp": 2.0
+  },
+  "nih": {
+   "config": "orig",
+   "epochs": 10,
+   "batch": 32,
+   "inits": [
+    "imagenet",
+    "P0",
+    "P1"
+   ]
+  }
+ },
+ "primary": "H11: NIH test mean AUROC over effusion, atelectasis, cardiomegaly, consolidation, lesion (mass or nodule) is higher for F_p1 than for F_in; patient-cluster bootstrap, 10,000 resamples; Holm with the two H12 contrasts"
+}

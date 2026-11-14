@@ -1,0 +1,5 @@
+model,backbone,input_px,params_M,gflops,ms_per_image,peak_gpu_gb
+ConvNeXt-V2-T (ours),convnextv2_tiny.fcmae_ft_in22k_in1k,512,30.71,75.95,46.08,0.37
+RAD-DINO ViT-B/14,hf:microsoft/rad-dino,512,89.58,334.21,66.89,0.81
+SwinV2-T,swinv2_tiny_window8_256.ms_in1k,512,30.42,76.8,43.8,0.73
+Qure released,SwinV2-B (TorchScript),1024,96.1,,603.72,1.16

@@ -1,0 +1,57 @@
+\section{Discussion}
+\label{sec:cls_discussion}
+Bone-suppressed inputs did not improve these classifiers. The multi-stream hybrid matched the radiograph alone on all three datasets, and on
+NIH the interval rules out a gain larger than 0.0024 in macro-AUROC, so the null result is informative rather than a lack of power. The
+hybrid also matched the control that gives the same network the radiograph three times, and plain channel stacking did at least as well as
+separate streams. With 175 runs, seed ensembles and a plan fixed before testing, these results leave little room for a general accuracy
+gain from suppression with this suppressor and encoder.
+
+The information argument (Section~\ref{sec:cls_intro}) offers one explanation. The suppressor adds no information, only a transformation learned from
+CT, and a DenseNet-121 trained on thousands of radiographs may learn whatever bone-invariant features its labels reward. The prior
+can matter only where the classifier cannot easily learn the separation itself, and the finding groups suggest where that is.
+
+\paragraph{Focal lesions.} Nodules and masses had the largest estimates on both adult datasets, of similar size ($+0.008$ to $+0.009$ for
+the soft-tissue input), and were the only group with a gain on NIH. Per class, the NIH gain came from nodules; masses did not change. This
+fits reader studies in which suppression improved nodule detection \citep{freedman2011lung}, and the geometry: a rib can hide a small
+nodule more easily than a mass. The pointing game agrees: maps of the radiograph stream found focal lesions less often than other findings,
+while maps of the soft-tissue stream found both about equally often, a pattern that Integrated Gradients reproduced. Two cautions limit this result. The NIH test split was used in \companion{ch:benchmark}, whose
+classifiers already showed a nodule gain and losses for effusion, infiltration and pleural thickening on the same images; the NIH result
+is therefore a re-test with new models rather than independent confirmation. VinBigData, the independent test, has a single merged
+nodule/mass class, and its interval included zero.
+
+\paragraph{Diffuse findings.} The loss for diffuse findings appeared on NIH only and came mostly from infiltration. NIH labels were mined
+from reports \citep{wang2017chestxray}, and infiltration is a broad label; on VinBigData, labelled by radiologists,
+diffuse findings did not change. These data cannot tell whether suppression removes image cues for diffuse disease or interacts with label
+noise.
+
+\paragraph{Uncertainty.} The conformal procedures kept their guarantees on all inputs, but NIH label sets that hold half of the 14 labels
+are of little use to a reader. The suppressor's own uncertainty made abstention worse in every configuration. Uncertainty about the bone image is a different quantity from uncertainty about the diagnosis, and this result argues
+against using one for the other.
+
+\paragraph{Implications.} A classifier should not be expected to gain overall accuracy from bone-suppressed inputs. Where suppression is
+considered for focal lesions, it should be evaluated per finding type and against a capacity-matched control, since a multi-stream network
+costs three times the computation of a single-stream one. Suppression for human readers is a separate question that these results do not
+address.
+
+\subsection{Limitations}
+\label{sec:cls_limits}
+\begin{itemize}
+\item \emph{One encoder.} The pre-specified screen selected DenseNet-121 alone; heavier encoders may use the extra streams differently.
+\item \emph{Resolution.} Classifiers saw $256\times256$\,px images, where small nodules occupy few pixels; suppression may matter more at
+  full resolution.
+\item \emph{One suppressor.} The suppressor was trained to keep lesion signal in the soft-tissue image; a suppressor that absorbs lesions
+  could remove the focal gain or turn it into a loss.
+\item \emph{Reused test split and labels.} The NIH test split had been used with other models in \companion{ch:benchmark}, and its labels are
+  report-derived. VinBigData has one focal class, and BDCXR-3257 is a three-class pneumonia task without focal findings.
+\item \emph{Clustering in per-class tests.} The pre-specified DeLong tests treat NIH images as independent although patients contribute
+  several images; the group and overall tests use a patient-cluster bootstrap.
+\item \emph{Attribution.} The pointing game depends on the attribution method and the 15\,px tolerance, and the expert boxes cover eight
+  NIH classes only.
+\item \emph{Registration.} The plan was hash-frozen before testing but not deposited in a public registry.
+\end{itemize}
+
+\section{Conclusion}
+Bone-suppressed inputs, alone, stacked or as separate streams, did not make deep chest radiograph classifiers more accurate on three
+datasets. The largest effect on both adult datasets was a small gain for nodules and masses, significant on NIH only and matched by better
+localisation in the soft-tissue stream; on NIH it came with a loss for diffuse findings. Bone suppression is not a general accuracy gain for classifiers, and
+any benefit should be sought, and tested, for focal lesions specifically.

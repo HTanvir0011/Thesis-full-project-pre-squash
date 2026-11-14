@@ -1,0 +1,22 @@
+{
+ "id": "ac_6/s4-p2a-spread-nih",
+ "title": "s4-p2a-spread-nih",
+ "code_file": "run_spread.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_6/s4-code",
+  "ac_6/s4-wts3",
+  "nih-chest-xrays/data"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_6/s4-prep-nih"
+ ],
+ "model_sources": []
+}

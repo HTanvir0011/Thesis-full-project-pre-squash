@@ -1,0 +1,162 @@
+\section{Classifier study: do classifiers gain from bone-suppressed inputs?}
+\label{sec:classifier}
+
+\subsection{Rationale}
+\label{sec:cls_intro}
+With the frozen suppressor ensemble $\bar f$ of Section~\ref{sec:method_v2}, a classifier can receive the radiograph $X$, the soft-tissue image
+$S=X-\bar f(X)$ and the bone image $\hat B=\mathrm{clip}_{[0,1]}(X-S)$ on the stored 8-bit scale. Because $(S,\hat B)$ is a deterministic function
+of $X$, the inputs carry no new information about a label $Y$:
+\begin{equation}
+I\big(Y;\,X,S,\hat B\big)=I\big(Y;\,X\big).
+\label{eq:info}
+\end{equation}
+A gain can therefore come only from the prior the suppressor learned from CT, or from the inductive bias of the network that reads the extra
+images; a network that reads three images also spends three times the encoder computation. The study below separates these sources with a
+control of the same capacity, and analyses the effect per finding group, because suppression could help focal lesions behind ribs while
+removing cues for diffuse or pleural findings.
+
+\subsection{Input configurations and network}
+Five configurations were trained with identical settings (Fig.~\ref{fig:architecture}b; inputs and contrasts in Supplementary Fig.~S11): \emph{orig} ($X$), \emph{soft} ($S$), \emph{early} ($X$,
+$S$ and $\hat B$ as the three input channels of one stream), \emph{hybrid} (three streams $X$, $S$, $\hat B$) and \emph{ctrl} (the hybrid
+network with $X$ in all three streams). The soft-tissue image comes from ours (Section~\ref{sec:experiments}) run at its input size of 512\,px;
+classifiers see all images at $256\times256$\,px. One DenseNet-121 encoder $E$ \citep{huang2017densenet} with shared weights, pretrained on
+ImageNet \citep{deng2009imagenet,wightman2019timm}, processes each stream $u_s$. Each stream is standardised per image and passed through its own
+learned affine map, because the bone image spans a narrow intensity range; the $8\times8$ encoder output is projected to $D=256$-dimensional
+tokens with a stream embedding $e_s$ and a two-dimensional sine position code $\pi_n$:
+\begin{equation}
+\begin{gathered}
+\tilde u_s=\gamma_s\,\frac{u_s-\mathrm{mean}(u_s)}{\mathrm{sd}(u_s)}+\beta_s,\\
+z_{s,n}=W\,E(\tilde u_s)_n+e_s+\pi_n\in\mathbb{R}^{D}.
+\end{gathered}
+\label{eq:tokens}
+\end{equation}
+A two-layer decoder with eight heads and one learned query $q_c$ per class attends to the tokens of all streams, as in query-based
+multi-label heads \citep{liu2021query2label,ridnik2023mldecoder}, and a linear map per class gives the logit $\ell_c$ from the decoder output
+$o_c$. With keys $k_{s,n}$, the head-averaged cross-attention of the last layer defines the routing of class $c$ to stream $s$:
+\begin{equation}
+\begin{gathered}
+a_{c,(s,n)}=\operatorname*{softmax}_{(s,n)}\Big(\frac{q_c^{\top}k_{s,n}}{\sqrt{D}}\Big),\\
+\rho_{c,s}=\sum_{n}a_{c,(s,n)},\\
+\ell_c=w_c^{\top}o_c+b_c.
+\end{gathered}
+\label{eq:routing}
+\end{equation}
+Single-stream configurations use the same encoder and decoder over 64 tokens. The shared encoder gives the hybrid the parameters of a
+single-stream model plus the decoder, at three times the encoder computation; \emph{ctrl} has exactly the hybrid's parameters and
+computation but no suppression.
+
+\subsection{Training}
+The loss is the binary cross-entropy over the annotated labels $\mathcal{V}$ of a batch (one-hot targets for the three BDCXR-3257 classes):
+\begin{equation}
+\mathcal{L}_{\mathrm{cls}}=-\frac{1}{|\mathcal{V}|}\sum_{(i,c)\in\mathcal{V}}\Big[y_{ic}\log\sigma(\ell_{ic})+(1-y_{ic})\log\big(1-\sigma(\ell_{ic})\big)\Big].
+\label{eq:bce}
+\end{equation}
+Training used AdamW \citep{loshchilov2019adamw} (learning rate $3\times10^{-4}$, weight decay $10^{-4}$), batch size 32, 20 epochs with a cosine
+schedule after 200 warm-up steps, and mixed precision. Augmentation: random rotation by up to $7^\circ$, scaling by 0.9--1.1, translation by up to
+3\,\% of the image size, and brightness and contrast changes, identical across the channels of an image. The epoch with the best validation
+macro-AUROC was kept. Every configuration was trained with seeds 0--4 on NIH ChestX-ray14 and VinBigData and with seeds 0--4 in each of the five
+BDCXR-3257 folds of Section~\ref{sec:bdcxr_protocol}, giving 175 runs. A configuration's prediction is the seed ensemble
+\begin{equation}
+\bar p_c(x)=\frac15\sum_{k=0}^{4}\sigma\big(\ell^{(k)}_c(x)\big),
+\label{eq:seedens}
+\end{equation}
+and all tests compare seed ensembles. Runs used Kaggle T4 GPUs; a run longer than one session resumed from an end-of-epoch checkpoint, which gave
+the same predictions as uninterrupted training in a test.
+
+\subsection{Encoder selection}
+The plan screened four encoders on the NIH validation split (configuration \emph{orig}, seed 0, 10 epochs): DenseNet-121, ConvNeXt-V2-T
+\citep{woo2023convnextv2}, RAD-DINO \citep{perezgarcia2025raddino} and Swin-V2-B \citep{liu2022swinv2}. The best encoder would go forward
+with DenseNet-121, and an encoder within 0.005 of the best would yield to a cheaper one. All four reached validation macro-AUROC between
+0.8384 and 0.8430, and DenseNet-121 was the cheapest, so it went forward alone. ConvNeXt-V2-T failed to train at the plan's learning rate;
+following the rule of the suppressor study, the three encoders without batch normalisation were screened again with the encoder learning rate
+reduced fourfold, a deviation decided before the other screen results were seen (Supplementary Section~S1).
+
+\subsection{Finding groups}
+Before any run, the classes were grouped as \emph{focal} (NIH: nodule, mass; VinBigData: nodule/mass), \emph{diffuse} (effusion,
+infiltration, consolidation, oedema, pneumonia; VinBigData: pleural effusion, infiltration, consolidation, lung opacity, interstitial lung
+disease) and \emph{boundary} (cardiomegaly, atelectasis, pneumothorax, pleural thickening, emphysema, fibrosis, hernia; VinBigData:
+cardiomegaly, atelectasis, pneumothorax, pleural thickening, aortic enlargement, pulmonary fibrosis, calcification). VinBigData's
+``other lesion'' belongs to no group, and BDCXR-3257 (normal, bacterial or viral pneumonia) enters only the overall tests. For a group $G$ of
+classes and two configurations $m$ and $m'$,
+\begin{equation}
+\begin{gathered}
+\mathrm{AUROC}_{\mathrm{macro}}(m)=\frac1C\sum_{c=1}^{C}\mathrm{AUROC}_c(m),\\
+\Delta_G(m,m')=\frac{1}{|G|}\sum_{c\in G}\big(\mathrm{AUROC}_c(m)-\mathrm{AUROC}_c(m')\big).
+\end{gathered}
+\label{eq:group}
+\end{equation}
+
+\subsection{Hypotheses and statistics}
+\label{sec:cls_stats}
+The hypotheses continue the numbering of the suppressor plans; H9 concerns the suppressor's intervals (Section~\ref{sec:method_v2}).
+\paragraph{H6 (primary)} The hybrid has a higher macro-AUROC than \emph{orig}; one test per dataset, Holm correction over the three.
+\paragraph{H7 (secondary)} Hybrid against \emph{ctrl} (does a gain come from the suppression or from the extra computation?) and against
+\emph{early} (do separate streams beat channel stacking?); one Holm family over the six tests.
+\paragraph{H8 (secondary)} $\Delta_G$ of Eq.~\eqref{eq:group} for hybrid and for \emph{soft} against \emph{orig} in each finding group; Holm
+within dataset over the six tests. Per class, hybrid against \emph{orig} and against \emph{early} with the paired DeLong test
+\citep{delong1988auc}, Holm within dataset over classes and both contrasts.
+\paragraph{H10 (secondary)} In the hybrid models, the pointing-game hit rate of the soft-tissue stream minus that of the radiograph stream is
+larger for focal targets than for the other targets (Section~\ref{sec:cls_xai}).
+
+Every contrast $\Delta$ of two seed ensembles is resampled with a paired cluster bootstrap: replicate $b$ draws clusters with replacement
+(patients for NIH, images for VinBigData, near-duplicate groups for BDCXR-3257), recomputes $\Delta^{*}_b$ with the same resamples for every
+contrast of a dataset, and with $B=\num{10000}$ replicates gives the percentile interval $[\Delta^{*}_{(0.025)},\Delta^{*}_{(0.975)}]$ and
+\begin{equation}
+p=\min\Big\{1,\;2\min\Big(\frac{1+\#\{b:\Delta^{*}_b\le0\}}{B+1},\;\frac{1+\#\{b:\Delta^{*}_b\ge0\}}{B+1}\Big)\Big\}.
+\label{eq:bootp}
+\end{equation}
+AUPRC differences are reported with bootstrap intervals only. The plan, the code and the split files were hashed on 3 November 2026, before
+the encoder screen and before any classifier of this study saw a test split; all primary and secondary results are reported whatever their
+direction.
+
+\subsection{Attribution maps and pointing game}
+\label{sec:cls_xai}
+For each hybrid model, Grad-CAM++ \citep{chattopadhay2018gradcampp} was computed per stream on the last encoder block. Integrated Gradients
+\citep{sundararajan2017axiomatic} was computed on the three inputs jointly against a blurred baseline ($\sigma=8$\,px, 32 steps), because a
+black image has no contrast after standardisation; the decoder attention was read from its last layer. A target $t$ is a pair of test image
+and box class; a map $M_m$ hits when its maximum lies inside a box of that class, with a tolerance of 15\,px at 256\,px fixed in advance
+\citep{zhang2018topdown}. With $h^{(k)}_m(t)\in\{0,1\}$ the hit of map $m$ of the seed-$k$ hybrid model, focal targets $\mathcal{F}$ (masses
+and nodules) and the other targets $\mathcal{O}$ (six box classes),
+\begin{equation}
+\begin{gathered}
+d(t)=\frac15\sum_{k=0}^{4}\big(h^{(k)}_{S}(t)-h^{(k)}_{X}(t)\big),\\
+I=\frac{1}{|\mathcal{F}|}\sum_{t\in\mathcal{F}}d(t)-\frac{1}{|\mathcal{O}|}\sum_{t\in\mathcal{O}}d(t),
+\end{gathered}
+\label{eq:pointing}
+\end{equation}
+and H10 tests $I>0$ with an image-cluster bootstrap (\num{10000} resamples; Eq.~\eqref{eq:bootp}).
+
+\subsection{Classification uncertainty}
+\label{sec:cls_uq}
+\paragraph{NIH: false-negative risk control} An image's label set holds every class with ensemble probability at least $1-\lambda$; the
+threshold is calibrated on the validation split (\num{8634} images) by conformal risk control \citep{angelopoulos2022crc} and the
+false-negative rate is measured on the test split:
+\begin{equation}
+\begin{gathered}
+\mathcal{C}_\lambda(x)=\{c:\bar p_c(x)\ge1-\lambda\},\\
+\hat\lambda=\min\Big\{\lambda:\frac{n\,\hat R_n(\lambda)+1}{n+1}\le\alpha\Big\},\\
+\hat R_n(\lambda)=\frac1n\sum_{i=1}^{n}\Big(1-\frac{|\mathcal{C}_\lambda(x_i)\cap Y_i|}{|Y_i|}\Big),
+\end{gathered}
+\label{eq:crc}
+\end{equation}
+over the $n$ calibration images with at least one positive label $Y_i$, at $\alpha=0.10$.
+\paragraph{BDCXR-3257: class-conditional sets} With probabilities normalised to sum to one, $\hat p_y=\bar p_y/\sum_{y'}\bar p_{y'}$, the score
+$1-\hat p_y$ is calibrated separately for each true class \citep{vovk2005algorithmic}, on the other folds' out-of-fold predictions for each
+test fold:
+\begin{equation}
+\begin{gathered}
+\mathcal{C}(x)=\{y:1-\hat p_y(x)\le q_y\},\\
+q_y=\text{the }\lceil (n_y+1)(1-\alpha)\rceil\text{-th smallest of }\{1-\hat p_{y_i}(x_i):y_i=y\}.
+\end{gathered}
+\label{eq:mondriansets}
+\end{equation}
+\paragraph{Selective classification} Images are ranked by a confidence score and the most confident fraction is kept
+\citep{geifman2017selective,geifman2019bias}. Score A is one minus the entropy $H$ of the seed ensemble (mean binary entropy over the 14 labels
+for NIH, Shannon entropy of the normalised probabilities for BDCXR-3257); score B adds the suppressor's own uncertainty,
+$-(z_H+z_\sigma)$, where $\sigma$ is the spread of Eq.~\eqref{eq:ensemble} averaged over the lung field and $z$ standardises over the evaluated
+images of a dataset. With the losses $\ell_{(1)},\dots,\ell_{(N)}$ sorted by decreasing confidence (Brier score for NIH, top-1 error for
+BDCXR-3257),
+\begin{equation}
+\mathrm{AURC}=\frac1N\sum_{k=1}^{N}\frac1k\sum_{j=1}^{k}\ell_{(j)}.
+\label{eq:aurc}
+\end{equation}

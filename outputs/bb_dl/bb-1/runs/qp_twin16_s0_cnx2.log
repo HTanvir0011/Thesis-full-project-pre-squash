@@ -1,0 +1,44 @@
+arm=qp_twin16 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 16.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} bank-free (lesion library from /kaggle/input/datasets/ac_4/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/kaggle/input/datasets/ac_4/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1307s loss 0.0932 {'qp': {'mae': 0.024679381400346756, 'psnr': 28.06501579284668}}
+4000 2599s loss 0.1080 {'qp': {'mae': 0.025626521557569504, 'psnr': 27.772113800048828}}
+6000 3893s loss 0.1076 {'qp': {'mae': nan, 'psnr': nan}}
+8000 5156s loss nan {'qp': {'mae': nan, 'psnr': nan}}
+10000 6419s loss nan {'qp': {'mae': nan, 'psnr': nan}}
+12000 7694s loss nan {'qp': {'mae': nan, 'psnr': nan}}
+12500 8014s loss nan {'qp': {'mae': nan, 'psnr': nan}}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/input/datasets/ac_4/s4-code/s4/eval_real.py", line 146, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/input/datasets/ac_4/s4-code/s4/eval_real.py", line 137, in main
+    rows.append(dict(image=n, **metrics(x, g, f(x))))
+                                ~~~~~~~^^^^^^^^^^^^
+  File "/kaggle/input/datasets/ac_4/s4-code/s4/eval_real.py", line 53, in metrics
+    cal = calibrate(est, gt)
+  File "/kaggle/input/datasets/ac_4/s4-code/s4/eval_real.py", line 38, in calibrate
+    (a, b), *_ = np.linalg.lstsq(A, ref.ravel(), rcond=None)
+                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/numpy/linalg/_linalg.py", line 2565, in lstsq
+    x, resids, rank, s = _umath_linalg.lstsq(a, b, rcond,
+                         ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+                                             signature=signature)
+                                             ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/numpy/linalg/_linalg.py", line 116, in _raise_linalgerror_lstsq
+    raise LinAlgError("SVD did not converge in Linear Least Squares")
+numpy.linalg.LinAlgError: SVD did not converge in Linear Least Squares
+ ** On entry to DLASCL parameter number  4 had an illegal value
+ ** On entry to DLASCL parameter number  4 had an illegal value
+ ** On entry to DLASCL parameter number  4 had an illegal value
+ ** On entry to DLASCL parameter number  4 had an illegal value
+ ** On entry to DLASCL parameter number  5 had an illegal value
+ ** On entry to DLASCL parameter number  4 had an illegal value
+ours: n=450 A_mean=nan low-overlap=nan high-overlap=nan leak=nan
+/kaggle/working/runs/qp_twin16_s0_cnx2/final_ema.pt n=400 {'mae_bone': nan, 'psnr_bone': nan, 'ssim_bone': nan}

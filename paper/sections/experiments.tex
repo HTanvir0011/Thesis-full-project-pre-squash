@@ -1,0 +1,114 @@
+\section{Experiments}
+\label{sec:experiments}
+% PLAN (about 2 pages and one table). Design only: no result appears here. Everything below restates SAP.md / SAP_v2.md, which were frozen before the
+% locked evaluations (tools/freeze.py, tools/freeze_v2.py); if this text and SAP_v2.md differ, SAP_v2.md wins and this text is corrected.
+%   6.1 Models and comparators (ours, no-twin control, v1, Qure released weights, identity, CLAHE, homomorphic filtering).
+%   6.2 Arms (Table arms) and the dose-response over the twin weight.
+%   6.3 Protocols per hypothesis H1'-H5' (what is computed, on which set, with which test).
+%   6.4 Metrics. 6.5 Downstream protocol. 6.6 Encoder screen (selection rule fixed before the screen).
+\subsection{Models and comparators}
+\emph{Ours} is the ensemble of three ConvNeXt-V2-T UNet++/CBAM suppressors (seeds 0--2) trained on the Qure projections with twin weight $w=16$
+(Section~\ref{sec:method_v2}). It replaced the SwinV2-T configuration of the analysis plan under the pre-declared replacement rule (R2) before the
+freeze: ConvNeXt-V2-T and RAD-DINO both met it on development data, and the pre-declared tie-break (mean absorption within 0.005, then the
+higher bone-region PSNR) chose ConvNeXt-V2-T at two seeds each. With the third seeds the absorption gap is 0.0055, just outside the band; the
+choice was not reopened, and both encoders are reported. The SwinV2-T and RAD-DINO pairs (twin and no twin, three seeds each) are secondary.
+Comparators are: the \emph{no-twin control} (same encoder, data and recipe, $w=0$, three seeds); the v1 model trained on LIDC-IDRI only (\texttt{clia},
+pre-specified pick of the v1 study); the publicly released weights of \citet{angaitkar2026anatomy} (SwinV2-B at $1024$~px; research licence);
+and three controls that need no training: identity, CLAHE \citep{zuiderveld1994clahe} and a homomorphic filter
+\citep{oppenheim1968homomorphic}. All methods are scored with the same code on the same images.
+
+\subsection{Arms}
+Table~\ref{tab:arms} lists the arms. Each arm changes one factor of its parent. The confirmatory dose-response varies the twin weight over
+$w\in\{0,4,8,16,32,64\}$ in the SwinV2-T family with 3, 2, 2, 4, 2 and 2 seeds ($w=1$ appears only in the screening). The insertion-only arm and the
+last four rows form the ablation of the regulariser (two seeds each, SwinV2-T, $w=16$).
+
+\begin{table}[htbp]
+\centering\small
+\renewcommand{\arraystretch}{1.15}
+\caption{Training arms. ``Lesions'' is the maximum number of lesions inserted into the base image before the physics (counterfactual insertion);
+``Twin'' is the twin weight $w$, varied over $\{4,8,16,32,64\}$ in the \texttt{qp\_twin}$w$ arms ($w=1$ in the screening only). The parent of an arm is \texttt{recipe} for the
+LIDC arms, \texttt{qp} for the first Qure arms and \texttt{qp\_twin16} for the last four rows.}
+\label{tab:arms}
+\begin{tabular}{@{}p{0.25\linewidth}p{0.08\linewidth}p{0.09\linewidth}p{0.08\linewidth}p{0.26\linewidth}@{}}
+\toprule
+Arm & Source & Lesions & Twin & Change \\
+\midrule
+\texttt{recipe} & LIDC & 0 & none & v1 baseline \\
+\texttt{nodule\_loss} & LIDC & 0 & none & lesion-weighted loss \\
+\texttt{clia} & LIDC & 3 & none & counterfactual insertion \\
+\texttt{clia\_nodule} & LIDC & 3 & none & insertion and lesion-weighted loss \\
+\texttt{qp} & Qure & 0 & none & Qure projections (no-twin control) \\
+\texttt{qp\_clia} & Qure & 3 & none & insertion only, no tie term \\
+\texttt{qp\_twin}$w$ & Qure & 3 & varied & twin regulariser \\
+\texttt{qp\_twin16\_sg} & Qure & 3 & 16 & stop-gradient on the un-pasted branch \\
+\texttt{qp\_twin16\_wide} & Qure & 3 & 16 & support dilated with a $31\times31$ window \\
+\texttt{qp\_twin16\_all} & Qure & 3 & 16 & whole-image support \\
+\texttt{qp\_twin16\_n4} & Qure & 3 & 16 & four lesions per twin \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Protocols per hypothesis}
+The analysis plan (SAP.md for the v1 family, SAP\_v2.md for v2) was frozen before any held-out or locked evaluation, on 1~November 2026
+(\path{freeze_v2.json}: hashes of both plans, the SZCH development and held-out lists, the split files and the 52 weight files, at commit
+\texttt{dd52b6a}). Paired differences are tested with the Wilcoxon signed-rank test \citep{wilcoxon1945individual} and given percentile bootstrap intervals
+\citep{efron1993bootstrap}. Multiplicity is handled by the Holm procedure \citep{holm1979simple} on the $p$-values within each family; confidence intervals are unadjusted
+95\,\% intervals; effect sizes are always reported with them, and a hypothesis that fails is reported as failed. The external validation on
+BDCXR-3257 has its own addendum, frozen before any model saw those images (Section~\ref{sec:bdcxr_protocol}).
+\begin{description}
+\item[H1$'$, dose-response.] On VinDr-RibCXR (245 images, six sites each, lesions from LIDC test CTs, $\alpha=1$), the per-site absorption $A$ averaged over
+ seeds falls with the twin weight: the slope of $A$ on $\log_2(1+w)$, with an image-cluster bootstrap interval, passes if its upper bound is below zero.
+ The same analysis on the Qure-projection test split (exact truth) is secondary.
+\item[H2$'$, fidelity.] On the 51 held-out SZCH pairs, bone-region PSNR of ours against the reference model is non-inferior within a margin of 0.5~dB
+ (one-sided 95\,\% lower bound of the paired mean difference, image-level bootstrap); SSIM has a margin of 0.01 and is reported either way; ours against the
+ no-twin control uses a margin of 0.25~dB (the cost of the regulariser). Metrics are computed after a per-image gain and offset fit to the DES reference
+ (``calibrated'', primary) and without it (``raw'').
+\item[H3$'$, lesion absorption.] On VinDr-RibCXR sites, $A$(ours)$<A$(reference model) and $A$(ours)$<A$(no-twin control), as paired site-level
+ differences with image-cluster bootstrap intervals, Holm over the two contrasts, and an interaction between sites that overlap an annotated rib and sites
+ that do not.
+\item[H4$'$, evidence without insertion.] (a) Contrast-to-noise change of real nodules on JSRT and Node21, ours against the reference model and against
+ the no-twin control, for all lesions and for lesions with at least 15\,\% bone overlap. (b) Downstream: NIH ChestX-ray14 macro AUROC per input
+ (original, ours, reference model, CLAHE, original plus ours; three seeds); TBX11K, Node21 and VinBigData detection by FROC and mAP@50; recall at two false
+ positives per image for lesions with and without bone overlap, as a difference in differences against the original input.
+\item[H5$'$, reliability.] Spearman correlation between ensemble spread and absolute bone error on the SZCH held-out pairs (pseudo-truth bone from the
+ least-squares-aligned DES image); split-conformal coverage calibrated on Qure-projection validation CTs and measured on the Qure-projection test split
+ (nominal 90\,\%) and, as measured under shift, on SZCH.
+\end{description}
+
+\subsection{Metrics and downstream models}
+Paired fidelity uses PSNR and SSIM \citep{wang2004ssim} on the bone region and on the whole image, band-limited SSIM, MS-SSIM \citep{wang2003msssim}, LPIPS \citep{zhang2018lpips}
+and a high-frequency energy ratio; the same smoothing is applied to every method and never tuned. The rib benchmark reports the relative reduction of
+Sobel gradient energy on the rib-boundary band inside the lungs and on lung pixels away from ribs, their difference (selectivity) and the ROC-AUC of the
+gradient-reduction map. Detection is scored by FROC sensitivity at fixed false-positive rates, averaged as the competition performance metric
+\citep{vanginneken2010anode09,niemeijer2011cpm}, and by mAP@50; AUCs are compared with the paired DeLong test \citep{delong1988auc}. The downstream classifier is a DenseNet-121
+\citep{huang2017densenet} and the detector a Faster R-CNN with a ResNet-50 FPN backbone \citep{ren2017fasterrcnn}, with identical settings for every
+input variant (\path{s4/cls.py}, \path{s4/det.py}). The classifier sees $256$~px images, is trained for 10 epochs with AdamW
+\citep{loshchilov2019adamw} (learning rate $3\times10^{-4}$, weight decay $10^{-4}$, batch 64, cosine schedule) and keeps the epoch with the
+best validation macro-AUROC. The detector sees $512$~px images, is trained for 12 epochs with SGD (learning rate 0.01, momentum 0.9, weight
+decay $10^{-4}$, batch 8) and keeps the epoch with the best validation CPM. A multi-channel input (original plus soft, or original, soft and bone)
+stacks the images as channels. Detection metrics treat tied scores as one threshold, so they do not depend on the order in which a sort
+returns ties.
+
+\subsection{Encoder screen}
+To check whether a newer encoder helps under the same recipe, ConvNeXt V2 \citep{woo2023convnextv2}, DINOv3 \citep{simeoni2025dinov3} and RAD-DINO
+\citep{perezgarcia2025raddino} were trained at a reduced budget under the same recipe, and an encoder moves to the full budget only if
+it meets a rule fixed in advance (RUNPLAN.md, rule R1): at \num{100000} samples, absorption $A\le0.070$ on the development audit with
+bone-region PSNR$_{cal}\ge21.60$~dB on the development pairs, or PSNR$_{cal}\ge21.95$~dB with $A\le0.100$. The thresholds come from the
+SwinV2-T range at that budget and were written after one SwinV2-B run had been seen; the decision at the full budget used rule R2 (see Models and comparators above). Pretrained encoders other than SwinV2 are trained with a learning rate $0.25\times$ that of the decoder;
+ConvNeXt-V2-T diverged at the full rate (fp16 overflow) and was rerun at $0.25\times$, an extension of the rule written for vision transformers.
+DINOv3 ViT-S/16 did not improve on SwinV2-T, RAD-DINO ViT-B/14 missed R1 on PSNR by 0.05~dB but was continued at the full budget as an
+exploratory encoder, and ConvNeXt-V2-T met R1.
+
+\subsection{External validation protocol (BDCXR-3257)}
+\label{sec:bdcxr_protocol}
+An addendum to the analysis plan (SAP\_bdcxr.md) was frozen before any model of this study saw a BDCXR-3257 image; its one change, the
+duplicate grouping (Section~\ref{sec:data}), was made from the images alone before any model ran and is recorded in the deviations log. All
+suppressors are the frozen models; only the downstream classifiers are trained. (E1, primary) Pneumonia classification with three one-vs-rest
+outputs, inputs as in H4$'$b (original, ours, reference model, CLAHE, original plus ours), the classifier settings of the downstream protocol,
+five folds stratified by class over the near-duplicate groups (fold seed 0) with 10\,\% of each training part, by whole groups, for epoch selection,
+and three seeds per fold and input (75 runs). Out-of-fold probabilities, averaged over seeds, give one prediction per image. The primary measure
+is the pooled macro-AUROC; ours against the original image is non-inferior if the lower bound of the 95\,\% interval of the difference (group
+bootstrap) exceeds $-0.01$, and superior if it exceeds 0; per class, paired DeLong tests with Holm over the three classes. (E2, secondary) The
+lesion audit of Section~\ref{sec:audit} on a fixed class-stratified subset of 300 images (seed 7), six sites per image, with bone overlap from the
+reference model's bone map; images whose lung mask covers less than 2\,\% of the image are skipped and counted (none was). (E3, descriptive) The
+per-image ensemble spread over the lung field, compared with the held-out SZCH pairs and correlated with age.

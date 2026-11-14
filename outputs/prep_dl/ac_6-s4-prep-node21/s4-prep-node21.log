@@ -1,0 +1,21 @@
+[{"stream_name":"stdout","time":5.782179386,"data":"s4.prep ['--dataset', 'node21', '--weights', 'cnx_t16_s0.pt+cnx_t16_s1.pt+cnx_t16_s2.pt', '--qure', 'none', '--arrays', 'orig,soft,bone,soft_qure', '--tag', 'node21']\n"}
+,{"stream_name":"stdout","time":32.346511088,"data":"node21 images: 4882 arrays: ['orig', 'soft', 'bone', 'soft_qure']\n"}
+,{"stream_name":"stdout","time":155.424165421,"data":"[w0] 0/2441 36s\n"}
+,{"stream_name":"stdout","time":155.467616981,"data":"[w1] 0/2441 36s\n"}
+,{"stream_name":"stdout","time":1014.084745066,"data":"[w0] 1600/2441 895s\n"}
+,{"stream_name":"stdout","time":1074.534145667,"data":"[w1] 1600/2441 955s\n"}
+,{"stream_name":"stdout","time":1461.017688776,"data":"[w0] done 2441 ok, 0 unreadable\n"}
+,{"stream_name":"stdout","time":1555.825896424,"data":"[w1] done 2441 ok, 0 unreadable\n"}
+,{"stream_name":"stdout","time":1557.426806924,"data":"box CNR orig: n=1474 mean=0.210\n"}
+,{"stream_name":"stdout","time":1557.428430113,"data":"box CNR soft: n=1474 mean=0.287\n"}
+,{"stream_name":"stdout","time":1557.429828009,"data":"box CNR soft_qure: n=1474 mean=0.312\n"}
+,{"stream_name":"stdout","time":1557.431101512,"data":"box CNR clahe: n=1474 mean=0.307\n"}
+,{"stream_name":"stdout","time":1557.432663816,"data":"DONE node21 ok 4882 bad 0 in 1525s\n"}
+,{"stream_name":"stdout","time":1557.927169151,"data":"PREP rc 0\n"}
+,{"stream_name":"stderr","time":1560.062420859,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1560.062445643,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1560.342484356,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1560.342509836,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1561.210895629,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1562.235303876,"data":"[NbConvertApp] Writing 277206 bytes to __results__.html\n"}
+]

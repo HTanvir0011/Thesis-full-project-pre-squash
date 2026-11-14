@@ -1,0 +1,24 @@
+== rd_s2: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_s2.csv
+ours: n=1470 A_mean=0.052 low-overlap=0.049 high-overlap=0.064 leak=0.0012
+== rd_nt: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt.csv
+ens: n=1470 A_mean=0.165 low-overlap=0.161 high-overlap=0.192 leak=0.0012
+== clia_v1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/audit_ribcxr/clia_v1.csv
+ens: n=1470 A_mean=0.289 low-overlap=0.229 high-overlap=0.361 leak=0.0014
+== identity: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods identity --out results/final/audit_ribcxr/identity.csv
+identity: n=1470 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000
+have results/final/audit_jsrt/rd_s2.csv
+have results/final/audit_jsrt/rd_nt.csv
+have results/final/audit_jsrt/clia_v1.csv
+have results/final/audit_jsrt/identity.csv
+have results/final/audit_szch/rd_s2.csv
+have results/final/audit_szch/rd_nt.csv
+have results/final/audit_szch/clia_v1.csv
+have results/final/audit_szch/identity.csv
+== rd: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/final_v2/weights/qp_twin16_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/rib/rd.csv
+ens:outputs/final_v2/weights/qp_twin16_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt n=245 {'r_rib': '0.2886 +- 0.0462', 'r_non': '0.0746 +- 0.0305', 'selectivity': '0.2140 +- 0.0400', 'auc': '0.6704 +- 0.0314'}
+== clia_v1: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/rib/clia_v1.csv
+ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt n=245 {'r_rib': '0.3382 +- 0.0738', 'r_non': '0.1339 +- 0.0751', 'selectivity': '0.2043 +- 0.0587', 'auc': '0.6889 +- 0.0389'}
+== clahe: python -m s4.eval_ribcxr --root data/ribcxr_raw --method clahe --out results/final/rib/clahe.csv
+clahe n=245 {'r_rib': '-0.8043 +- 0.1523', 'r_non': '-0.8000 +- 0.1798', 'selectivity': '-0.0043 +- 0.0983', 'auc': '0.3371 +- 0.0429'}
+== homomorphic: python -m s4.eval_ribcxr --root data/ribcxr_raw --method homomorphic --out results/final/rib/homomorphic.csv
+homomorphic n=245 {'r_rib': '0.5714 +- 0.2399', 'r_non': '0.6134 +- 0.2183', 'selectivity': '-0.0420 +- 0.0280', 'auc': '0.6468 +- 0.0918'}

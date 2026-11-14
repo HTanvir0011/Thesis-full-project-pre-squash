@@ -1,0 +1,20 @@
+{
+ "id": "ac_1/s4-r2-1",
+ "title": "s4-r2-1",
+ "code_file": "run_train.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_1/s4-bank",
+  "ac_1/s4-code",
+  "ac_1/s4-qproj"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

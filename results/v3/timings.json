@@ -1,0 +1,46 @@
+{
+ "_note": "Seconds per optimiser step of 32 samples on one Kaggle T4, warm page cache. 'measured' = smoke kernel s4-v3-smoke (2026-11-03, 40 steps, epoch-to-epoch difference) or v2 logs; 'estimate' = derived, replace after the phase-1 screen. A forward-only pass (evaluation) is taken as 1/3 of a training step.",
+ "densenet121": {
+  "single": 0.22,
+  "multi": 0.6,
+  "accum_single": 1,
+  "accum_multi": 1,
+  "src": "full epochs with the R4 loader: multi 0.59 s (s4-v3-diag, 1,482 s per epoch incl. validation); single 0.21 s (s4-v3-r24-nih window), 0.247 s in screen-a with the pre-R4 CPU loader; planned 0.22 / 0.60"
+ },
+ "convnextv2_tiny": {
+  "single": 0.42,
+  "multi": 1.25,
+  "accum_single": 1,
+  "accum_multi": 1,
+  "src": "single 0.42 s: full epochs with the R4 loader (s4-v3-diag, 1,053-1,060 s per epoch; 0.435 s in screen-a pre-R4); multi 1.25 s: smoke window",
+  "enc_lr_note": "collapsed at encoder lr 1.0 in screen-a; learns at 0.25 (s4-v3-diag)"
+ },
+ "rad-dino": {
+  "single": 0.44,
+  "multi": 1.23,
+  "accum_single": 1,
+  "accum_multi": 1,
+  "src": "single 0.44 s: screen-b full epochs (1,107-1,124 s, pre-R4 loader); multi 1.23 s: smoke window",
+  "enc_lr_note": "encoder lr 1.0 learned slowly in screen-b (validation 0.553 -> 0.677); screened at 0.25 in screen-c"
+ },
+ "swinv2_base_window16_256": {
+  "single": 1.26,
+  "multi": 3.9,
+  "accum_single": 4,
+  "accum_multi": 8,
+  "src": "single 1.26 s with --accum 4: screen-b full epochs (3,173-3,186 s, pre-R4 loader); multi 3.9 s: estimate (3 x single, micro-batches of 4 with --accum 8)"
+ },
+ "arch_flag": {
+  "densenet121": "densenet121.ra_in1k",
+  "convnextv2_tiny": "convnextv2_tiny.fcmae_ft_in22k_in1k",
+  "rad-dino": "hf:microsoft/rad-dino",
+  "swinv2_base_window16_256": "swinv2_base_window16_256.ms_in1k"
+ },
+ "vin_factor": 1.1,
+ "_vin": "vin_factor 1.1 measured in s4-v3-r24-vin (2026-11-04, resize on the GPU): DenseNet three streams 25 s per 40 steps + 256 evaluations as on NIH (1.0), one stream 10 s against 9 s on NIH (1.1)",
+ "warm_up_s": {
+  "nih": 64,
+  "vin": 49,
+  "_src": "sequential read of orig.npy + soft.npy before the lanes start (R2), s4-v3-r24-nih / -vin"
+ }
+}

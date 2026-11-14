@@ -1,0 +1,1 @@
+{"jobs": [[0, "det", "node21", "clahe", 0, 12], [1, "det", "node21", "orig", 1, 12], [0, "det", "node21", "soft", 1, 12], [1, "det", "node21", "both", 1, 12]], "done": ["node21_det_both_s1", "node21_det_clahe_s0", "node21_det_orig_s1", "node21_det_soft_s1"]}

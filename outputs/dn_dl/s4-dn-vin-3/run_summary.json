@@ -1,0 +1,1 @@
+{"jobs": [[0, "det", "vin", "soft_qure", 1, 12], [1, "det", "vin", "clahe", 1, 12], [0, "det", "vin", "orig", 2, 12], [1, "det", "vin", "soft", 2, 12]], "done": ["vin_det_clahe_s1", "vin_det_orig_s2", "vin_det_soft_qure_s1", "vin_det_soft_s2"]}

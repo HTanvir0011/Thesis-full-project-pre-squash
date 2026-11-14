@@ -1,0 +1,98 @@
+% v2 chapter. The method text of the paper is input; thesis-only parts are the design rationale, the exploratory screening (numbers copied from
+% DECISIONS.md, all development data) and the thesis-length reading of the dose-response, ablation and encoder results (generated tables).
+\section{Why a second analysis plan}
+The first study left three things open (Chapter~\ref{ch:v1}). Its models kept lesions on rendered data but not on real radiographs; lesion
+insertion acted only through the supervised target, so the network was never told that the bone estimate should not change when a lesion is
+added; and the comparison with the reference model on SZCH-X-Rays had been looked at, so that set could no longer decide anything about a new
+recipe. The second plan, SAP\_v2.md, was written on 29 October 2026 after the new recipe had been developed on development data only: the 24
+SZCH development pairs, the audit on all 75 SZCH images, and the synthetic validation data. It names five confirmatory hypotheses on sets that no
+decision had used: the dose-response of absorption on the twin weight on VinDr-RibCXR (H1$'$), non-inferior fidelity on the 51 held-out SZCH
+pairs (H2$'$), lower absorption than the reference model and the no-twin control on VinDr-RibCXR (H3$'$), evidence that does not use insertion
+(H4$'$: real-nodule contrast and downstream tasks), and reliability (H5$'$). The plan, the configuration and the weights were frozen on
+1~November 2026 (\path{freeze_v2.json}) before any of these sets was evaluated.
+
+\input{../paper/sections/method_v2}
+
+\section{Exploratory screening rounds}
+The operating point of the regulariser was found in a sequence of screening rounds. All of them are exploratory: single runs or few seeds, the
+SZCH development pairs and the audit on all 75 SZCH images (450 sites), never a locked set. The numbers below are copied from the decision log
+of the project; they are development evidence and are not used for any confirmatory claim.
+
+\paragraph{Round 1: training source.} With SwinV2-T at \num{100000} samples, switching the source from LIDC renders to the Qure.ai projections
+lowered the real-image absorption from 0.300 to 0.216, at a cost of about 0.5\,dB of development bone-region PSNR$_{cal}$; adding lesion
+insertion on top (0.218) or mixing the two sources (0.286, 0.269 with insertion) did not do better, and a twin term of weight 1 on a mixed
+source moved absorption only slightly (0.260). The reference model absorbed 0.134 on the same sites.
+
+\paragraph{Round 2: twin weight.} On the Qure source alone, absorption fell monotonically with the twin weight: 0.216, 0.186, 0.151, 0.103 and
+0.020 at $w=0,1,4,16,64$. Development bone PSNR$_{cal}$ stayed flat up to $w=16$ (21.69--21.79\,dB) and fell to 21.27\,dB at $w=64$; the bone
+error on the Qure-projection validation data rose with the weight (MAE 0.0044 to 0.0082 at $w=16$). Seed repeats put the seed spread at about
+0.02 in absorption and 0.1\,dB in PSNR; three times the training length and the larger SwinV2-B encoder each moved absorption by about one
+seed spread. The twin weight was the lever.
+
+\paragraph{Rounds 3 and 4: seeds, budget and the operating point.} At $w=64$ two seeds disagreed strongly (absorption 0.020 and 0.061,
+PSNR 21.27 and 20.80\,dB), so that weight was not usable; $w=16$ to 32 was stable. At \num{300000} samples four seeds of SwinV2-T with
+$w=16$ gave absorption 0.059--0.071 (mean 0.067) at a development PSNR of 21.73\,dB, tighter than at \num{100000} samples, while $w=32$ cost
+about 0.4\,dB for a further 0.009 of absorption. The operating point was fixed at $w=16$.
+
+\paragraph{Wave 1: dose-response and ablation at the full budget.} The twin weights $w\in\{0,4,8,16,32,64\}$ and the ablation arms were
+trained at \num{300000} samples with at least two seeds; their development results fed no decision about the final configuration and are
+reported only in the ablation table (Table~\ref{tab:ablation_twin}); the dose-response itself is confirmatory and is evaluated on the locked
+sets below.
+
+\paragraph{Encoder screen and the final configuration.} ConvNeXt-V2-T, DINOv3 ViT-S/16 and RAD-DINO ViT-B/14 were screened at
+\num{100000} samples (Table~\ref{tab:app_screen}; rule R1, Chapter~\ref{ch:benchmark}). ConvNeXt-V2-T met R1 after a rerun with a reduced
+encoder learning rate, RAD-DINO missed it on PSNR by 0.05\,dB but was continued as exploratory, and both met the replacement rule R2 at
+\num{300000} samples. The pre-declared tie-break (mean absorption within 0.005, then the higher bone PSNR) chose ConvNeXt-V2-T at two seeds
+each; with the third seeds the absorption gap became 0.0055, just outside the band, and the choice was not reopened. The final model is the
+ensemble of three ConvNeXt-V2-T suppressors with $w=16$; SwinV2-T and RAD-DINO are reported as secondary encoders.
+
+\section{Dose-response and ablation}
+\label{sec:res_twin}
+On the locked VinDr-RibCXR audit the absorption of the SwinV2-T family falls from 0.183 at $w=0$ to 0.043 at $w=64$
+(Table~\ref{tab:dose_response}, Figure~\ref{fig:dose_response}). The slope of $A$ on $\log_2(1+w)$ is $-0.0233$ $[-0.0249,-0.0217]$; the
+upper bound is below zero, so H1$'$ passes. On VinDr-RibCXR the fall is steepest at small weights and continues, more slowly, up to $w=64$; on
+the Qure-projection test split with exact truth the slope is $-0.0174$ $[-0.0190,-0.0160]$ and absorption hardly changes above $w=16$ (0.118, 0.122 and 0.112). On the
+held-out SZCH pairs the bone-region PSNR$_{cal}$ of the family stays between 21.22 and 21.28\,dB up to $w=16$ and drops to 20.92 and 21.01\,dB
+at $w=32$ and 64 (Figure~\ref{fig:pareto}). The confirmatory data thus reproduce what the development data had shown: the regulariser lowers
+absorption in proportion to the logarithm of its weight, and its fidelity cost appears only above $w=16$.
+
+The ablation (Table~\ref{tab:ablation_twin}, development data) shows which parts carry the effect. A stop-gradient on the branch without the
+pasted lesion removes it entirely ($A$ 0.185 against 0.067 for the full regulariser and 0.190 without it): the network must be able to move both
+predictions towards each other. A consistency term over the whole image also removes it (0.197), presumably because the per-pixel weight of
+the lesion is diluted by the much larger background. Dilating the support by 31\,px keeps part of the effect (0.137); up to four lesions per
+twin instead of up to two keep all of it (0.074). Inserting lesions without the twin term (CLIA) gives 0.191, the same as no twin at all,
+which matches the v1 finding on real images: showing the model lesions is not the same as telling it to leave them alone.
+\begin{table}[htbp]
+\centering\small
+\caption{Dose-response of the lesion absorption on the twin weight (SwinV2-T family): seeds per weight, mean $A$ on VinDr-RibCXR and on the
+Qure-projection test split, and the pre-specified slope with its image-cluster bootstrap interval.}
+\label{tab:dose_response}
+\fittable{tables/dose_response.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/dose_response.pdf}
+\caption{Dose-response of the lesion absorption $A$ on VinDr-RibCXR on the twin weight $w$ (SwinV2-T), one marker per seed, with the
+pre-specified slope on $\log_2(1+w)$.}
+\label{fig:dose_response}
+\end{figure}
+\begin{table}[htbp]
+\centering\small
+\caption{Ablation of the twin regulariser at $w=16$ (SwinV2-T, 300k samples, mean over seeds): one factor changed per row. Development evidence:
+audit on all 75 SZCH images, bone PSNR$_{cal}$ on the 24 development pairs.}
+\label{tab:ablation_twin}
+\fittable{tables/ablation_twin.tex}
+\end{table}
+
+\section{Encoder results on the locked sets}
+The twin effect does not depend on the encoder (Table~\ref{tab:encoders}). On VinDr-RibCXR it lowers absorption by 0.127 for ConvNeXt-V2-T,
+0.114 for SwinV2-T and 0.112 for RAD-DINO, with intervals well away from zero, and on JSRT by 0.073, 0.061 and 0.064. RAD-DINO reaches the same
+absorption as the selected ConvNeXt-V2-T on VinDr-RibCXR (0.053 against 0.051); single-seed results of all three families are in
+Table~\ref{tab:app_seeds}. These comparisons are exploratory: the plan's confirmatory contrasts concern the selected model only.
+\begin{table}[htbp]
+\centering\small
+\caption{Twin regulariser per encoder on the locked audit sets (exploratory): absorption difference to the matched no-twin control and its
+interaction with bone overlap.}
+\label{tab:encoders}
+\fittable{tables/encoders.tex}
+\end{table}

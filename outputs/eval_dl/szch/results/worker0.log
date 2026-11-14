@@ -1,0 +1,24 @@
+== rd_s2: python -m s4.eval_real --method ours:outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_s2.csv
+ "lpips_raw": "0.2363 +- 0.0190",
+ "lpips_cal": "0.2382 +- 0.0205"
+}
+== rd_nt: python -m s4.eval_real --method ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_nt.csv
+ "lpips_raw": "0.2226 +- 0.0188",
+ "lpips_cal": "0.2243 +- 0.0203"
+}
+== rd_nt_s0: python -m s4.eval_real --method ours:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_nt_s0.csv
+ "lpips_raw": "0.2238 +- 0.0190",
+ "lpips_cal": "0.2256 +- 0.0205"
+}
+== rd_nt_s1: python -m s4.eval_real --method ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_nt_s1.csv
+ "lpips_raw": "0.2226 +- 0.0187",
+ "lpips_cal": "0.2243 +- 0.0203"
+}
+== rd_nt_s2: python -m s4.eval_real --method ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_nt_s2.csv
+ "lpips_raw": "0.2231 +- 0.0188",
+ "lpips_cal": "0.2250 +- 0.0203"
+}
+== clia_v1: python -m s4.eval_real --method ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --lpips --out results/final/szch/clia_v1.csv
+ "lpips_raw": "0.2233 +- 0.0193",
+ "lpips_cal": "0.2250 +- 0.0213"
+}

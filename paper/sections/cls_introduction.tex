@@ -1,0 +1,31 @@
+\section{Introduction}
+\label{sec:cls_intro}
+Ribs and clavicles overlie most of the lung on a frontal chest radiograph and can hide small lesions. Dual-energy subtraction separates
+bone from soft tissue with dedicated hardware \citep{kuhlman2006des}; software suppression estimates the bone image from a single radiograph
+\citep{suzuki2006mtann,hogeweg2013suppression,yang2017cascade,gusarev2017deep}. Radiologists find more nodules with suppressed images
+\citep{freedman2011lung}, and computer-aided detection has been compared with bone-suppressed reading \citep{schalekamp2014cad}. Suppressed images
+have also been proposed as inputs to deep classifiers \citep{rajaraman2021bone}.
+
+Whether a classifier gains from them is less obvious than whether a reader does. A suppressor computes its soft-tissue and bone images from
+the radiograph, so they hold no information the classifier could not in principle extract itself. A gain must come from the prior the
+suppressor learned from CT or dual-energy data, or from the way the network uses the extra images. Feeding three images instead of one also
+triples the computation. Without a control that runs the same network and computation on the radiograph alone, a gain cannot be credited to
+the suppression. Comparisons of input variants are further clouded by the spread between training seeds and by the number of analyses a
+study can choose from after seeing its results \citep{varoquaux2022failures,simmons2011falsepositive}. Finally, suppression could help some
+findings and harm others: it may reveal small focal lesions behind ribs but remove cues used for diffuse or pleural findings, and a
+macro-average over classes would hide such a trade-off.
+
+This study tests whether the soft-tissue and bone images of a CT-supervised suppressor improve a deep chest radiograph classifier, using a
+suppressor developed and audited for lesion preservation in a companion study \todo{cite the companion paper (lesion audit)}. Hypotheses,
+tests and corrections were fixed in an analysis plan whose hash was recorded before any classifier of this study was evaluated on a test
+split. The plan continues the numbering of the companion study, so its hypotheses run from H6 to H10; H9 concerns the suppressor's own
+uncertainty and is reported in the companion paper. We trained five input configurations (Fig.~\ref{fig:cls_design}) with five seeds each on
+two adult datasets and one paediatric dataset from another population. Our contributions are:
+\begin{itemize}
+\item a pre-specified, seed-replicated comparison (175 training runs) of the radiograph, the soft-tissue image, channel stacking and a
+  multi-stream network, with a control that matches the multi-stream network's parameters and computation;
+\item an analysis by finding group (focal, diffuse, boundary) and by class, which separates where suppression helps from where it harms;
+\item stream-wise attribution maps scored against expert boxes, which test whether the soft-tissue stream locates focal lesions better
+  than the radiograph stream;
+\item conformal uncertainty for these classifiers and a test of the suppressor's own uncertainty as a signal for abstaining.
+\end{itemize}

@@ -1,0 +1,643 @@
+% PLAN (15-20 pages). Tutorial background first, then the related work of the paper, which is input unchanged at the end.
+%   2.1 Chest radiography and bone overlap: image formation, attenuation, why ribs and clavicles hide lesions.
+%   2.2 Dual-energy subtraction: principle, hardware, dose, SZCH-X-Rays as a public DES data set (sun2026bsldm, sun2026debonedit).
+%   2.3 Learning-based bone suppression: MTANN (suzuki2006mtann), CNNs (yang2017cascade, gusarev2017deep), diffusion (chen2024bsdiff, sun2026bsldm,
+%       sun2025gllcm, sun2026debonedit), CT-supervised (angaitkar2026anatomy).
+%   2.4 Architectures used here: Swin Transformer V2 (liu2022swinv2), UNet++ (zhou2018unetpp), CBAM (woo2018cbam); optimiser (loshchilov2019adamw).
+%   2.5 Image-quality and detection metrics: PSNR, SSIM (wang2004ssim), LPIPS (zhang2018lpips), CNR, FROC and CPM (niemeijer2011cpm), AUROC and
+%       DeLong (delong1988auc).
+%   2.6 Uncertainty: deep ensembles (lakshminarayanan2017ensembles), split conformal prediction (lei2018conformal, angelopoulos2023conformal).
+%   2.7 Statistics: paired bootstrap, cluster bootstrap, Holm correction, non-inferiority, pre-specified analysis plans.
+%   2.8 Related work as in the paper (input below).
+% Section 2.3 describes each cited paper only as far as its abstract (PubMed or arXiv, read 2026-11-03) supports; check against the PDFs before submission.
+This chapter collects the background that the later chapters assume. It is written for a reader who knows machine learning but not the physics
+of chest radiography or the conventions of this field. Sections~\ref{sec:bg_cxr} and~\ref{sec:bg_des} explain how a chest radiograph is formed
+and why bone overlap is a problem; Section~\ref{sec:bg_learned} surveys learned bone suppression; Section~\ref{sec:bg_arch} introduces the network
+components and training techniques used in this study; Sections~\ref{sec:bg_metrics} to~\ref{sec:bg_stats} define the metrics, the uncertainty
+estimates and the statistical procedures. The related work of the paper closes the chapter (Section~\ref{sec:related}). No result of this study
+appears here.
+
+\section{Chest radiography and bone overlap}
+\label{sec:bg_cxr}
+\paragraph{Projection imaging.} A chest radiograph is a projection image. An X-ray tube emits a beam that passes through the thorax and is
+recorded by a detector on the other side. In the standard posteroanterior (PA) view the patient faces the detector and the beam enters from the
+back; the anteroposterior (AP) view, used at the bedside, reverses the direction. The tube produces a polyenergetic spectrum: bremsstrahlung up to
+a maximum photon energy set by the tube voltage (kVp), plus characteristic lines of the anode material, shaped by the filtration in the beam. Each
+detector pixel records the energy that reaches it along the rays that end in that pixel. Everything the ray crosses, from the skin of the back to
+the skin of the chest, contributes to the same pixel; depth information is lost. This superposition is the root of the problem studied in this
+thesis.
+
+\paragraph{Attenuation.} For a narrow monoenergetic beam of energy $E$ crossing a homogeneous slab of thickness $t$, the transmitted intensity
+follows the Beer--Lambert law, $I=I_0\,e^{-\mu(E)\,t}$, where $\mu$ is the linear attenuation coefficient of the material. Through a
+heterogeneous body the exponent becomes a line integral along the ray $L$:
+\begin{equation}
+\begin{gathered}
+I(E)=I_0(E)\,\exp\!\Big(-\int_L \mu(\mathbf{r},E)\,\mathrm{d}r\Big),\\
+p(E)=-\ln\frac{I(E)}{I_0(E)}=\int_L \mu(\mathbf{r},E)\,\mathrm{d}r .
+\end{gathered}
+\label{eq:bg_beerlambert}
+\end{equation}
+The log-transformed value $p$ is linear in the attenuation along the ray, so overlapping structures \emph{add}. It is convenient to write
+$\mu=(\mu/\rho)\,\rho$, the product of the mass attenuation coefficient $\mu/\rho$, which depends only on the elemental composition and the
+energy, and the density $\rho$. If the body is described by a few materials $c$ (for example bone, soft tissue and lung) with fixed compositions,
+the line integral splits into a sum over materials,
+\begin{equation}
+\begin{gathered}
+p(E)=\sum_c \Big(\frac{\mu}{\rho}\Big)_{\!c}(E)\;a_c,\\
+a_c=\int_L \rho_c(\mathbf{r})\,\mathrm{d}r ,
+\end{gathered}
+\label{eq:bg_materials}
+\end{equation}
+where $a_c$ is the areal density (g\,cm$^{-2}$) of material $c$ along the ray. Tabulated mass attenuation coefficients for elements and mixtures
+are available from NIST XCOM \citep{berger2010xcom}, and reference compositions of body tissues from ICRU Report~44 \citep{icru1989report44}.
+Equation~\eqref{eq:bg_materials} is the basis of everything that follows: of dual-energy subtraction (Section~\ref{sec:bg_des}), of the
+CT-derived training data of this study, and of the idea that a radiograph can be written as a soft-tissue image plus a bone image.
+
+\paragraph{Polyenergetic beams and beam hardening.} A real beam has a spectrum $\phi(E)$, and an energy-integrating detector weights each photon
+roughly by its energy. The recorded log signal is then
+\begin{equation}
+p=-\ln\frac{\int \phi(E)\,E\,\exp\!\big(-\sum_c (\mu/\rho)_c(E)\,a_c\big)\,\mathrm{d}E}{\int \phi(E)\,E\,\mathrm{d}E},
+\label{eq:bg_poly}
+\end{equation}
+the model used in Chapter~\ref{ch:data}. Because low-energy photons are absorbed preferentially, the mean energy of the beam rises along its path
+(\emph{beam hardening}) and $p$ is no longer exactly linear in the $a_c$: the sum of separately projected materials differs slightly from the
+projection of the whole body. Chapter~\ref{ch:data} quantifies this additivity gap for the renderer of this study.
+
+\paragraph{Why bone stands out.} At diagnostic energies (roughly 20 to 150~keV) two interactions dominate attenuation in tissue. Photoelectric
+absorption rises steeply with atomic number and falls steeply with energy; Compton scattering depends mainly on electron density and changes
+slowly with energy \citep{bushberg2020essential}.
+Bone mineral contains calcium and phosphorus, whose atomic numbers are much higher than those of the hydrogen, carbon, nitrogen and oxygen that make
+up soft tissue, so bone attenuates more than soft tissue at every energy and its attenuation falls faster with energy. The first property makes
+ribs and clavicles bright on a radiograph; the second makes dual-energy subtraction possible.
+
+\paragraph{From detector signal to stored image.} Scattered photons reach the detector from directions other than the primary ray and add a
+smooth haze that lowers contrast; anti-scatter grids reduce but do not remove it. The number of detected photons is random, which adds quantum
+noise. Before an image is stored, digital systems apply vendor-specific processing (logarithmic or other tone curves, look-up tables, multi-scale
+contrast enhancement and edge sharpening) \citep{prokop2003processing,schaeferprokop2008digital}. A stored radiograph is therefore
+an unknown, mostly monotone function of the line integral in Equation~\eqref{eq:bg_poly}, combined with local filtering. This is why the training
+data of this study pass the exact components through random monotone tone curves (Section~\ref{sec:methods}) and why real-image metrics are also
+reported after a per-image tone calibration (Section~\ref{sec:bg_metrics}).
+
+\paragraph{Why ribs and clavicles hide lesions.} On a PA radiograph the posterior and anterior ribs, the clavicles and parts of the scapulae
+project over the lung fields, and the anterior and posterior ribs cross each other. A pulmonary nodule is a small region of near-water density
+inside the air-filled lung; in the log domain it adds a compact signal of a few millimetres to a few centimetres. A rib adds a signal of similar or
+larger amplitude, with sharp cortical edges, at the same spatial scale. In a linear projection the nodule over a rib keeps its own signal, but it
+sits on a background that is bright, structured and full of edges, and the eye (or a detection algorithm) has to separate the two. Background
+structure of this kind, often called anatomical noise, is generally regarded as a stronger limit on nodule detection in chest radiography than
+quantum noise \citep{samei1999detection}. Reader studies support the clinical relevance
+of bone overlap: in a study in which fifteen radiologists read the radiographs of 368 patients first unaided and then with software that
+suppresses ribs and clavicles, filters noise and equalises contrast, reader sensitivity rose from 49.5\,\% to 66.3\,\% while specificity fell from
+96.1\,\% to 91.8\,\%, and 74\,\% of the aided detections were of cancers with at least 70\,\% overlap between bone and nodule \citep{freedman2011lung}.
+
+\paragraph{Bone suppression as source separation.} In the log domain a radiograph can be written as $x=s+b$, a soft-tissue image $s$ plus a bone
+image $b$ (up to the beam-hardening gap and the tone curve). Bone suppression estimates $b$, or equivalently $s=x-b$, from $x$ alone. This is a
+separation problem with one equation and two unknowns per pixel; it can only be solved with prior knowledge of what bone looks like (elongated,
+smoothly curved ribs with bright cortical edges, clavicles of known shape and position) and of what soft tissue looks like. The prior is weakest
+exactly where it matters: a compact bright nodule that lies on a rib is consistent with both explanations. A suppressor that has learned that
+bright compact structures in the rib region belong to bone can move part of the nodule into $\hat b$ and remove it from the soft image. The audit
+of Chapter~\ref{ch:audit} measures this lesion absorption directly.
+
+\section{Dual-energy subtraction}
+\label{sec:bg_des}
+\paragraph{Principle.} Dual-energy subtraction (DES) separates bone from soft tissue by imaging the same anatomy with two different spectra.
+Write $p_L$ and $p_H$ for the log images obtained with a low-energy and a high-energy spectrum, and treat the body as two materials, soft tissue
+($\mathrm{s}$) and bone ($\mathrm{b}$), with effective mass attenuation coefficients $\mu^{L}_{\cdot}$ and $\mu^{H}_{\cdot}$ for the two spectra.
+Equation~\eqref{eq:bg_materials} then gives two equations in two unknowns:
+\begin{equation}
+\begin{gathered}
+p_L=\mu^{L}_{\mathrm{s}}\,a_{\mathrm{s}}+\mu^{L}_{\mathrm{b}}\,a_{\mathrm{b}},\\
+p_H=\mu^{H}_{\mathrm{s}}\,a_{\mathrm{s}}+\mu^{H}_{\mathrm{b}}\,a_{\mathrm{b}} .
+\end{gathered}
+\label{eq:bg_des_system}
+\end{equation}
+A weighted subtraction of the log images cancels one material:
+\begin{align}
+p_{\mathrm{soft}} &= p_H-w_{\mathrm{b}}\,p_L=\big(\mu^{H}_{\mathrm{s}}-w_{\mathrm{b}}\,\mu^{L}_{\mathrm{s}}\big)\,a_{\mathrm{s}},
+ & w_{\mathrm{b}}&=\mu^{H}_{\mathrm{b}}/\mu^{L}_{\mathrm{b}}, \label{eq:bg_des_soft}\\
+p_{\mathrm{bone}} &= p_H-w_{\mathrm{s}}\,p_L=\big(\mu^{H}_{\mathrm{b}}-w_{\mathrm{s}}\,\mu^{L}_{\mathrm{b}}\big)\,a_{\mathrm{b}},
+ & w_{\mathrm{s}}&=\mu^{H}_{\mathrm{s}}/\mu^{L}_{\mathrm{s}}. \label{eq:bg_des_bone}
+\end{align}
+The system is solvable only if the ratios $w_{\mathrm{b}}$ and $w_{\mathrm{s}}$ differ, that is, if bone and soft tissue change their attenuation
+differently with energy; the photoelectric effect in bone mineral provides this difference (Section~\ref{sec:bg_cxr}). The soft-tissue image
+$p_{\mathrm{soft}}$ shows lung, vessels, heart and soft-tissue lesions without ribs and clavicles; the bone image $p_{\mathrm{bone}}$ shows the
+skeleton and anything else that contains calcium.
+
+\paragraph{What DES does and does not do.} The decomposition is a two-material model. A third material with a different energy dependence is
+split between the two images according to its own coefficients, and calcium outside the skeleton is, by construction, bone. A calcified nodule
+therefore appears in the DES bone image, which is one of the main clinical uses of the technique: a review of DES chest radiography names the
+clearer depiction of calcification, which helps to characterise pulmonary nodules, as its main advantage and lists further uses in the hila,
+mediastinum, airways, vessels, pleura and chest wall \citep{kuhlman2006des}. A non-calcified nodule, by contrast, belongs to the soft-tissue
+image. This distinction defines what a learned suppressor should do with a soft-tissue lesion over a rib: leave it in $s$. In practice the
+weights in Equations~\eqref{eq:bg_des_soft} and~\eqref{eq:bg_des_bone} are tuned empirically, because the spectra are polyenergetic and beam
+hardening and scatter make the effective coefficients depend on thickness; cancellation is imperfect and residual bone edges can remain. The
+subtraction of two images also removes most of the signal while their noise adds, so DES images are noisier than the standard radiograph and are
+usually filtered, which changes their texture and tone.
+
+\paragraph{Hardware, dose and motion.} Two acquisition schemes are in use \citep{schaeferprokop2008digital}. In \emph{dual-exposure} DES the tube voltage is switched between two exposures taken in quick succession; the energy separation is
+good, but anything that moves between the two exposures (the heart, the diaphragm, the patient) is misregistered and leaves artefacts in both
+images \citep{schaeferprokop2008digital}. In \emph{single-exposure} DES a layered detector with a filter between the layers
+records the softer part of the spectrum in front and the harder part behind; there is no motion between the images, but the energy separation is
+smaller and the images are noisier. Dual-exposure radiographs exist in research collections; for example, one CNN study trained on 504 cases of
+two-exposure DES chest radiographs \citep{yang2017cascade}. DES needs dedicated equipment, and the review cited above states that it requires a
+somewhat higher radiation dose than conventional radiography \citep{kuhlman2006des}; authors of learned methods cite equipment cost and
+additional exposure as reasons to replace DES by software \citep{chen2024bsdiff}. Most chest radiographs, including all large public
+collections used in this study, are single-energy images.
+
+\paragraph{Public paired data.} Learning bone suppression from real images requires radiographs paired with DES images of the same exposure, and
+such pairs are scarce. The data sets of the earlier learned methods (Section~\ref{sec:bg_learned}) are not described as public in their
+abstracts. The SZCH-X-Rays data set was compiled for BS-LDM, whose abstract describes 818 pairs of high-resolution radiographs and soft-tissue
+images from a partner hospital \citep{sun2026bsldm}; it was released with DeBoneDiT, whose abstract describes the release as 741 pairs of
+radiographs and DES soft-tissue images and as the largest publicly available high-quality paired data set for bone suppression \citep{sun2026debonedit}.
+The BS-LDM paper compiled 831 pairs and excluded 13; DeBoneDiT and GL-LCM report 741 pairs split into 592 training, 74 validation and 75
+test pairs, with the same exclusion criteria. None of the three papers explains the difference, and only the 75 test pairs are public. The
+images come from one partner hospital, acquired with dual-exposure DES on a GE Discovery XR656 at $2021\times2021$ pixels of 0.194~mm.
+The released data set carries a non-commercial licence (Chapter~\ref{ch:data}). In this study the SZCH-X-Rays pairs are used only as
+evaluation references, never for training. Three properties of DES references matter for that use. They are themselves estimates, with residual
+bone, noise and possible motion artefacts; their tone and texture differ from the radiograph they are paired with; and they come from one
+institution. Chapter~\ref{ch:benchmark} therefore reports metrics both as computed and after a per-image gain and offset fit, and treats
+agreement with DES as one line of evidence among several.
+
+\section{Learning-based bone suppression}
+\label{sec:bg_learned}
+This section follows the field roughly in chronological order, grouping closely related studies, and describes each method only as far as its
+abstract supports. Input resolution, which most abstracts do not state, is left out. Table~\ref{tab:bg_learned} summarises the learned methods; Section~\ref{sec:related} places them
+relative to this study.
+
+\begin{table}[htbp]
+\centering\small
+\renewcommand{\arraystretch}{1.15}
+\caption{Learned bone-suppression methods discussed in Section~\ref{sec:bg_learned}, described only as far as their abstracts support. Rows
+follow the order of first appearance (preprint date where there is one); the year is that of the bibliography entry; data sizes are those stated
+in the abstracts.}
+\label{tab:bg_learned}
+\begin{tabular}{@{}p{0.07\linewidth}p{0.21\linewidth}p{0.29\linewidth}p{0.30\linewidth}@{}}
+\toprule
+Year & Method & Model & Training pairs named in the abstract \\
+\midrule
+2006 & MTANN \citep{suzuki2006mtann} & multiresolution massive-training ANN (non-linear filter) & DES bone images as teaching images (number not stated) \\
+2017 & CamsNet \citep{yang2017cascade} & cascade of multi-scale CNNs in the gradient domain & 504 two-exposure DES cases (404 training, 100 test) \\
+2017 & \citet{gusarev2017deep} & two end-to-end networks & not stated in the abstract \\
+2024 & BS-Diff \citep{chen2024bsdiff} & conditional diffusion model (U-Net) with an autoencoder-based enhancement module & radiographs and soft-tissue images of 120 patients \\
+2026 & BS-LDM \citep{sun2026bsldm} & conditional latent diffusion with a VQ-GAN & SZCH-X-Rays (818 pairs); 241 JSRT pairs \\
+2025 & GL-LCM \citep{sun2025gllcm} & latent consistency model with global and local paths & SZCH-X-Rays; JSRT \\
+2026 & \citet{angaitkar2026anatomy} & networks that predict one CT-projected component & projections of chest CT; no real pairs \\
+2026 & DeBoneDiT \citep{sun2026debonedit} & source-conditioned Brownian-bridge diffusion transformer & SZCH-X-Rays release (741 DES pairs) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Massive-training neural networks (2006).} \citet{suzuki2006mtann} trained a multiresolution massive-training artificial neural
+network (MTANN), a highly non-linear filter applied separately at three resolution levels, to map a radiograph to its DES bone image. The
+network outputs a bone-like image, and subtracting it from the radiograph gives a soft-tissue-like image. On a validation set of 118 radiographs
+with nodules and an independent test set of 136 digitised screen-film radiographs from 14 institutions, ribs and clavicles were substantially
+suppressed while the visibility of nodules and vessels was maintained; the abstract reports no detection measure. This
+predict-the-bone-and-subtract design is the one used in this study.
+
+\paragraph{Reader and CAD studies (2011--2014).} The reader study of \citet{freedman2011lung}, summarised in Section~\ref{sec:bg_cxr}, showed
+higher sensitivity with suppression software at some cost in specificity. A later study asked whether computer-aided detection (CAD) adds anything once readers
+already have bone-suppressed images: with 300 subjects (111 with a solitary nodule) read by eight observers with PA and lateral radiographs and
+bone-suppressed images, reading with CAD marks increased the JAFROC figure of merit, although observers dismissed most of the true-positive CAD
+candidates they had missed \citep{schalekamp2014cad}. These studies use commercial software whose algorithm their abstracts do not describe.
+
+\paragraph{Contrast of inserted nodules (2013, 2020).} Two studies measured what suppression does to a nodule whose position is known.
+\citet{hogeweg2013suppression} suppressed elongated structures (ribs, clavicles, catheters) with a non-learned method that models intensity
+profiles across the structure and separates them by blind source separation. In 100 radiographs with nodules extracted from CT and simulated near
+the clavicles, the abstract reports that clavicle contrast fell from 2.46 to 0.55 after suppression, while nodule contrast fell from 1.83 to 1.35:
+suppression removed most of the clavicle and some of the nodule. \citet{takagi2020dose} imaged an anthropomorphic phantom with a 12~mm simulated
+nodule at 66 positions under several tube voltages and doses; in areas not overlapping the ribs, bone suppression significantly increased nodule
+contrast and CNR, and bone-suppressed images at 70~kVp were equal to or better than those at 140~kVp. The abstract does not name the
+suppression software. Both studies measure contrast of a known nodule; neither audits a learned suppressor against an exact, additive lesion
+signal (Section~\ref{sec:related}).
+
+\paragraph{Convolutional networks (2017).} \citet{yang2017cascade} trained a cascade of multi-scale convolutional networks (CamsNet) to map
+the gradients of a radiograph to the gradients of its bone image, refined the prediction from coarse to fine scales, fused the predicted bone
+gradients in a maximum-a-posteriori framework to reconstruct the bone image, and subtracted it from the radiograph. Training and testing used 504
+cases of real two-exposure DES radiographs (404 for training and 100 for testing) with a pixel size of about 0.194~mm, and the trained model was
+also applied to radiographs from other machines, including scanned films. A plausible reason for working in the gradient domain is that the bone
+signal varies most at the rib edges, so gradients concentrate the learning problem there. \citet{gusarev2017deep} proposed two end-to-end architectures that treat bones as noise to be
+removed and reported that the scheme does not introduce artefacts; their abstract does not describe the training data.
+
+\paragraph{Diffusion models on DES pairs (2024--2026).} Diffusion models generate an image by reversing a gradual noising process; a
+\emph{conditional} diffusion model generates the soft-tissue image given the radiograph. BS-Diff \citep{chen2024bsdiff} combines a conditional
+diffusion U-Net with an enhancement module that includes an autoencoder, trained on paired radiographs and soft-tissue images of 120 patients
+from the authors' hospital, and evaluates it with comparisons, ablations and clinical evaluations. BS-LDM \citep{sun2026bsldm} moves the diffusion
+into the latent space of a vector-quantised GAN trained with a multi-level hybrid loss, adds offset noise in the forward process and a temporal
+adaptive thresholding in the reverse process to preserve low-frequency soft-tissue information, and introduces SZCH-X-Rays; it also uses 241
+pairs from the JSRT database \citep{shiraishi2000jsrt} converted to negative images. GL-LCM \citep{sun2025gllcm} replaces diffusion sampling by a
+latent consistency model for speed and combines a global path with a local path guided by lung segmentation, adding a training-free local
+guidance to reduce boundary artefacts; it is evaluated on SZCH-X-Rays and JSRT. DeBoneDiT \citep{sun2026debonedit} formulates suppression as a
+source-conditioned Brownian-bridge diffusion that starts from the radiograph instead of from noise, uses a transformer denoiser in the latent
+space of an autoencoder trained with a feature loss from a pretrained depth-estimation encoder, and releases SZCH-X-Rays. These methods produce
+the soft-tissue image directly and are trained on real DES pairs from one institution; generative models of this kind can also produce content
+that is not in the input (Section~\ref{sec:related}).
+
+\paragraph{CT-supervised suppression (2026).} \citet{angaitkar2026anatomy} replace real pairs by digitally reconstructed radiographs: chest CT
+volumes are decomposed into bone, non-lung soft tissue and lung, each component is projected separately, and the weighted components sum exactly
+to the full projection. Models learn to predict one component (bone or lung) and recover the rest by subtraction, and they transfer to real
+radiographs without real paired training data. The abstract reports detection gains concentrated on abnormalities with substantial bone overlap and
+releases models and projections. Supervision of this kind is exact and scalable, because every CT volume yields a pair, but it carries a domain gap
+between projections and real radiographs, and the lesions of the training CTs are whatever the CT collection happens to contain. This study builds
+on these projections (Chapter~\ref{ch:v2}).
+
+\paragraph{Summary.} Three sources of supervision appear in the literature: real DES pairs, which are realistic but scarce, noisy and
+institution-specific; non-learned models of the bone, which need no pairs but have hand-set assumptions; and CT projections, which are exact and
+plentiful but synthetic. Evaluation has used similarity to DES images, reader and CAD studies, downstream detection and the contrast of known
+nodules. What a learned suppressor does to a soft-tissue lesion that lies on a rib, measured against an exactly known lesion signal, is the
+question of this thesis.
+
+\section{Architectures and optimisation}
+\label{sec:bg_arch}
+The suppressor of this study is an encoder--decoder network that maps a radiograph $x$ to a bone image $\hat b$; the soft image is
+$\hat s=x-\hat b$. Predicting the bone image rather than the soft image keeps the output sparse (zero outside bone) and makes the identity
+$x=\hat s+\hat b$ hold by construction. The encoder is a pretrained image backbone that produces a feature pyramid; the decoder merges the pyramid
+back to full resolution. The confirmatory dose-response and the ablation use a Swin Transformer V2 Tiny encoder (SwinV2-T); the final model uses a
+ConvNeXt V2 Tiny encoder (ConvNeXt-V2-T), chosen by the pre-declared rule described in Section~\ref{sec:experiments}. Both produce four feature maps
+at strides 4, 8, 16 and 32, so the same decoder, after a $1\times1$ projection of each map, serves both.
+
+\paragraph{Swin Transformer V2.} A vision transformer cuts an image into patches, embeds each as a token and lets every token attend to every
+other; the cost is quadratic in the number of tokens, which is prohibitive for dense prediction at high resolution. The Swin Transformer computes
+self-attention only inside non-overlapping windows of $M\times M$ tokens and shifts the window grid by half a window between consecutive blocks, so
+that information crosses window borders; patch-merging layers halve the resolution and double the channels between stages, which gives a
+hierarchical pyramid like that of a convolutional network \citep{dosovitskiy2021vit,liu2021swin}. Swin Transformer V2 \citep{liu2022swinv2} adds three changes to scale capacity and
+resolution: a residual post-norm combined with cosine attention to stabilise training, a log-spaced continuous position bias to transfer models
+pre-trained at low resolution to high-resolution inputs, and SimMIM self-supervised pre-training. In cosine attention the similarity of a query
+$q_i$ and a key $k_j$ is
+\begin{equation}
+\mathrm{Sim}(q_i,k_j)=\frac{\cos(q_i,k_j)}{\tau}+B_{ij},
+\label{eq:bg_cosattn}
+\end{equation}
+with a learnable temperature $\tau$ and a relative position bias $B_{ij}$ produced by a small network from log-spaced relative coordinates.
+Because attention is computed within windows of fixed size, an encoder pretrained on small images can be applied to a larger input with the same
+window size; only the number of windows grows. The continuous bias additionally allows the window size itself to change.
+
+\paragraph{ConvNeXt V2.} ConvNeXt is a convolutional network modernised with design choices from transformers: a patchify stem, large ($7\times7$)
+depthwise convolutions, layer normalisation and inverted-bottleneck MLPs with GELU \citep{liu2022convnext}. ConvNeXt V2 \citep{woo2023convnextv2} co-designs the
+architecture with masked-autoencoder pre-training: it proposes a fully convolutional masked autoencoder (FCMAE) and a Global Response
+Normalization (GRN) layer that enhances inter-channel feature competition. For a feature map $X\in\mathrm{R}^{H\times W\times C}$, GRN computes
+the spatial $\ell_2$ norm of each channel, normalises it by the mean over channels and rescales the features:
+\begin{equation}
+\begin{gathered}
+G_i=\lVert X_{:,:,i}\rVert_2,\\
+N_i=\frac{G_i}{\frac1C\sum_{j=1}^{C}G_j},\\
+X_{:,:,i}\leftarrow\gamma_i\,X_{:,:,i}\,N_i+\beta_i+X_{:,:,i},
+\end{gathered}
+\label{eq:bg_grn}
+\end{equation}
+with learnable $\gamma$ and $\beta$. The encoder used here was pre-trained with FCMAE and then fine-tuned on ImageNet \citep{deng2009imagenet}
+(Section~\ref{sec:method_v2}).
+
+\paragraph{Nested decoder (UNet++).} A U-Net decoder upsamples the deepest features step by step and concatenates, at each scale, the encoder
+features of the same resolution (skip connections). UNet++ \citep{zhou2018unetpp} replaces the plain skips by nested, dense skip pathways: node
+$X^{i,j}$ at depth $i$ and position $j$ along the skip receives all previous nodes at the same depth and the upsampled node from the next depth,
+\begin{equation}
+X^{i,j}=\mathcal{H}\Big(\big[X^{i,0},X^{i,1},\dots,X^{i,j-1},\,\mathcal{U}(X^{i+1,j-1})\big]\Big),
+\label{eq:bg_unetpp}
+\end{equation}
+where $\mathcal{H}$ is a convolution block, $\mathcal{U}$ upsampling and $[\cdot]$ concatenation. The intermediate nodes narrow the semantic gap
+between encoder and decoder features before they are fused. UNet++ also proposes deep supervision of the intermediate outputs; the decoder here
+uses only the final node. Because the transformer and ConvNeXt pyramids start at stride 4, the network of this study adds a short tail with two
+shallow convolutional skips from the input to recover full resolution (Section~\ref{sec:methods}).
+
+\paragraph{CBAM.} The Convolutional Block Attention Module \citep{woo2018cbam} reweights a feature map $F$ first by channel and then by
+position:
+\begin{equation}
+\begin{gathered}
+M_c(F)=\sigma\big(\mathrm{MLP}(\mathrm{AvgPool}(F))+\mathrm{MLP}(\mathrm{MaxPool}(F))\big),\\
+M_s(F)=\sigma\big(f^{7\times7}([\mathrm{AvgPool}_c(F);\mathrm{MaxPool}_c(F)])\big),
+\end{gathered}
+\label{eq:bg_cbam}
+\end{equation}
+with $F'=M_c(F)\odot F$ and $F''=M_s(F')\odot F'$. Here $\sigma$ is the logistic function, the MLP is shared between the two pooled descriptors,
+$\mathrm{AvgPool}_c$ and $\mathrm{MaxPool}_c$ pool over channels and $f^{7\times7}$ is a $7\times7$ convolution. In a suppressor the spatial map
+can emphasise rib regions; the module is cheap and is placed after the decoder blocks.
+
+\paragraph{AdamW, schedule and clipping.} Adam keeps exponential moving averages of the gradient $g_t$ and of its square, $m_t$ and $v_t$, and
+scales each parameter's step by $1/\sqrt{\hat v_t}$. With an $L_2$ penalty added to the loss, the penalty gradient is rescaled in the same way, so
+parameters with large gradient variance are regularised less. AdamW \citep{loshchilov2019adamw} decouples weight decay from the adaptive update:
+\begin{equation}
+\theta_t=\theta_{t-1}-\eta_t\Big(\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}+\lambda\,\theta_{t-1}\Big),
+\label{eq:bg_adamw}
+\end{equation}
+where $\hat m_t$ and $\hat v_t$ are the bias-corrected moments and $\lambda$ the decoupled weight-decay rate. The learning rate $\eta_t$ rises
+linearly during a short warm-up of $t_w$ steps and then follows a cosine decay to zero at step $T$,
+\begin{equation}
+\begin{gathered}
+\eta_t=\eta_{\max}\,\tfrac12\Big(1+\cos\Big(\pi\,\frac{t-t_w}{T-t_w}\Big)\Big),\\
+t_w\le t\le T .
+\end{gathered}
+\label{eq:bg_cosine}
+\end{equation}
+A pretrained encoder is often given a smaller learning rate than a randomly initialised decoder, so that the pretrained features are adapted
+rather than overwritten. Gradient clipping rescales the full gradient $g$ to $g\,\min(1,c/\lVert g\rVert_2)$ when its norm exceeds $c$, which
+limits the damage of rare very large gradients.
+
+\paragraph{EMA weights.} An exponential moving average of the weights,
+\begin{equation}
+\bar\theta_t=d_t\,\bar\theta_{t-1}+(1-d_t)\,\theta_t ,
+\label{eq:bg_ema}
+\end{equation}
+is kept alongside the trained weights and used for validation and evaluation. Averaging over the last part of the trajectory smooths the noise of
+stochastic optimisation and usually gives a slightly better and more stable model than the last iterate. The decay $d_t$ is small at the start and
+grows to a fixed maximum, so that the average is not dominated by the random initialisation; normalisation statistics (buffers) are copied rather
+than averaged.
+
+\paragraph{Mixed precision.} Mixed-precision training runs most of the forward and backward pass in 16-bit floating point (fp16), which halves
+memory traffic and uses the fast matrix units of current GPUs, while the master weights and the optimiser state stay in 32-bit precision. The
+fp16 format has a small range: very small gradients underflow to zero and values above about $6.5\times10^4$ overflow. Dynamic loss scaling
+multiplies the loss by a factor $S$ before the backward pass, divides the gradients by $S$ before clipping and the optimiser step, skips any step
+whose gradients contain infinities or NaNs, and adapts $S$ during training. Loss scaling does not protect activations in the forward pass, and
+fp16 overflow can still make a run diverge; Section~\ref{sec:experiments} reports a divergence attributed to fp16 overflow and how it was handled.
+
+\section{Metrics}
+\label{sec:bg_metrics}
+Throughout this section $y$ is a reference image (for example a DES soft-tissue image), $\hat y$ an estimate of it, both scaled to $[0,1]$, $p$
+indexes pixels and $R$ is a set of pixels (the whole image or a region).
+
+\paragraph{Tone calibration.} A DES image and a radiograph differ in global tone (Section~\ref{sec:bg_des}), and a suppressor trained on other
+data cannot know the tone of the reference. Fidelity metrics are therefore also computed after a per-image least-squares gain and offset,
+\begin{equation}
+\begin{gathered}
+\hat y_{\mathrm{cal}}=\mathrm{clip}_{[0,1]}\big(a^\ast\hat y+c^\ast\big),\\
+(a^\ast,c^\ast)=\arg\min_{a,c}\sum_p\big(a\,\hat y_p+c-y_p\big)^2 ,
+\end{gathered}
+\label{eq:bg_calib}
+\end{equation}
+which removes differences in brightness and contrast but not in structure. Section~\ref{sec:methods} calls these metrics ``calibrated''.
+
+\paragraph{PSNR.} The mean squared error over $R$ and the peak signal-to-noise ratio are
+\begin{equation}
+\begin{gathered}
+\mathrm{MSE}_R=\frac{1}{|R|}\sum_{p\in R}\big(\hat y_p-y_p\big)^2,\\
+\mathrm{PSNR}_R=10\log_{10}\frac{L^2}{\mathrm{MSE}_R}\ \mathrm{dB},
+\end{gathered}
+\label{eq:bg_psnr}
+\end{equation}
+with dynamic range $L=1$. PSNR is a monotone transform of the MSE: it weights every pixel equally and is dominated by large errors, so it is
+sensitive to the global tone and to a few badly wrong pixels. Restricting $R$ to the region where bone was removed (the bone region of
+Section~\ref{sec:methods}) focuses the metric on the pixels that suppression should change.
+
+\paragraph{SSIM.} The structural similarity index \citep{wang2004ssim} compares local means, variances and covariance of two images $u$ and $v$ in
+a sliding window:
+\begin{equation}
+\begin{gathered}
+\mathrm{SSIM}(u,v)=\frac{(2\mu_u\mu_v+C_1)\,(2\sigma_{uv}+C_2)}{(\mu_u^2+\mu_v^2+C_1)\,(\sigma_u^2+\sigma_v^2+C_2)},\\
+C_1=(K_1L)^2,\ C_2=(K_2L)^2,
+\end{gathered}
+\label{eq:bg_ssim}
+\end{equation}
+with the customary $K_1=0.01$ and $K_2=0.03$. It is the product of a luminance term
+$l=(2\mu_u\mu_v+C_1)/(\mu_u^2+\mu_v^2+C_1)$, a contrast term $c=(2\sigma_u\sigma_v+C_2)/(\sigma_u^2+\sigma_v^2+C_2)$ and a structure term
+$s=(\sigma_{uv}+C_2/2)/(\sigma_u\sigma_v+C_2/2)$. The local values form an SSIM map, whose mean over $R$ is reported. SSIM ranges up to 1
+(identical images); it is more sensitive to structure and local contrast than PSNR, and it depends on the window, which differs between
+implementations (the original uses an $11\times11$ Gaussian window; the scikit-image function used here uses a $7\times7$ uniform window by
+default).
+
+\paragraph{MS-SSIM.} Multi-scale SSIM \citep{wang2003msssim} evaluates the contrast and structure terms at $M$ scales, obtained by repeated
+low-pass filtering and down-sampling by two, and the luminance term only at the coarsest scale:
+\begin{equation}
+\mathrm{MS\text{-}SSIM}(u,v)=\big[l_M(u,v)\big]^{\alpha_M}\prod_{j=1}^{M}\big[c_j(u,v)\big]^{\beta_j}\big[s_j(u,v)\big]^{\gamma_j},
+\label{eq:bg_msssim}
+\end{equation}
+with $M=5$ and the exponents fitted to human judgements in the original paper ($\beta_j=\gamma_j=0.0448$, $0.2856$, $0.3001$, $0.2363$, $0.1333$
+and $\alpha_M=\beta_M$). It is less dominated by fine texture than single-scale SSIM.
+
+\paragraph{Band-limited SSIM.} A DES soft-tissue image is filtered and noisier than the radiograph, so a suppressor that keeps the fine texture
+of the radiograph can be penalised by full-resolution SSIM for texture that has nothing to do with bone. Band-limited SSIM compares the two images
+after the same Gaussian low-pass filter $G_\sigma$,
+\begin{equation}
+\mathrm{SSIM}_\sigma(\hat y,y)=\mathrm{SSIM}\big(G_\sigma\ast\hat y,\;G_\sigma\ast y\big),
+\label{eq:bg_blssim}
+\end{equation}
+which keeps the scales of ribs and soft-tissue structures and discards the finest texture. The values of $\sigma$ are fixed in the analysis plan
+and applied identically to every method.
+
+\paragraph{LPIPS.} The learned perceptual image patch similarity \citep{zhang2018lpips} measures distance in the feature space of a pretrained
+network. With $\hat u^{l}_{hw}$ and $\hat v^{l}_{hw}$ the channel-normalised activations of layer $l$ at position $(h,w)$,
+\begin{equation}
+d(u,v)=\sum_l\frac{1}{H_lW_l}\sum_{h,w}\big\lVert w_l\odot\big(\hat u^{l}_{hw}-\hat v^{l}_{hw}\big)\big\rVert_2^2 ,
+\label{eq:bg_lpips}
+\end{equation}
+where the channel weights $w_l$ were fitted to human similarity judgements. Lower is better. This study uses the AlexNet variant and replicates
+the grey image to three channels. The network and the human judgements come from natural images, so LPIPS is a secondary, perceptual check
+rather than a measure of diagnostic content.
+
+\paragraph{Contrast-to-noise ratio of a box.} For a lesion with bounding box $\mathcal{B}$, let $\mathcal{R}$ be the ring obtained by enlarging
+the box by half its width on the left and right and by half its height above and below, minus the box itself (clipped to the image). The
+contrast-to-noise ratio is
+\begin{equation}
+\mathrm{CNR}=\frac{\bar x_{\mathcal{B}}-\bar x_{\mathcal{R}}}{\mathrm{sd}_{\mathcal{R}}(x)+\varepsilon},
+\label{eq:bg_cnr}
+\end{equation}
+with means $\bar x$ and standard deviation $\mathrm{sd}$ over the indicated pixels and a small $\varepsilon$. The effect of suppression is the
+change $\Delta\mathrm{CNR}=\mathrm{CNR}(\hat s)-\mathrm{CNR}(x)$ on the same box. Two effects are mixed in this number: removing rib edges from
+the ring lowers $\mathrm{sd}_{\mathcal{R}}$ and raises the CNR, while moving part of the lesion into the bone image lowers the numerator. A
+positive change therefore does not prove that the lesion was preserved, and the CNR is used as evidence that complements, but does not replace,
+the insertion audit. A box also contains background around the lesion, so its mean is a diluted measure of lesion contrast.
+
+\paragraph{Detection: FROC and CPM.} A detector outputs boxes with scores. A predicted box is matched to a ground-truth box if their
+intersection over union, $\mathrm{IoU}=|\mathcal{B}_1\cap\mathcal{B}_2|/|\mathcal{B}_1\cup\mathcal{B}_2|$, reaches a threshold; predictions are
+matched greedily in order of decreasing score and each ground-truth box at most once. For a score threshold $t$, let $\mathrm{TP}(t)$ and
+$\mathrm{FP}(t)$ be the numbers of matched and unmatched predictions with score at least $t$, $N_{\mathrm{gt}}$ the number of ground-truth
+lesions and $N_{\mathrm{img}}$ the number of images. The free-response ROC (FROC) curve plots the sensitivity
+$\mathrm{TP}(t)/N_{\mathrm{gt}}$ against the mean number of false positives per image $\mathrm{FP}(t)/N_{\mathrm{img}}$ as $t$ varies. The
+competition performance metric (CPM) averages the sensitivity at seven operating points,
+\begin{equation}
+\begin{gathered}
+\mathrm{CPM}=\frac17\sum_{r\in\{\frac18,\frac14,\frac12,1,2,4,8\}}\mathrm{Sens}(r),\\
+\mathrm{Sens}(r)=\max_{t:\ \mathrm{FP}(t)/N_{\mathrm{img}}\le r}\frac{\mathrm{TP}(t)}{N_{\mathrm{gt}}},
+\end{gathered}
+\label{eq:bg_cpm}
+\end{equation}
+as introduced in the ANODE09 study and named CPM by \citet{niemeijer2011cpm} \citep[see also][]{vanginneken2010anode09,setio2017luna16}. Tied
+scores are treated as one threshold, so the curve does not depend on how a sort orders ties. FROC analysis suits lesion detection because an
+image can contain several lesions and several false marks, which an image-level ROC curve cannot represent.
+
+\paragraph{Average precision.} With precision $P(t)=\mathrm{TP}(t)/(\mathrm{TP}(t)+\mathrm{FP}(t))$ and recall
+$\mathrm{Rec}(t)=\mathrm{TP}(t)/N_{\mathrm{gt}}$, the interpolated precision at recall $r$ is $P_{\mathrm{int}}(r)=\max_{r'\ge r}P(r')$ and the
+average precision is the area under the interpolated precision--recall curve,
+\begin{equation}
+\mathrm{AP}=\sum_k\big(r_k-r_{k-1}\big)\,P_{\mathrm{int}}(r_k),
+\label{eq:bg_ap}
+\end{equation}
+summed over the distinct recall levels $r_k$ (all-point interpolation). The mean over classes at an IoU threshold of 0.5 is reported as
+mAP@50. Unlike the CPM, AP penalises false positives through precision rather than per image.
+
+\paragraph{AUROC.} For a binary label with $m$ positive cases with scores $X_1,\dots,X_m$ and $n$ negative cases with scores $Y_1,\dots,Y_n$, the
+area under the ROC curve equals the Mann--Whitney statistic
+\begin{equation}
+\begin{gathered}
+\hat\theta=\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}\psi(X_i,Y_j),\\
+\psi(a,b)=\begin{cases}1 & a>b\\ \tfrac12 & a=b\\ 0 & a<b\end{cases},
+\end{gathered}
+\label{eq:bg_auc}
+\end{equation}
+the probability that a random positive case scores higher than a random negative one. It does not depend on a threshold or on the class
+prevalence. For several labels (for example the findings of a multi-label classifier) the macro-AUROC is the unweighted mean of the per-label AUROCs.
+
+\section{Uncertainty estimation}
+\label{sec:bg_uncertainty}
+A suppressor returns one bone image; a user also needs to know where that image may be wrong. Two kinds of uncertainty are usually distinguished:
+\emph{aleatoric} uncertainty, which comes from ambiguity in the data and cannot be reduced by more training data (the rib-or-nodule ambiguity of
+Section~\ref{sec:bg_cxr} is of this kind), and \emph{epistemic} uncertainty, which comes from limited data and model knowledge and grows on
+inputs unlike the training data. This study uses a deep ensemble to obtain a per-pixel uncertainty score and split conformal prediction to turn
+that score into intervals with a stated coverage.
+
+\paragraph{Deep ensembles.} \citet{lakshminarayanan2017ensembles} train several networks independently from different random initialisations
+(and data orders) and combine their predictions; they also use proper scoring rules and, optionally, adversarial training. For $K$ members
+$f_1,\dots,f_K$, the ensemble prediction and spread of the bone image at pixel $p$ are
+\begin{equation}
+\begin{gathered}
+\bar f_p(x)=\frac1K\sum_{k=1}^{K}f_{k,p}(x),\\
+\sigma_p(x)=\Big(\frac{1}{K-1}\sum_{k=1}^{K}\big(f_{k,p}(x)-\bar f_p(x)\big)^2\Big)^{1/2}.
+\end{gathered}
+\label{eq:bg_ensemble}
+\end{equation}
+The mean is usually more accurate than a single member, and the spread is large where the members disagree, which happens mostly where the data
+did not pin the function down. In this study each member outputs only a bone image, not a variance, so $\sigma$ reflects disagreement between
+members rather than noise in the target. With few members $\sigma$ is itself a noisy estimate, and nothing guarantees that it is calibrated: a
+spread of $0.01$ need not mean an error of about $0.01$. Whether the spread ranks pixels by their error is checked with the Spearman correlation
+between spread and absolute error (Section~\ref{sec:bg_stats}) and with sparsification curves (Section~\ref{sec:method_v2}).
+
+\paragraph{Split conformal prediction.} Conformal prediction turns any score into a prediction set with a guaranteed coverage
+\citep{lei2018conformal,angelopoulos2023conformal}. In the split version the model is fixed and a calibration set
+$(X_1,Y_1),\dots,(X_n,Y_n)$, disjoint from the training data, is used to compute nonconformity scores. For a regression output with an
+uncertainty scale, a natural score is the normalised residual
+\begin{equation}
+S_i=\frac{|Y_i-\bar f(X_i)|}{\sigma(X_i)+\varepsilon},
+\label{eq:bg_score}
+\end{equation}
+with a small $\varepsilon$ that keeps the interval open where the members agree exactly. Let $\hat q$ be the
+$\lceil (n+1)(1-\alpha)\rceil$-th smallest of $S_1,\dots,S_n$. The interval for a new input is
+\begin{equation}
+C(X_{n+1})=\big[\bar f(X_{n+1})-\hat q\,(\sigma(X_{n+1})+\varepsilon),\;\bar f(X_{n+1})+\hat q\,(\sigma(X_{n+1})+\varepsilon)\big].
+\label{eq:bg_conformal}
+\end{equation}
+For the bone image $Y$ is a bone pixel value; because $\hat s=x-\hat b$ and $x$ is known, the soft image has an interval of the same width.
+
+\paragraph{Exchangeability and marginal coverage.} The guarantee rests on one assumption: the calibration pairs and the test pair
+$(X_1,Y_1),\dots,(X_{n+1},Y_{n+1})$ are \emph{exchangeable}, that is, their joint distribution does not change when the indices are permuted.
+Independent, identically distributed data are exchangeable. Under exchangeability the rank of $S_{n+1}$ among $S_1,\dots,S_{n+1}$ is uniformly
+distributed, from which it follows that
+\begin{equation}
+\Pr\big(Y_{n+1}\in C(X_{n+1})\big)\ \ge\ 1-\alpha ,
+\label{eq:bg_coverage}
+\end{equation}
+and, if the scores are almost surely distinct, the coverage is also at most $1-\alpha+1/(n+1)$ \citep{lei2018conformal}. Three limits of this
+statement matter for this study. First, the coverage is \emph{marginal}: the probability is over the random calibration set and the random test
+point together, so the interval covers $1-\alpha$ of test points on average, not $1-\alpha$ of the pixels of every image or of every region (for
+example the pixels over a lesion). Second, when pixels are pooled as calibration units, the pixels of one image are dependent, so exchangeability
+of pixels is an approximation; the resulting statement is about pixels drawn as in calibration, not about images (Section~\ref{sec:method_v2}).
+Third, the guarantee holds only for test data from the calibration distribution. Calibrating on CT projections and testing on real radiographs
+breaks exchangeability, so coverage on real images is measured, not guaranteed, and is reported as coverage under shift
+(Chapter~\ref{ch:reliability}).
+
+\section{Statistical methods}
+\label{sec:bg_stats}
+All comparisons in this thesis are \emph{paired}: every method is scored on the same units (images, lesion sites, patients), and inference is
+based on the per-unit differences $d_i=a_i-b_i$ between two methods. Pairing removes the large variation between units that both methods share and
+makes small differences detectable.
+
+\paragraph{Percentile bootstrap.} The bootstrap \citep{efron1993bootstrap} estimates the sampling distribution of a statistic by resampling the
+observed data. For the mean difference $\hat\theta=\frac1n\sum_i d_i$, draw $B$ samples of size $n$ with replacement from $d_1,\dots,d_n$,
+compute the mean $\hat\theta^{\ast}_b$ of each, and take the empirical quantiles
+\begin{equation}
+\big[\hat\theta^{\ast}_{(\alpha/2)},\ \hat\theta^{\ast}_{(1-\alpha/2)}\big]
+\label{eq:bg_boot}
+\end{equation}
+as a $1-\alpha$ confidence interval. The percentile interval needs no normality assumption; it assumes that the units are independent and that the
+sample is large enough for the bootstrap distribution to approximate the sampling distribution.
+
+\paragraph{Cluster bootstrap.} Units are often nested: several lesion sites per image, several images per patient. Sites in one image share the
+image's anatomy and the model's behaviour on it, so they are positively correlated, and resampling sites as if independent gives intervals that
+are too narrow. The cluster bootstrap resamples whole clusters $g=1,\dots,G$ with replacement and recomputes the statistic over all units in the
+resampled clusters,
+\begin{equation}
+\hat\theta^{\ast}_b=\frac{\sum_{g\in\mathcal{S}_b}\sum_{i\in g}d_i}{\sum_{g\in\mathcal{S}_b}n_g},
+\label{eq:bg_clusterboot}
+\end{equation}
+where $\mathcal{S}_b$ is the $b$-th resample of cluster indices (with repetitions) and $n_g$ the number of units in cluster $g$. The between-cluster
+variation then enters the interval as it should. In this study, for example, lesion sites are clustered by image and images by patient
+(Section~\ref{sec:experiments}).
+
+\paragraph{Wilcoxon signed-rank test.} \citet{wilcoxon1945individual} proposed ranking the absolute paired differences. Zero differences are
+dropped; the remaining $|d_i|$ are ranked from 1 to $n$ (ties receive average ranks), and the statistic is the sum of the ranks of the positive
+differences,
+\begin{equation}
+\begin{gathered}
+W^{+}=\sum_{i:\,d_i>0}\mathrm{rank}(|d_i|),\\
+\mathrm{E}[W^{+}]=\frac{n(n+1)}{4},\\
+\mathrm{Var}[W^{+}]=\frac{n(n+1)(2n+1)}{24}
+\end{gathered}
+\label{eq:bg_wilcoxon}
+\end{equation}
+under the null hypothesis that the differences are distributed symmetrically about zero (variance without ties). Large samples use the normal
+approximation, small ones the exact distribution. The test is robust to outliers and does not assume normality, but it tests a shift in location
+(the pseudo-median of the differences), not the mean; the bootstrap interval of the mean and the Wilcoxon $p$-value therefore answer slightly
+different questions and are reported together.
+
+\paragraph{Holm correction.} Testing $m$ hypotheses at level $\alpha$ each inflates the probability of at least one false rejection (the
+family-wise error rate). The Holm procedure \citep{holm1979simple} orders the $p$-values $p_{(1)}\le\dots\le p_{(m)}$ and rejects
+$H_{(1)},\dots,H_{(k-1)}$, where $k$ is the first index with $p_{(k)}>\alpha/(m-k+1)$. Equivalently, the adjusted $p$-values
+\begin{equation}
+\tilde p_{(i)}=\max_{j\le i}\ \min\big(1,\,(m-j+1)\,p_{(j)}\big)
+\label{eq:bg_holm}
+\end{equation}
+are compared with $\alpha$. Holm controls the family-wise error rate under any dependence between the tests and rejects at least as much as
+the Bonferroni correction. It is applied within each pre-declared family of hypotheses; confidence intervals are not adjusted.
+
+\paragraph{One-sided non-inferiority.} A new method that adds a regulariser is not expected to be better than a reference on every metric; the
+question is whether it is \emph{not worse by more than a tolerable amount}. For a metric where higher is better and a margin $\delta>0$ fixed in
+advance, the hypotheses are
+\begin{equation}
+H_0:\ \Delta\le-\delta\qquad\text{against}\qquad H_1:\ \Delta>-\delta ,
+\label{eq:bg_noninf}
+\end{equation}
+where $\Delta$ is the mean paired difference (new minus reference). $H_0$ is rejected at level $0.05$ if the lower limit of a one-sided 95\,\%
+confidence interval for $\Delta$, which equals the lower limit of a two-sided 90\,\% interval, lies above $-\delta$. Three points are often
+confused. Failing to show non-inferiority does not show inferiority; non-inferiority does not mean equality; and a margin chosen after seeing the
+data makes the test meaningless, which is why the margins of this study were fixed in the analysis plan (Section~\ref{sec:experiments}).
+
+\paragraph{DeLong test for paired AUCs.} When two classifiers score the same cases, their AUCs are correlated, and comparing them as if
+independent wastes power. \citet{delong1988auc} use the structure of Equation~\eqref{eq:bg_auc}. For classifier $r$ define the placement values
+\begin{equation}
+\begin{gathered}
+V^{r}_{10}(X_i)=\frac1n\sum_{j=1}^{n}\psi(X^{r}_i,Y^{r}_j),\\
+V^{r}_{01}(Y_j)=\frac1m\sum_{i=1}^{m}\psi(X^{r}_i,Y^{r}_j),
+\end{gathered}
+\label{eq:bg_placements}
+\end{equation}
+whose means are both $\hat\theta^{r}$. With $S_{10}$ and $S_{01}$ the sample covariance matrices of the placement values over the positive and
+the negative cases, the covariance of the AUC estimates is $S=S_{10}/m+S_{01}/n$, and
+\begin{equation}
+z=\frac{\hat\theta^{1}-\hat\theta^{2}}{\sqrt{S_{11}+S_{22}-2S_{12}}}
+\label{eq:bg_delong}
+\end{equation}
+is compared with a standard normal distribution. The covariance term $S_{12}$ is what makes the test paired: the more the two classifiers agree
+on which cases are hard, the smaller the variance of their difference.
+
+\paragraph{Spearman correlation.} The Spearman coefficient is the Pearson correlation of the ranks of two variables; without ties it equals
+\begin{equation}
+\rho_S=1-\frac{6\sum_i D_i^2}{n(n^2-1)},
+\label{eq:bg_spearman}
+\end{equation}
+where $D_i$ is the difference between the ranks of the two variables for unit $i$. It measures monotone rather than linear association and is
+invariant to monotone transformations of either variable, which suits the comparison of an uncertainty score with an error, whose scales differ.
+
+\paragraph{Training seeds.} The result of training a network depends on its random seed (initialisation, data order, augmentation). A difference
+between two arms measured with one seed each confounds the effect of the arm with seed noise. Arms are therefore trained with several seeds,
+seed results are averaged within each unit before a test, and the spread over seeds is reported alongside (Section~\ref{sec:methods}).
+
+\paragraph{Pre-specified plans, development and confirmatory data.} A study that tries many models, metrics, subsets and tests and reports the
+best has a much higher false-positive rate than its nominal $\alpha$, and a model chosen because it scored best on a data set will, on average,
+score lower on new data from the same source (selection bias, or the winner's curse) \citep{simmons2011falsepositive,varoquaux2022failures}.
+Two safeguards follow. First, development and confirmatory data are separated: every choice of architecture, weight, threshold and metric is
+made on development data (here the validation projections and the SZCH development pairs), and the confirmatory data are scored only after
+the choices are fixed. Second, the confirmatory analysis is pre-specified: hypotheses, primary metrics, tests, margins, hypothesis families and
+the data lists are written down and frozen, with file hashes, before the confirmatory data are scored (Section~\ref{sec:experiments}).
+Unlike a pre-registration, the plans and their hashes were kept in the project's version control and not deposited with a public registry,
+so their timing rests on the commit history. A pre-specified plan does not forbid exploratory analyses; it makes the difference between
+confirmatory and exploratory results visible. Any change
+to the plan after freezing is a deviation and is reported as such (Appendix~\ref{app:deviations}), and a hypothesis that fails is reported as
+failed.
+
+\input{../paper/sections/related_work}

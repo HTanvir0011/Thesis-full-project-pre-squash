@@ -1,0 +1,17 @@
+% Selective classification: area under the risk-coverage curve, lower is better; score B adds the lung-field suppressor spread
+\begin{tabular}{lllll}
+\toprule
+data set (risk) & configuration & AURC, 1 $-$ entropy & same, images with spread & AURC, + suppressor spread \\
+\midrule
+NIH (Brier score) & orig & 0.0352 & 0.0352 & 0.0372 \\
+NIH (Brier score) & soft & 0.0356 & 0.0356 & 0.0374 \\
+NIH (Brier score) & early & 0.0352 & 0.0353 & 0.0372 \\
+NIH (Brier score) & hybrid & 0.0357 & 0.0358 & 0.0375 \\
+NIH (Brier score) & ctrl & 0.0356 & 0.0356 & 0.0374 \\
+BDCXR-3257 (top-1 error) & orig & 0.1754 & 0.1754 & 0.2192 \\
+BDCXR-3257 (top-1 error) & soft & 0.1893 & 0.1893 & 0.2252 \\
+BDCXR-3257 (top-1 error) & early & 0.1811 & 0.1811 & 0.2203 \\
+BDCXR-3257 (top-1 error) & hybrid & 0.1784 & 0.1784 & 0.2138 \\
+BDCXR-3257 (top-1 error) & ctrl & 0.1938 & 0.1938 & 0.2260 \\
+\bottomrule
+\end{tabular}

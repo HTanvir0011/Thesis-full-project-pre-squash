@@ -1,0 +1,28 @@
+== rd_nt_s0: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s0.csv
+ours: n=1470 A_mean=0.164 low-overlap=0.162 high-overlap=0.189 leak=0.0019
+== rd_nt_s1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s1.csv
+ours: n=1470 A_mean=0.168 low-overlap=0.163 high-overlap=0.197 leak=0.0012
+== rd_nt_s2: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s2.csv
+ours: n=1470 A_mean=0.164 low-overlap=0.158 high-overlap=0.190 leak=0.0014
+== recipe_v1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/audit_ribcxr/recipe_v1.csv
+ens: n=1470 A_mean=0.308 low-overlap=0.246 high-overlap=0.376 leak=0.0014
+== qure: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods qure:data/qure/weights/bone_suppression.ts --out results/final/audit_ribcxr/qure.csv
+qure: n=1470 A_mean=0.149 low-overlap=0.141 high-overlap=0.198 leak=0.0004
+have results/final/audit_jsrt/rd_nt_s0.csv
+have results/final/audit_jsrt/rd_nt_s1.csv
+have results/final/audit_jsrt/rd_nt_s2.csv
+have results/final/audit_jsrt/recipe_v1.csv
+have results/final/audit_jsrt/qure.csv
+have results/final/audit_szch/rd_nt_s0.csv
+have results/final/audit_szch/rd_nt_s1.csv
+have results/final/audit_szch/rd_nt_s2.csv
+have results/final/audit_szch/recipe_v1.csv
+have results/final/audit_szch/qure.csv
+== rd_nt: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/rib/rd_nt.csv
+ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt n=245 {'r_rib': '0.3680 +- 0.0522', 'r_non': '0.1340 +- 0.0494', 'selectivity': '0.2339 +- 0.0534', 'auc': '0.6692 +- 0.0369'}
+== recipe_v1: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/rib/recipe_v1.csv
+ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt n=245 {'r_rib': '0.3461 +- 0.0721', 'r_non': '0.1393 +- 0.0742', 'selectivity': '0.2068 +- 0.0563', 'auc': '0.6883 +- 0.0380'}
+== qure: python -m s4.eval_ribcxr --root data/ribcxr_raw --method qure:data/qure/weights/bone_suppression.ts --out results/final/rib/qure.csv
+qure:data/qure/weights/bone_suppression.ts n=245 {'r_rib': '0.4844 +- 0.0753', 'r_non': '0.2201 +- 0.1007', 'selectivity': '0.2643 +- 0.0813', 'auc': '0.6705 +- 0.0419'}
+== identity: python -m s4.eval_ribcxr --root data/ribcxr_raw --method identity --out results/final/rib/identity.csv
+identity n=245 {'r_rib': '0.0000 +- 0.0000', 'r_non': '0.0000 +- 0.0000', 'selectivity': '0.0000 +- 0.0000', 'auc': '0.5000 +- 0.0000'}

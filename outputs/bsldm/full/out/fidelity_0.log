@@ -1,0 +1,26 @@
+/usr/local/lib/python3.13/dist-packages/monai/utils/module.py:399: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  pkg = __import__(module)  # top level module
+/usr/local/lib/python3.13/dist-packages/generative/networks/layers/vector_quantizer.py:86: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @torch.cuda.amp.autocast(enabled=False)
+/usr/local/lib/python3.13/dist-packages/generative/networks/layers/vector_quantizer.py:124: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @torch.cuda.amp.autocast(enabled=False)
+{
+ "method": "bsldm",
+ "n": 38,
+ "psnr_raw": "29.9440 +- 1.7920",
+ "mse_raw": "0.0011 +- 0.0004",
+ "ssim_raw": "0.8208 +- 0.0414",
+ "psnr_cal": "32.2618 +- 1.7018",
+ "mse_cal": "0.0006 +- 0.0002",
+ "ssim_cal": "0.8570 +- 0.0255",
+ "psnr_cal_bone": "28.9719 +- 3.0856",
+ "psnr_cal_nonbone": "32.9734 +- 1.5676",
+ "ssim_cal_bone": "0.8564 +- 0.0365",
+ "ssim_cal_nonbone": "0.8571 +- 0.0257",
+ "ssim_cal_s2": "0.9646 +- 0.0141",
+ "ssim_cal_s4": "0.9771 +- 0.0117",
+ "bone_corr_s2": "0.9048 +- 0.0341",
+ "bone_slope_s2": "0.8477 +- 0.0634",
+ "hp_ratio_nonbone": "0.9053 +- 0.1182",
+ "msssim_cal": "0.9466 +- 0.0122"
+}

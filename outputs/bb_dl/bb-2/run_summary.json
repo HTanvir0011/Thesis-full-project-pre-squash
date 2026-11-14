@@ -1,0 +1,1 @@
+{"jobs": [[0, "qp_twin16", 0, 100000, 8, 0.0002, "_raddino", "--backbone hf:microsoft/rad-dino --enc_lr_mult 0.25"], [1, "qp_twin16", 1, 100000, 8, 0.0002, "_raddino", "--backbone hf:microsoft/rad-dino --enc_lr_mult 0.25"]], "done": ["qp_twin16_s0_raddino", "qp_twin16_s1_raddino"]}

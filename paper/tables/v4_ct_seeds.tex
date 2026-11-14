@@ -1,0 +1,14 @@
+% Every CT teacher run (20 epochs, unchanged recipe); slot k is the teacher of P1 seed k (DEVIATIONS.md, 9 Nov)
+\begin{tabular}{llll}
+\toprule
+CT teacher seed & best validation macro-AUROC & test macro-AUROC & use \\
+\midrule
+0 & 0.7382 & 0.7369 & slot 0 \\
+1 & 0.8278 & 0.8187 & slot 1 \\
+2 & 0.5448 & 0.5540 & collapsed, not used \\
+3 & 0.8308 & 0.8091 & slot 3 \\
+4 & 0.8033 & 0.8033 & slot 4 \\
+5 & 0.8342 & 0.8224 & slot 2 (replaces seed 2) \\
+6 & 0.7135 & 0.7297 & unused spare \\
+\bottomrule
+\end{tabular}

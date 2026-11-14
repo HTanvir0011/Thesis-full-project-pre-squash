@@ -1,0 +1,21 @@
+C:\Users\Asus\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\torch\jit\_serialization.py:170: FutureWarning: `torch.jit.load` is not supported in Python 3.14+ and may break. Please switch to `torch.export`.
+  warnings.warn(
+{
+ "method": "qure:data/qure/weights/bone_suppression.ts",
+ "n": 75,
+ "psnr_raw": "24.1542 +- 0.6965",
+ "mse_raw": "0.0039 +- 0.0006",
+ "ssim_raw": "0.8717 +- 0.0168",
+ "psnr_cal": "25.7003 +- 0.7432",
+ "mse_cal": "0.0027 +- 0.0005",
+ "ssim_cal": "0.8687 +- 0.0261",
+ "psnr_cal_bone": "21.6579 +- 1.4519",
+ "psnr_cal_nonbone": "26.5854 +- 0.8650",
+ "ssim_cal_bone": "0.8138 +- 0.0333",
+ "ssim_cal_nonbone": "0.8748 +- 0.0294",
+ "ssim_cal_s2": "0.9393 +- 0.0249",
+ "ssim_cal_s4": "0.9498 +- 0.0235",
+ "bone_corr_s2": "0.3621 +- 0.1019",
+ "bone_slope_s2": "0.3457 +- 0.1529",
+ "hp_ratio_nonbone": "0.9898 +- 0.1581"
+}

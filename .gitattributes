@@ -1,0 +1,25 @@
+*.sh text eol=lf
+# Files whose SHA-256 a freeze recorded (protocol/freeze*.json): stored byte for byte, without line-ending conversion,
+# so tools/verify_freeze.py gives the same answer on every platform.
+config.yaml -text
+kernels/down/run_down.py -text
+kernels/xm_prep/run_xm_prep.py -text
+protocol/DESIGN_v3.md -text
+protocol/DESIGN_v4.md -text
+protocol/SAP.md -text
+protocol/SAP_v2.md -text
+protocol/SAP_v3.md -text
+protocol/SAP_v4.md -text
+results/qp_meta.csv -text
+s4/cls_hybrid.py -text
+s4/ct_prep.py -text
+s4/runtag.py -text
+s4/uq_conformal.py -text
+s4/xai_multistream.py -text
+s4/xm.py -text
+s4/xm_halluc.py -text
+s4/xm_labels.py -text
+s4/xm_xai.py -text
+splits/ct_split.csv -text
+tools/hybrid_stats.py -text
+tools/xm_stats.py -text

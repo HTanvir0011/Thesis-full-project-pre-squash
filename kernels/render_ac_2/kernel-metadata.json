@@ -1,0 +1,19 @@
+{
+ "id": "ac_2/s4-render-1",
+ "title": "s4-render-1",
+ "code_file": "render_shard.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": false,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "dataset_sources": [
+  "washingtongold/lidcidri30",
+  "vafaeii/luna16",
+  "ac_2/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

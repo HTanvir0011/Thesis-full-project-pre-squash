@@ -1,0 +1,430 @@
+% Cross-modality study (v4): the fourth analysis plan SAP_v4.md and its design DESIGN_v4.md, hash-frozen in freeze_v4.json on 8 November 2026
+% before the first v4 training run; later changes are in DEVIATIONS.md (Appendix app:deviations). Tables: paper/tables/v4_*.tex, written by
+% tools/xm_tables.py from results/final_xm_stats.json (tools/xm_stats.py), results/v4/delong.json, results/v4/pointing_summary.json and
+% results/v4/uq_cls_*.json; figures: paper/figures/fig_v4_*.pdf (tools/fig_v4.py). Numbers in the text are copied from those files.
+\section{Question}
+\label{sec:xm_intro}
+The earlier chapters used CT in one way only: to render training images for a bone suppressor. No classifier ever saw a CT volume. This
+chapter asks whether CT can teach a chest radiograph classifier directly. CT resolves in three dimensions what a radiograph superimposes,
+so a classifier trained on CT learns its findings without the overlap of ribs, heart and mediastinum. If that knowledge passes to an X-ray
+model through images of the same patients, the X-ray model might classify real radiographs better, look at the right place and report
+fewer findings that are not there.
+
+The chapter builds and tests such a framework: an explainable and hallucination-aware Swin transformer for cross-modality chest CT and
+X-ray classification. One Swin family, SwinV2-T \citep{liu2022swinv2}, serves both modalities. A CT teacher learns six findings from
+volumes of CT-RATE \citep{hamamci2026ctrate}. An X-ray model learns the same findings from frontal projections of the same volumes, once on
+its own (P0) and once with knowledge distillation from the teacher (P1) \citep{hinton2015distilling}. Both then initialise classifiers of
+the 14 NIH ChestX-ray14 diseases \citep{wang2017chestxray}, beside a classifier started from ImageNet weights. Five hypotheses were fixed
+before any v4 model was trained, in a fourth analysis plan that is pre-specified and hash-frozen (8 November 2026) but not deposited in a
+public registry; they continue the numbering of the earlier plans. H11 (primary) and H12 ask whether distillation from CT improves the
+classification of real radiographs; H13 compares the Swin classifier with the DenseNet-121 of Chapter~\ref{ch:classifier}; H14 asks
+whether the CT and the X-ray models attend to the same place in the same patient; and H15 asks whether the CT-distilled classifier
+hallucinates less when an image gains anatomy but no disease.
+
+\section{Materials and methods}
+\label{sec:xm_methods}
+
+\subsection{Data}
+\label{sec:xm_data}
+\paragraph{Paired CT and projections.} The Qure.ai ct2xr projections \citep{angaitkar2026anatomy} are frontal projections of CT-RATE
+volumes, one per volume, each with six findings taken from its scan: lung opacity, pleural effusion, atelectasis, cardiomegaly,
+consolidation and lung lesion. They were split by patient as in Chapter~\ref{ch:v2} (\num{21051} training, 406 validation and 430 test
+projections). The CT subset holds one reconstruction per patient: every validation and test patient of that split and \num{1600} training
+patients drawn with a fixed seed, \num{2156} volumes in all (\num{1600} training, 259 validation, 297 test). Volumes that CT-RATE lists as
+not showing the chest and volumes not scanned head first and supine were never selected, and their projections were left out of the
+projection models as well, which leaves \num{20533} training, 396 validation and 415 test projections. Each volume was reduced inside the
+cloud kernel to 24 axial slices spread over the lung extent, with three Hounsfield windows as channels (lung, mediastinum, bone) and
+cropped to the body at 256\,px; the lung box and an anteroposterior attenuation projection were kept for the heat maps. CT-RATE is
+released under CC BY-NC-SA~4.0; following the design, nothing derived from it left the cloud accounts except metrics and the
+$32\times32$ heat-map frames, with the logged exceptions of Appendix~\ref{app:deviations} (teacher outputs, predictions and the weights of
+the distilled models, which stayed private on the author's computer).
+
+\paragraph{Real radiographs.} NIH ChestX-ray14 and VinBigData were used with the splits of Chapter~\ref{ch:classifier}
+(Section~\ref{sec:cls_data}): NIH \num{77890} training, \num{8634} validation and \num{25596} test images with the 984 expert boxes of the
+test list; VinBigData \num{2943} test images, used for zero-shot transfer only. A fixed label map links the six projection findings to
+the real data sets: pleural effusion, atelectasis, cardiomegaly and consolidation map to the classes of the same name, and lung lesion to
+NIH Mass or Nodule (VinBigData Nodule/Mass). These five are the exactly mapped shared findings of H11 and H12. Lung opacity maps exactly to
+VinBigData Lung Opacity but only approximately to NIH Infiltration; it is reported but not tested.
+
+\subsection{Models and training}
+\label{sec:xm_models}
+All models use SwinV2-T (\texttt{swinv2\_tiny\_window8\_256}, ImageNet-1k weights from timm \citep{wightman2019timm}) and the class-query
+decoder of Chapter~\ref{ch:classifier} (Section~\ref{sec:cls_methods}); learning rate $3\times10^{-4}$ with the encoder at 0.25 of it, and
+five seeds per model (Fig.~\ref{fig:xm_design}).
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_design.pdf}
+\caption{Study design. A 2.5D CT teacher learns six findings on the CT subset; projection models learn them on the Qure.ai projections
+without (P0) and with (P1) distillation from the teacher; NIH classifiers start from ImageNet (F$_\mathrm{in}$), P0 (F$_\mathrm{p0}$) or P1
+(F$_\mathrm{p1}$). All models are SwinV2-T with the class-query decoder, five seeds each; the DenseNet-121 of
+Chapter~\ref{ch:classifier} is the CNN reference.}
+\label{fig:xm_design}
+\end{figure}
+
+\paragraph{CT teacher.} A 2.5D network: the X-ray encoder runs on each of the 24 slices with the three windows as colour channels; every
+slice yields $8\times8$ tokens with a two-dimensional sine code and a learned slice-depth embedding, and the class-query decoder attends
+over the tokens of all slices. A full 3D Swin did not fit a T4 GPU at a useful batch size, and the 2.5D design keeps the ImageNet weights
+and the architecture of the X-ray model. It was trained for 20 epochs with four volumes per step, keeping the best validation epoch.
+
+\paragraph{Projection models.} P0 learns the six findings on the projections for 15 epochs (batch 32). P1 is trained the same way but,
+on the \num{1600} training rows whose volume is in the CT subset, also matches the teacher's logits (binary distillation at temperature
+2, weight 1) and aligns its pooled decoder output with the teacher's through a linear head (cosine loss, weight 0.5); half of every batch
+is drawn from these paired rows. P1 seed $k$ distils from the teacher of slot $k$ (below).
+
+\paragraph{NIH classifiers.} F$_\mathrm{in}$ starts from ImageNet, F$_\mathrm{p0}$ from P0 and F$_\mathrm{p1}$ from P1 (encoder and
+decoder loaded, class heads new); each is trained on the 14 NIH diseases for 10 epochs (batch 32) with the radiograph as its only input,
+keeping the best validation epoch. The five DenseNet-121 radiograph-only runs of Chapter~\ref{ch:classifier} are the CNN reference; they
+were trained for 20 epochs at the full encoder learning rate, the pre-specified rule for batch-normalised encoders, so H13 compares
+encoders trained with different budgets, neither tuned further.
+
+\paragraph{Seed handling.} CT teacher seed 2 did not learn: its validation macro-AUROC stayed between 0.46 and 0.54 and its logits were
+constant over all volumes. Before any P1 model of seed 2 was trained, a rule was fixed and logged: train seeds 5 and 6 with the unchanged
+recipe and give slot 2 to seed 5 unless its logits were constant (per-class standard deviation below 0.01 over the training and validation
+volumes in every class), otherwise to seed 6. Seed 5 learned and took slot 2; seed 6 was not used. The teachers of slots 0--4 are
+therefore seeds 0, 1, 5, 3 and 4.
+
+\subsection{Explainability}
+\label{sec:xm_xai}
+\paragraph{X-ray.} Grad-CAM++ on the last encoder stage \citep{chattopadhay2018gradcampp}, Integrated Gradients
+\citep{sundararajan2017axiomatic} and the attention of the last decoder layer were computed as in Section~\ref{sec:cls_xai}, and the
+pointing game was played on the 984 NIH boxes with the same tolerance of 15\,px at 256\,px \citep{zhang2018topdown}, for each seed of
+F$_\mathrm{in}$, F$_\mathrm{p0}$, F$_\mathrm{p1}$ and the DenseNet-121 reference.
+
+\paragraph{CT and cross-modal agreement (H14).} For each CT subset test scan positive for a finding, Grad-CAM++ was computed on every slice
+of the teacher, the slice maps were stacked into a saliency volume and summed along the anteroposterior axis, which gives a frontal map in
+the geometry of the paired projection. The CT map and the X-ray map of the paired projection (P1, and P0 for comparison) were cropped to
+their own lung boxes, resized to $32\times32$, scaled to sum 1 and averaged over the five seed pairs (teacher of slot $k$ with X-ray seed
+$k$). Agreement is the Pearson correlation of the matched maps; its null pairs the CT map with the X-ray maps of the other scans positive
+for the same finding. The pre-specified orientation check used the frames alone, never a heat map: the CT attenuation frames correlated
+better with the projections as they were (0.472) than mirrored (0.435), so no X-ray map was mirrored.
+
+\subsection{Hallucination tests}
+\label{sec:xm_halluc}
+A classifier hallucinates when it reports a finding the image does not contain, or misses one it does. The tests use the
+\num{9861} NIH test images without any finding and each model's seed-mean probabilities, with a per-class threshold at 90\,\% specificity
+on the validation split. \emph{Finding-free perturbations:} rib emphasis (the radiograph plus half of the bone image of the suppressor of
+Chapter~\ref{ch:v2}, which adds anatomy but no disease), Gaussian noise ($\sigma=0.02$) and a gamma of 0.8; the hallucination rate is the
+share of images in which some class moves from at most to above its threshold. \emph{Counterfactual lesions:} a nodule from the lesion
+library of Chapter~\ref{ch:audit} is pasted into a lung field of images whose Mass and Nodule scores are at most their thresholds; sensitivity
+is the share in which either score crosses its threshold, and the score change is reported by nodule-size tertile. \emph{Off-target
+attribution:} the share of Grad-CAM++ mass outside the lung field for positive predictions of lung findings. Seed groups of one model run on
+different accounts were combined first (probabilities averaged with the number of seeds as weights, thresholds from the averaged
+validation probabilities).
+
+\subsection{Statistics}
+\label{sec:xm_stats}
+A model's prediction is the mean of its seeds' probabilities. H11 compares F$_\mathrm{p1}$ with F$_\mathrm{in}$ in the mean test AUROC of
+the five exactly mapped shared findings; H12 makes the same comparison for F$_\mathrm{p1}$ against F$_\mathrm{p0}$ and for F$_\mathrm{p0}$
+against F$_\mathrm{in}$; H13 compares F$_\mathrm{in}$ with the DenseNet-121 reference in the macro-AUROC over all 14 NIH diseases. All
+three use a paired patient-cluster bootstrap (\num{10000} resamples) with two-sided percentile $p$-values (the $+1$ rule); H11 and the two
+H12 contrasts form one Holm family. H14 is the mean per-map difference between matched and mismatched correlation with a scan-cluster
+bootstrap, and H15 the mean per-image difference in the rib-emphasis flip between F$_\mathrm{p1}$ and F$_\mathrm{in}$ with a
+patient-cluster bootstrap. The plan lists as descriptive: the CT teacher, the projection models and their zero-shot transfer to NIH and
+VinBigData, per-class DeLong tests \citep{delong1988auc}, conformal risk control of the false-negative rate at 0.10
+\citep{angelopoulos2022crc} for the Swin classifiers (calibrated on the NIH validation predictions as in Section~\ref{sec:cls_uq}) and the
+pointing game. How the DeLong tests are grouped (Holm over the 15 shared-finding tests and over the 14 classes of the H13 contrast) and how
+the pointing game is summarised (hit rate of the seed-mean hits with an image-cluster bootstrap interval) were fixed after the hypothesis
+results were known and are logged as such.
+
+\section{Results}
+\label{sec:xm_results}
+All 32 training runs finished (seven CT teachers, ten projection models and 15 NIH classifiers), as did the 20 zero-shot transfers, the
+ten cross-modal map runs, seven hallucination test runs and 20 pointing-game runs. One zero-shot run first failed because it started
+before its model had been written and was rerun unchanged. Table~\ref{tab:xm_ct_seeds} and Fig.~\ref{fig:xm_ct_training} show the seven
+CT teachers.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Every CT teacher run (unchanged recipe, 20 epochs): best validation and test macro-AUROC over the six findings of the CT subset.
+Slot $k$ is the teacher of P1 seed $k$; seed 2 collapsed and seed 5 replaced it by the rule fixed beforehand.}
+\label{tab:xm_ct_seeds}
+\fittable{tables/v4_ct_seeds.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig[88mm]{figures/fig_v4_ct_training.pdf}
+\caption{Validation macro-AUROC of the CT teacher per epoch for all seven seeds. Seed 2 never left chance level, seed 6 learned late and
+was not used, and seed 0 stalled near 0.60 for 12 epochs before it learned.}
+\label{fig:xm_ct_training}
+\end{figure}
+
+\subsection{CT teacher and projection models}
+\label{sec:xm_res_transfer}
+The CT teacher reached a seed-ensemble test macro-AUROC of 0.821 on the 297 CT subset test volumes (Table~\ref{tab:xm_transfer}). It was
+strong for cardiomegaly (0.951) and pleural effusion (0.942) and weak for lung lesions (0.608). The recipe was unstable across seeds: the
+single teachers ranged from 0.737 to 0.822 among the five used, and two of seven runs collapsed or nearly did.
+
+On the projections, distillation lowered accuracy slightly. The seed ensemble of P1 reached 0.806 against 0.814 for P0, and P1 was below
+P0 in every seed (Table~\ref{tab:xm_seeds}, Fig.~\ref{fig:xm_transfer}a). Without any training on real radiographs, the projection
+models transferred moderately to VinBigData (P0 0.739, P1 0.732) and weakly to NIH (P0 0.648, P1 0.640); distillation again gave the
+lower value in both.
+
+\begin{table}[htbp]
+\centering\small
+\caption{CT teacher, projection models and their zero-shot transfer: test AUROC of the seed ensembles over the six findings, with the
+macro-average (descriptive). NIH lung opacity is the approximate mapping to Infiltration.}
+\label{tab:xm_transfer}
+\fittable{tables/v4_transfer.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Test macro-AUROC of every single model (one seed each); the other tables use the seed ensembles. Projection models and zero-shot
+transfer: six findings; NIH classifiers: 14 diseases.}
+\label{tab:xm_seeds}
+\fittable{tables/v4_seeds.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_transfer.pdf}
+\caption{Macro-AUROC of single seeds (open circles) and seed ensembles (diamonds). (a) Projection test split; (b, c) zero-shot transfer
+of the projection models to NIH and VinBigData over the six shared findings; (d) NIH classifiers over the 14 diseases.}
+\label{fig:xm_transfer}
+\end{figure}
+
+\subsection{Distillation and real radiographs (H11, H12)}
+\label{sec:xm_res_h11}
+Distillation from CT did not improve the classification of real radiographs (Table~\ref{tab:xm_hyp}, Fig.~\ref{fig:xm_forest}a). On the
+five shared findings F$_\mathrm{p1}$ differed from F$_\mathrm{in}$ by $-0.0001$ $[-0.0016, 0.0014]$ (Holm $p=0.912$), so a gain larger
+than 0.0014 is not compatible with the data. F$_\mathrm{p1}$ did not differ from F$_\mathrm{p0}$ ($-0.0008$ $[-0.0022, 0.0006]$, Holm
+$p=0.742$), nor F$_\mathrm{p0}$ from F$_\mathrm{in}$ ($+0.0007$ $[-0.0008, 0.0023]$, Holm $p=0.742$). Over all 14 diseases the three Swin
+classifiers reached 0.819 (F$_\mathrm{in}$), 0.822 (F$_\mathrm{p0}$) and 0.821 (F$_\mathrm{p1}$) (Table~\ref{tab:xm_macro}). Per shared
+finding no difference survived the correction; the largest were $+0.0044$ for cardiomegaly with F$_\mathrm{p0}$ against F$_\mathrm{in}$
+(Holm $p=0.093$) and $-0.0042$ for consolidation with F$_\mathrm{p1}$ against F$_\mathrm{in}$ (Holm $p=0.122$; Table~\ref{tab:xm_shared}).
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Pre-specified hypotheses: differences of the seed ensembles with 95\,\% bootstrap intervals (\num{10000} resamples). Holm: H11
+with the two H12 contrasts. The P0 row of H14 is descriptive.}
+\label{tab:xm_hyp}
+\fittable{tables/v4_hypotheses.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_forest.pdf}
+\caption{Pre-specified contrasts with 95\,\% bootstrap intervals. (a) AUROC contrasts of H11--H13; (b) H14, matched minus mismatched
+correlation of the CT and X-ray heat maps; (c) H15, difference in the share of finding-free images flipped by rib emphasis. Filled
+markers: $p<0.05$ (Holm-adjusted for H11 and H12).}
+\label{fig:xm_forest}
+\end{figure}
+
+\begin{table}[htbp]
+\centering\small
+\caption{NIH test macro-AUROC of the seed ensembles over the 14 diseases and mean AUROC of the five shared findings (descriptive).}
+\label{tab:xm_macro}
+\fittable{tables/v4_macro.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Shared findings on the NIH test split: AUROC of the seed ensembles and paired DeLong differences, Holm over the 15 tests
+(descriptive).}
+\label{tab:xm_shared}
+\fittable{tables/v4_shared_delong.tex}
+\end{table}
+
+\subsection{Swin against DenseNet-121 (H13)}
+\label{sec:xm_res_h13}
+The DenseNet-121 reference was better than F$_\mathrm{in}$ over the 14 diseases by $0.0049$ $[0.0015, 0.0085]$ ($p=0.005$; the difference
+F$_\mathrm{in}$ minus DenseNet-121 is $-0.0049$). The per-class tests, which were not planned in this form, locate almost all of it in one
+class (Table~\ref{tab:xm_per_class}, Fig.~\ref{fig:xm_per_class}): for hernia, the rarest NIH class (86 positive test images),
+DenseNet-121 reached 0.901 against
+0.833 ($-0.0679$, Holm $p=0.0008$), which alone accounts for $-0.0049$ of the 14-class mean. The only other class that survived the
+correction was infiltration ($-0.0062$, Holm $p=0.003$); the remaining 12 classes differed by less than 0.007 in either direction. On the
+classes other than hernia the two encoders were practically equivalent.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{NIH per-class test AUROC of the seed ensembles, with the paired DeLong difference F$_\mathrm{in}$ minus DenseNet-121 and Holm over
+the 14 classes (descriptive).}
+\label{tab:xm_per_class}
+\fittable{tables/v4_per_class.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_per_class.pdf}
+\caption{(a) NIH per-class test AUROC of the seed ensembles. (b) F$_\mathrm{in}$ minus DenseNet-121 per class with 95\,\% DeLong
+intervals; filled markers: Holm $p<0.05$ over the 14 classes. Hernia carries almost all of the H13 difference.}
+\label{fig:xm_per_class}
+\end{figure}
+
+\subsection{Cross-modal agreement (H14)}
+\label{sec:xm_res_h14}
+The CT and X-ray heat maps did not agree. Over 419 maps of 227 CT subset test scans, the matched CT and P1 maps correlated at $-0.052$ on
+average and the mismatched ones at $-0.060$, a difference of $+0.0076$ $[-0.0068, 0.0223]$ ($p=0.301$; Table~\ref{tab:xm_hyp},
+Fig.~\ref{fig:xm_forest}b). With P0 the matched maps correlated less than the mismatched ones ($-0.0087$ $[-0.0228, 0.0056]$). Per
+finding all mean correlations were negative, from $-0.008$ to $-0.140$, and the matched-minus-mismatched differences changed sign from one
+finding to the next (Table~\ref{tab:xm_crossmodal}, Fig.~\ref{fig:xm_crossmodal}). The mean maps show why (Fig.~\ref{fig:xm_maps}). The
+projected CT maps vary almost only from top to bottom, in horizontal bands that follow the importance of individual slices, while the
+X-ray maps of most findings concentrate along the edges of the lung box; for cardiomegaly they peak near the centre, where the heart is,
+and for lung lesions they are broad and weighted to the upper zones. Maps with such different structure are unlikely to correlate
+positively, whatever the patient.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Cross-modal agreement per finding: mean Pearson correlation of the projected CT map with the X-ray map of the same scan (matched)
+and with the X-ray maps of the other scans positive for the same finding (mismatched), maps averaged over the five seed pairs.}
+\label{tab:xm_crossmodal}
+\fittable{tables/v4_crossmodal.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig[88mm]{figures/fig_v4_crossmodal.pdf}
+\caption{Mean correlation of the CT map with the X-ray map of the same scan (filled) and of other scans positive for the same finding
+(open), for P1 and P0; in parentheses the number of maps.}
+\label{fig:xm_crossmodal}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_maps.pdf}
+\caption{Mean heat maps over the CT subset test scans positive for each finding: the CT teacher's Grad-CAM++ summed along the
+anteroposterior axis (top) and the Grad-CAM++ maps of P1 and P0 on the paired projections, all cropped to the lung box at $32\times32$ and
+scaled to sum 1 before averaging; each panel has its own colour scale. Only averages over scans are shown.}
+\label{fig:xm_maps}
+\end{figure}
+
+\subsection{Hallucination tests (H15)}
+\label{sec:xm_res_h15}
+Rib emphasis flipped 13.7\,\% of the finding-free NIH test images for F$_\mathrm{in}$ and 12.9\,\% for F$_\mathrm{p1}$, a difference of
+$-0.0080$ $[-0.0159, -0.0003]$ ($p=0.044$; Table~\ref{tab:xm_hyp}, Fig.~\ref{fig:xm_forest}c). H15 is secondary and was not corrected for
+multiplicity. The comparison it was built for does not single out distillation: F$_\mathrm{p0}$, trained on the same projections without
+the teacher, flipped 12.7\,\% and DenseNet-121 12.8\,\% (Table~\ref{tab:xm_halluc}, Fig.~\ref{fig:xm_halluc}). The clearest difference
+between the models came from noise: it flipped 78.1\,\% of the images for DenseNet-121 and 27.3--29.3\,\% for the Swin classifiers, while a
+gamma change flipped about 6\,\% for all four. Inserted nodules were rarely detected (sensitivity 2.8--3.2\,\%); the score change grew
+with nodule size, from practically zero for nodules of 4.0--6.2\,mm to between $+0.015$ and $+0.019$ for those of 8.5--37.6\,mm
+(Table~\ref{tab:xm_nodule}). Between 62\,\% (DenseNet-121) and 73\,\% (F$_\mathrm{p0}$) of the Grad-CAM++ mass of positive lung-finding
+predictions fell outside the lung fields.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Hallucination tests on the \num{9861} finding-free NIH test images: share with some class above its threshold on the clean image,
+share flipped by each perturbation, inserted-nodule sensitivity and the share of Grad-CAM++ mass outside the lung fields.}
+\label{tab:xm_halluc}
+\fittable{tables/v4_halluc.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Counterfactual nodules: mean change of the Mass/Nodule score after insertion, by nodule-size tertile.}
+\label{tab:xm_nodule}
+\fittable{tables/v4_nodule_size.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_halluc.pdf}
+\caption{Hallucination tests. (a) Share of finding-free NIH test images in which some class crosses its threshold after a perturbation
+that adds no disease. (b) Mean change of the Mass/Nodule score after inserting a nodule, by size tertile. (c) Share of Grad-CAM++ mass
+outside the lung fields for positive lung-finding predictions.}
+\label{fig:xm_halluc}
+\end{figure}
+
+\subsection{Pointing game}
+\label{sec:xm_res_pointing}
+The Swin classifiers' Grad-CAM++ maps rarely pointed into the expert boxes: 0.185 of the 984 targets for F$_\mathrm{in}$, 0.151 for
+F$_\mathrm{p0}$ and 0.154 for F$_\mathrm{p1}$, against 0.385 for DenseNet-121 (Table~\ref{tab:xm_pointing}, Fig.~\ref{fig:xm_pointing}).
+The decoder attention (0.479--0.572) and Integrated Gradients (0.615--0.645) did much better and differed little between the models. All
+maps hit focal boxes (masses and nodules) less often than the other boxes. Grad-CAM++ of the Swin models often spreads along the image
+borders (Fig.~\ref{fig:xm_xai}), as in the cross-modal maps.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Pointing game on the 984 NIH expert boxes (164 focal: Mass, Nodule): hit rate averaged over the five seeds, with a 95\,\%
+image-cluster bootstrap interval (descriptive).}
+\label{tab:xm_pointing}
+\fittable{tables/v4_pointing.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_pointing.pdf}
+\caption{Pointing game. (a) Hit rate over all 984 boxes with 95\,\% image-cluster bootstrap intervals. (b) Focal (filled) and other
+(open) boxes.}
+\label{fig:xm_pointing}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_xai_examples.pdf}
+\caption{Heat maps of the seed-0 models on NIH test images with expert boxes (white): the first image of each box class among the 24
+targets whose maps were saved; these 24 contain no mass or nodule box.}
+\label{fig:xm_xai}
+\end{figure}
+
+\subsection{Uncertainty}
+\label{sec:xm_res_uq}
+Conformal risk control held the false-negative rate below its target for all three Swin classifiers: calibrated on the \num{8634} NIH
+validation images, the test rate was 0.068--0.070 against a nominal 0.10, at the price of large label sets (6.33--6.45 of the 14 classes
+per image; Table~\ref{tab:xm_conformal}, Fig.~\ref{fig:xm_conformal}). Selective classification by ensemble entropy behaved identically
+for the three (area under the risk-coverage curve 0.0358).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Conformal risk control of the per-image false-negative rate at 0.10 on the NIH test split and selective classification by
+$1-$entropy (descriptive).}
+\label{tab:xm_conformal}
+\fittable{tables/v4_conformal.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_conformal.pdf}
+\caption{(a) Risk-coverage curves of the Swin classifiers (Brier score of the images kept, most confident first). (b) Test false-negative
+rate under conformal risk control at 0.10 (dashed); numbers: mean label-set size.}
+\label{fig:xm_conformal}
+\end{figure}
+
+\section{Discussion}
+\label{sec:xm_discussion}
+Distillation from a CT teacher did not make a better radiograph classifier. On the shared findings the CT-distilled classifier matched
+the one started from ImageNet within $\pm0.0016$ AUROC, and it matched the classifier pretrained on the same projections without the
+teacher; on the projections themselves and in zero-shot transfer distillation was slightly worse. With five seeds, seed ensembles and a
+plan fixed before training, the null result is informative: the interval excludes the gains that would justify a CT branch for
+radiograph classification with this design.
+
+Three observations suggest why. First, the teacher had little to give. On the six findings it was hardly better on CT (0.821) than P0 was
+on the projections of the same test patients (0.814), and it was weakest exactly where CT should help most, lung lesions (0.608). Second, the
+recipe was fragile: one of seven teachers collapsed, another nearly did, and the five used ranged from 0.737 to 0.822, so P1 seeds learned
+from teachers of very different quality. Third, whatever P1 gained on the projections had to survive the move to real radiographs; the
+zero-shot results (0.640--0.648 on NIH) show how wide that gap is, and the ten epochs of NIH fine-tuning may simply overwrite the
+initialisation, as the equal results of F$_\mathrm{p0}$ and F$_\mathrm{in}$ suggest.
+
+The explanation half of the framework failed in an instructive way. H14 asked whether the two modalities attend to the same place; they do
+not even produce maps of the same kind. The 2.5D teacher's Grad-CAM++ mostly ranks slices, so its projected map varies from top to bottom
+but hardly across, and the last stage of SwinV2-T gives an $8\times8$ grid whose Grad-CAM++ spreads along the image borders. The pointing
+game shows the same weakness on real radiographs: Grad-CAM++ hit the boxes less than half as often for Swin as for DenseNet-121, while
+decoder attention and Integrated Gradients localised about as well as for the CNN. For Swin classifiers the latter two are the maps to
+report.
+
+The hallucination tests separate robustness from accuracy. The Swin classifiers were not more accurate than DenseNet-121, but they were
+far less sensitive to image noise (flip rate about 0.28 against 0.78), a property the accuracy numbers do not show. Under rib emphasis the
+CT-distilled classifier flipped fewer images than the ImageNet-started one ($p=0.044$, uncorrected), but the classifier pretrained on the
+projections without the teacher did the same, so the effect, if real, belongs to pretraining on projections rather than to CT. No model
+reacted to inserted nodules of the two smaller size tertiles (up to 8.5\,mm), and even the largest ones moved the scores by less than
+0.02.
+
+\paragraph{Limitations.} The CT recipe was seed-unstable, and the replacement of seed 2 by seed 5 followed a rule fixed beforehand but
+used a teacher trained later. The CT subset is small (\num{1600} training volumes) and its labels come from reports, as do those of the
+projections. The NIH test split had been used in the earlier chapters with other models; H13's localisation in hernia comes from the
+per-class tests, which were planned only as descriptive, and hernia has few positive test images. The cross-modal agreement depends on
+Grad-CAM++ for both modalities, the weakest of the three maps on real radiographs; agreement of Integrated Gradients or attention maps was
+not part of the plan. The example heat maps come from the first 24 saved targets, which contain no mass or nodule. VinBigData fine-tuning
+(about 50 GPU hours) and the design's idea of using CT--X-ray disagreement as an abstention signal were not carried out. The teacher
+outputs, the predictions and the weights of the distilled models left the cloud accounts for the author's computer, against the data
+rule of the design; this is logged, and nothing derived from CT-RATE was released.
+
+\section{Summary}
+\label{sec:xm_summary}
+A Swin framework for chest CT and X-ray was built and tested under a pre-specified, hash-frozen plan. Distilling a CT teacher into an X-ray
+model did not improve the classification of real radiographs (H11, H12), the Swin classifier matched DenseNet-121 except in one rare class
+(H13), and the CT and X-ray heat maps did not agree (H14). The Swin classifiers were much more robust to noise than DenseNet-121. Under
+rib emphasis the CT-distilled classifier flipped slightly fewer finding-free images than the one started from ImageNet (H15, uncorrected),
+as did the classifier pretrained on the projections without the teacher. Grad-CAM++ is a poor explanation for Swin classifiers;
+Integrated Gradients and decoder attention localise about as well as for a CNN.

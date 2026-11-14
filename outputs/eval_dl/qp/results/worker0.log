@@ -1,0 +1,8 @@
+== rd: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ens:outputs/final_v2/weights/qp_twin16_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/qp/rd
+ens: sites=1720 A=0.114 LCR=1.012 bone MAE=0.0044
+== rd_s0: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_twin16_s0_raddino300k/final_ema.pt --out results/final/qp/rd_s0
+ours: sites=1720 A=0.112 LCR=1.025 bone MAE=0.0055
+== rd_s1: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_twin16_s1_raddino300k/final_ema.pt --out results/final/qp/rd_s1
+ours: sites=1720 A=0.117 LCR=1.046 bone MAE=0.0044
+== rd_nt: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/qp/rd_nt
+ens: sites=1720 A=0.212 LCR=0.875 bone MAE=0.0028

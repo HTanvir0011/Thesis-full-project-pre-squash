@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/input/datasets/ac_1/s4-code/s4/train.py", line 169, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/input/datasets/ac_1/s4-code/s4/train.py", line 93, in main
+    bank = load_bank(args.bank, [r["name"] for r in rows], dev)
+  File "/kaggle/input/datasets/ac_1/s4-code/s4/bank.py", line 20, in load_bank
+    z = np.load(index[n])
+  File "/usr/local/lib/python3.13/dist-packages/numpy/lib/_npyio_impl.py", line 494, in load
+    raise ValueError("Cannot load file containing pickled data "
+                     "when allow_pickle=False")
+ValueError: Cannot load file containing pickled data when allow_pickle=False

@@ -1,0 +1,22 @@
+{
+ "id": "ac_9/s4-v4-p1-a",
+ "title": "s4-v4-p1-a",
+ "code_file": "run_down.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_9/s4-code",
+  "ac_9/s4-xm-teacher"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_9/s4-prep-nih",
+  "ac_9/s4-qpprep"
+ ],
+ "model_sources": []
+}

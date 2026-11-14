@@ -1,0 +1,127 @@
+% Benchmark chapter: experimental design (paper section) and the locked-set results in thesis length. Result tables are the generated files in
+% ../paper/tables; numbers in the text are copied from results/final/stats_held.json. The paper's results.tex is NOT input (labels would clash).
+\input{../paper/sections/experiments}
+
+\section{Fidelity on held-out paired radiographs}
+On the 51 held-out SZCH pairs (Tables~\ref{tab:szch_heldout} and~\ref{tab:h2}) the bone-region PSNR$_{cal}$ of ours is 21.46\,dB and that of
+the reference model 21.51\,dB; the paired difference is $-0.06$\,dB with a one-sided 95\,\% lower bound of $-0.15$\,dB, well inside the
+non-inferiority margin of $-0.5$\,dB. Against the no-twin control the difference is $+0.01$\,dB (lower bound $-0.02$\,dB against a margin of
+$-0.25$\,dB). Both parts of H2$'$ that concern bone-region fidelity pass. SSIM$_{cal}$ fails: ours is lower than the reference model by 0.021,
+with a lower bound of $-0.023$ against a margin of $-0.01$, as the plan had anticipated from the development data.
+
+The SSIM difference was examined on development data before the freeze (Appendix~\ref{app:negative}). The dual-energy soft-tissue image has
+less high-frequency energy than a radiograph, so full-resolution SSIM against it rewards smooth outputs. On the held-out pairs, ours keeps
+about 9\,\% more high-frequency energy than the dual-energy image in non-bone regions, the reference model about 1\,\% less; with a Gaussian
+band limit of $\sigma=4$ the SSIM of the two models is 0.946 and 0.948, so almost all of the gap is fine texture. Whether a $1024$~px output,
+as the reference model has, would close the rest was not tested. LPIPS points the same way (0.234 for ours, 0.166 for the reference model).
+BS-LDM, trained on dual-energy pairs from the same hospital as the test images, reaches 28.57\,dB bone-region PSNR$_{cal}$; it is shown
+for orientation only.
+\begin{table}[htbp]
+\centering\small
+\caption{Held-out SZCH-X-Rays pairs: bone-region and whole-image metrics for ours and the comparators, calibrated (primary) and raw.}
+\label{tab:szch_heldout}
+\fittable{tables/szch_heldout.tex}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{H2$'$ non-inferiority on the 51 held-out SZCH-X-Rays pairs (paired differences, image bootstrap, one-sided 95\,\% lower bound).}
+\label{tab:h2}
+\fittable{tables/h2_noninferiority.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/pareto.pdf}
+\caption{Lesion absorption on VinDr-RibCXR against bone-region PSNR$_{cal}$ on the 51 held-out SZCH-X-Rays pairs: the SwinV2-T family at
+twin weights $0\ldots64$, ours and the no-twin control (ConvNeXt-V2-T, $K=3$), the reference model, the v1 model and the identity.}
+\label{fig:pareto}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/qualitative_szch.png}
+\caption{Held-out SZCH-X-Rays cases (CC BY-NC 4.0, \citealp{sun2026bsldm}), chosen by rule: the held-out images at the 25th, 50th and 75th
+percentile of the bone-region PSNR$_{cal}$ of ours. Radiograph, dual-energy soft-tissue reference, the soft-tissue estimates of ours and of the
+reference model, and the bone estimate of ours.}
+\label{fig:qualitative}
+\end{figure}
+
+\section{Rib benchmark}
+On VinDr-RibCXR the rib benchmark measures how much gradient energy a suppressor removes on rib-boundary pixels and on other lung pixels
+(Table~\ref{tab:rib_benchmark}). The reference model removes the most on both (48\,\% and 22\,\%), ours less (30\,\% and 8\,\%), and the
+no-twin control lies in between (37\,\% and 14\,\%). Selectivity, the difference of the two, is 0.264 for the reference model and 0.220 for
+ours, and the AUC that separates rib pixels from other lung pixels by the amount removed is the same (0.671 and 0.672). Ours is the more
+conservative suppressor: it removes less rib edge and much less of everything else. Read with the audit, ours keeps lesions better per unit of
+rib suppression (absorption a third of the reference model's at about 60\,\% of its rib-edge removal), but a share of the reference model's
+higher absorption may simply reflect stronger suppression. The benchmark says nothing about lesions directly: it is a measure of what is
+removed, not of what is kept.
+\begin{table}[htbp]
+\centering\small
+\caption{Rib benchmark on VinDr-RibCXR (metrics only): gradient-energy reduction on rib-boundary pixels and on other lung pixels, selectivity
+and AUC.}
+\label{tab:rib_benchmark}
+\fittable{tables/rib_benchmark.tex}
+\end{table}
+
+\section{Real nodules}
+Real nodules answer RQ3 only in part (Table~\ref{tab:nodule_cnr}). On JSRT (154 nodules) the contrast-to-noise ratio of the nodule box rises
+by 0.041 in the soft image of ours and by 0.018 in that of the reference model; the difference, $+0.023$ $[0.008,0.041]$, grows to $+0.032$
+$[0.014,0.052]$ for the 123 nodules with at least 15\,\% bone overlap, where the reference model lowers contrast. On Node21 (1,474 boxes) the
+reference model raises contrast more ($+0.103$ against $+0.078$; difference $-0.025$ $[-0.033,-0.018]$), also for the 1,109 bone-overlapping
+boxes ($-0.017$ $[-0.026,-0.009]$). Against the no-twin control ours raises contrast in all four comparisons ($+0.007$ to $+0.027$, Holm
+$p<0.001$). The twin regulariser thus helps real nodules relative to the same model without it, consistently; whether ours beats the reference
+model depends on the data set, and on Node21 the reference model's stronger suppression raises box contrast more.
+\begin{table}[htbp]
+\centering\small
+\caption{Contrast-to-noise change of real nodules on JSRT and Node21 (soft-tissue image minus original), all lesions and lesions with at least
+15\,\% bone overlap; image-cluster bootstrap intervals.}
+\label{tab:nodule_cnr}
+\fittable{tables/nodule_cnr.tex}
+\end{table}
+
+\section{Downstream classification}
+On NIH ChestX-ray14 (Table~\ref{tab:downstream_cls}) the three-seed ensemble of DenseNet-121 classifiers reaches a macro-AUROC of 0.818 on the
+original images and 0.817 on the soft-tissue images of ours ($-0.001$ $[-0.004,0.003]$, patient-cluster bootstrap). Per class the paired
+DeLong tests find four differences after Holm correction: ours is lower for effusion, infiltration and pleural thickening ($-0.004$, $-0.007$,
+$-0.013$) and higher for nodule ($+0.011$). Adding the soft image as a second channel helps a little ($+0.006$ $[0.003,0.008]$), and so does the
+reference model's soft image on its own ($+0.004$ $[0.002,0.007]$); CLAHE lowers the macro-AUROC ($-0.004$ $[-0.006,-0.002]$). The soft image
+of ours is no substitute for the original, but the nodule class, the one the method was designed for, moves in its favour.
+\begin{table}[htbp]
+\centering\small
+\caption{Downstream classification on NIH ChestX-ray14: macro-AUROC of the three-seed ensemble, per-seed mean $\pm$ SD and the difference to
+the original image (patient-cluster bootstrap).}
+\label{tab:downstream_cls}
+\fittable{tables/downstream_cls.tex}
+\end{table}
+
+\section{Downstream detection}
+For detection (Table~\ref{tab:downstream_det}, Figure~\ref{fig:downstream_forest}) the change in CPM with the soft image of ours alone is
+$+0.001$ $[-0.023,0.023]$ on Node21, $+0.006$ $[-0.009,0.020]$ on TBX11K and $-0.009$ $[-0.016,-0.002]$ on VinBigData. The three-channel input
+(original, soft and bone) gains $+0.028$ $[0.009,0.047]$ on Node21 and $+0.008$ $[0.002,0.014]$ on VinBigData; the reference model's soft image
+gains $+0.029$ $[0.016,0.043]$ on TBX11K. The bone-overlap subgroup, recall at two false positives per image for lesions with and without at
+least 15\,\% bone overlap compared as a difference in differences against the original input, shows no effect whose interval excludes zero
+(Node21 $-0.006$ $[-0.071,0.061]$, VinBigData $+0.009$ $[-0.034,0.053]$); on TBX11K it cannot be estimated, because every test box overlaps bone
+by at least 20\,\%. H4$'$b therefore finds no benefit of the soft image used alone; the gains come from giving the detector the soft and bone
+images in addition to the original.
+\begin{table}[htbp]
+\centering\small
+\caption{Downstream detection on Node21, TBX11K and VinBigData: CPM and mAP@50 (mean $\pm$ SD over three seeds), differences to the original
+image and the difference in differences (DiD) of recall at two false positives per image (image bootstrap).}
+\label{tab:downstream_det}
+\fittable{tables/downstream_det.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/downstream_forest.pdf}
+\caption{Downstream effects of each input against the original image with 95\,\% intervals: macro-AUROC on NIH ChestX-ray14, CPM on the
+detection sets.}
+\label{fig:downstream_forest}
+\end{figure}
+
+\section{Comparison with the reference model and the controls}
+The reference model is compared as released: a SwinV2-B suppressor that predicts at $1024$~px, trained by its authors on far more samples than
+ours, run with its own pre- and post-processing. Our models predict at $512$~px with a tiny encoder. Differences between the two therefore mix
+the effect of the regulariser with differences in resolution, capacity, data and training length; the matched no-twin control, which shares
+everything with ours except the regulariser, is the comparison that isolates the regulariser, and it absorbs slightly more than the reference
+model. The controls frame the scale of the effects: the identity removes nothing and absorbs nothing, CLAHE changes contrast everywhere and
+does worse than the original image downstream, and homomorphic filtering removes low-frequency content without separating bone from soft
+tissue. BS-LDM, trained on real dual-energy pairs from the test hospital, is far ahead in fidelity on that hospital's images and far behind
+in the development audit; it answers a different question and is not part of a pre-specified comparison.

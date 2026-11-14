@@ -1,0 +1,20 @@
+/kaggle/working/bsldm/bsldm_weights/2024-02-13-VQGAN.pth: 19 distinct globals
+   ok    __builtin__.set
+   ok    collections.OrderedDict
+   ok    generative.networks.layers.vector_quantizer.EMAQuantizer
+   ok    generative.networks.layers.vector_quantizer.VectorQuantizer
+   ok    generative.networks.nets.vqvae.Decoder
+   ok    generative.networks.nets.vqvae.Encoder
+   ok    generative.networks.nets.vqvae.VQVAE
+   ok    generative.networks.nets.vqvae.VQVAEResidualUnit
+   ok    monai.networks.blocks.acti_norm.ADN
+   ok    monai.networks.blocks.convolutions.Convolution
+   ok    torch.FloatStorage
+   ok    torch._utils._rebuild_parameter
+   ok    torch._utils._rebuild_tensor_v2
+   ok    torch.nn.modules.activation.ReLU
+   ok    torch.nn.modules.container.ModuleList
+   ok    torch.nn.modules.conv.Conv2d
+   ok    torch.nn.modules.conv.ConvTranspose2d
+   ok    torch.nn.modules.dropout.Dropout
+   ok    torch.nn.modules.sparse.Embedding

@@ -1,0 +1,14 @@
+% Seed-ensemble AUROC on the six shared findings (descriptive); NIH lung opacity is the approximate mapping to Infiltration
+\begin{tabular}{llllllllll}
+\toprule
+model & evaluation set & seeds & macro-AUROC & lung opacity & pleural effusion & atelectasis & cardiomegaly & consolidation & lung lesion \\
+\midrule
+CT teacher & CT subset test volumes (297) & 5 & 0.8209 & 0.827 & 0.942 & 0.726 & 0.951 & 0.872 & 0.608 \\
+P0 & projection test split (415) & 5 & 0.8138 & 0.796 & 0.935 & 0.753 & 0.944 & 0.855 & 0.601 \\
+P1 & projection test split (415) & 5 & 0.8062 & 0.777 & 0.933 & 0.760 & 0.941 & 0.853 & 0.572 \\
+P0, zero-shot & NIH test split (25,596) & 5 & 0.6476 & 0.583 & 0.720 & 0.662 & 0.797 & 0.613 & 0.511 \\
+P1, zero-shot & NIH test split (25,596) & 5 & 0.6402 & 0.596 & 0.734 & 0.655 & 0.751 & 0.598 & 0.507 \\
+P0, zero-shot & VinBigData test split (2,943) & 5 & 0.7387 & 0.711 & 0.882 & 0.605 & 0.919 & 0.750 & 0.565 \\
+P1, zero-shot & VinBigData test split (2,943) & 5 & 0.7318 & 0.637 & 0.879 & 0.605 & 0.919 & 0.792 & 0.559 \\
+\bottomrule
+\end{tabular}

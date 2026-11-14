@@ -1,0 +1,16 @@
+[
+ [
+  0,
+  "xmh",
+  "nih",
+  "dn121",
+  0,
+  0,
+  "--runs",
+  "@run:nih_hyb_orig@densenet121_s0",
+  "@run:nih_hyb_orig@densenet121_s1",
+  "@run:nih_hyb_orig@densenet121_s2",
+  "@run:nih_hyb_orig@densenet121_s3",
+  "@run:nih_hyb_orig@densenet121_s4"
+ ]
+]

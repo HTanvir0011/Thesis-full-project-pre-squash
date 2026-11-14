@@ -1,0 +1,34 @@
+arm=qp_twin16 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 16.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} train CT=588 val CT=64 lesion library=1057
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+resumed at step 31684
+/kaggle/input/datasets/ac_3/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+32000 372s loss 0.0456 {'mae': 0.026553809642791748, 'psnr': 27.87115478515625, 'ssim': 0.8244179487228394, 'lcr': -0.8284211158752441, 'qp': {'mae': 0.005204746499657631, 'psnr': 41.08129119873047}}
+34000 2661s loss 0.0503 {'mae': 0.026922155171632767, 'psnr': 27.725662231445312, 'ssim': 0.8229867219924927, 'lcr': -0.6575437784194946, 'qp': {'mae': 0.0051234811544418335, 'psnr': 41.23936462402344}}
+36000 4946s loss 0.1196 {'mae': 0.02684304118156433, 'psnr': 27.787120819091797, 'ssim': 0.8230029344558716, 'lcr': -0.7191362380981445, 'qp': {'mae': 0.005103101022541523, 'psnr': 41.22951889038086}}
+37500 6668s loss 0.1042 {'mae': 0.026650551706552505, 'psnr': 27.846412658691406, 'ssim': 0.8259553909301758, 'lcr': -0.7016881704330444, 'qp': {'mae': 0.005092233885079622, 'psnr': 41.26171875}}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.030507772035095134, 'psnr': 27.041119877296158, 'ssim': 0.8070383337856848, 'lcr': -0.8689811443537474, 'absorption': 0.08157335716982413}
+{
+ "method": "ours:/kaggle/working/runs/qp_twin16_s1_B300k/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.1696 +- 0.6219",
+ "mse_raw": "0.0039 +- 0.0006",
+ "ssim_raw": "0.8472 +- 0.0176",
+ "psnr_cal": "25.4040 +- 0.6886",
+ "mse_cal": "0.0029 +- 0.0005",
+ "ssim_cal": "0.8425 +- 0.0271",
+ "psnr_cal_bone": "21.5223 +- 1.6925",
+ "psnr_cal_nonbone": "26.2591 +- 0.8366",
+ "ssim_cal_bone": "0.7640 +- 0.0472",
+ "ssim_cal_nonbone": "0.8512 +- 0.0294",
+ "ssim_cal_s2": "0.9293 +- 0.0238",
+ "ssim_cal_s4": "0.9459 +- 0.0221",
+ "bone_corr_s2": "0.3262 +- 0.0895",
+ "bone_slope_s2": "0.3087 +- 0.1282",
+ "hp_ratio_nonbone": "1.1025 +- 0.1712",
+ "msssim_cal": "0.8942 +- 0.0169"
+}
+ours: n=450 A_mean=0.059 low-overlap=0.047 high-overlap=0.067 leak=0.0015
+/kaggle/working/runs/qp_twin16_s1_B300k/final_ema.pt n=400 {'mae_bone': 0.0051, 'psnr_bone': 41.3169, 'ssim_bone': 0.9637}

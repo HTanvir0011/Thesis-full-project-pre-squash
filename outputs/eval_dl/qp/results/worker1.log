@@ -1,0 +1,23 @@
+== identity: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods identity --out results/final/qp/identity
+identity: sites=1720 A=0.000 LCR=0.967 bone MAE=0.0318
+== rd_s2: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/qp/rd_s2
+ours: sites=1720 A=0.113 LCR=0.966 bone MAE=0.0041
+== rd_nt_s0: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt --out results/final/qp/rd_nt_s0
+ours: sites=1720 A=0.213 LCR=0.836 bone MAE=0.0029
+== rd_nt_s1: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --out results/final/qp/rd_nt_s1
+ours: sites=1720 A=0.218 LCR=0.910 bone MAE=0.0030
+== rd_nt_s2: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/qp/rd_nt_s2
+ours: sites=1720 A=0.206 LCR=0.880 bone MAE=0.0029
+== clia_v1: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/qp/clia_v1
+ens: sites=1720 A=0.280 LCR=0.876 bone MAE=0.0126
+== qure: python -m s4.audit_qp --pack outputs/qp_pack --lib outputs/lesions_test.npz --methods qure:data/qure/weights/bone_suppression.ts --out results/final/qp/qure
+qure: sites=1720 A=0.199 LCR=0.854 bone MAE=0.0082
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/input/datasets/ac_7/s4-code/s4/eval_uncertainty.py", line 99, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/input/datasets/ac_7/s4-code/s4/eval_uncertainty.py", line 80, in main
+    from szch_split import is_dev
+ModuleNotFoundError: No module named 'szch_split'

@@ -1,0 +1,162 @@
+% =====================================================================================================================
+% Combined manuscript: lesion-faithful bone suppression, bone-suppressed classifier inputs and Swin CT-to-X-ray knowledge transfer
+% (Studies I-III; Medical Image Analysis, one column). Supplementary material: supplementary.tex.
+% Compile with pdfLaTeX + BibTeX (Overleaf: Menu > Compiler = pdfLaTeX). Main file: main.tex.
+% Every number in Sections 9 and the tables comes from generated tables (tables/*.tex, written by tools/final_stats.py,
+% tools/bdcxr_stats.py, tools/paper_extras.py and tools/hybrid_stats.py in the project repository); do not retype results.
+% Red [TODO: ...] markers and the author block are the only places that still need the authors' input.
+% =====================================================================================================================
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{xcolor}
+\usepackage{siunitx}
+\usepackage{setspace}
+\usepackage{lineno}
+\usepackage[section]{placeins}   % floats stay in the section that cites them
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\onehalfspacing
+\setlength{\emergencystretch}{3em}   % lets justified lines stretch instead of running into the margin
+\def\UrlBreaks{\do\/\do\.\do\_\do\-}  % file paths in \path{...} may break after / . _ -
+% Float placement: allow large floats at the top or bottom of a page and fuller float pages
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\graphicspath{{figures/}}
+\journal{Medical Image Analysis}
+
+% ---- helpers ---------------------------------------------------------------------------------------------------------
+% Red placeholder for text only the authors can supply (plain ASCII inside, no % or empty line).
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: \detokenize{#1}]}}
+% Figure that shows a red box instead of stopping the build if the file is missing: \safefig[width]{figures/name.pdf}
+\newcommand{\safefig}[2][\linewidth]{%
+  \IfFileExists{#2}%
+    {\includegraphics[width=#1]{#2}}%
+    {\fbox{\parbox[c][2.4cm][c]{0.92\linewidth}{\centering\todo{missing figure #2}}}}}
+% Generated table, shrunk to the text width or 80 % of the page height when larger (never enlarged): \fittable{tables/name.tex}
+\newcommand{\fittable}[1]{\begin{adjustbox}{max width=\linewidth,max totalheight=0.8\textheight}\input{#1}\end{adjustbox}}
+% Bibliography styles print DOIs through \doi{...}; \url copes with underscores in DOIs.
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Explainable and hallucination-aware cross-modality learning from chest CT for X-ray disease classification: lesion-faithful
+bone suppression and Swin transformer knowledge transfer}
+
+% Replace the placeholders below with the real author list, affiliations and corresponding address.
+\author[inst1]{Author One\corref{cor1}}
+\ead{author.one@example.org}
+\author[inst1]{Author Two}
+\author[inst2]{Author Three}
+\cortext[cor1]{Corresponding author.}
+\address[inst1]{Department, University, City, Country}
+\address[inst2]{Department, Hospital, City, Country}
+
+\begin{abstract}
+\textbf{Background.} CT can supervise radiograph models, but these may erase lesions, report absent findings or explain decisions poorly,
+failures that accuracy metrics miss.
+\textbf{Purpose.} To build CT-supervised bone suppressors and Swin radiograph classifiers and test their lesion fidelity, hallucinations
+and explanations under pre-specified plans.
+\textbf{Methods.} Study~I measures lesion absorption $A$, the fraction of a counterfactual nodule moved into the predicted bone image, and
+trains suppressors on public CT-derived projections with a twin lesion-invariance regulariser. Study~II tests whether classifiers gain from
+the suppressed images (175 runs, three datasets, capacity-matched controls). Study~III distils a 2.5D Swin CT teacher (CT-RATE) into Swin
+X-ray models through paired projections and tests the resulting NIH classifiers for accuracy, heat-map agreement, localisation and
+hallucination.
+\textbf{Results.} On VinDr-RibCXR the twin ensemble absorbed 0.051 of an added lesion, a released model 0.149 and a matched control 0.178,
+at non-inferior bone-region PSNR. Given as separate streams, suppressed inputs did not raise macro-AUROC on any dataset (NIH $+0.0001$
+$[-0.0022,0.0024]$); as extra channels they gave small gains (NIH up to $+0.006$). CT
+distillation did not improve NIH classification ($-0.0001$ $[-0.0016,0.0014]$), and CT and X-ray Grad-CAM++ maps disagreed. Swin
+Grad-CAM++ located expert boxes less than half as often as DenseNet-121's, yet noise flipped far fewer finding-free images for Swin
+(27--29\,\% against 78\,\%).
+\textbf{Conclusions.} Models of equal fidelity or accuracy differ widely in what they erase, invent and highlight, which should be
+audited. A twin regulariser reduces lesion erasure; multi-stream suppressed inputs and CT distillation did not improve classification.
+\end{abstract}
+
+\begin{keyword}
+chest radiography \sep bone suppression \sep knowledge distillation \sep Swin transformer \sep explainability \sep hallucination
+\sep counterfactual evaluation
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/data}
+\input{sections/methods}
+\input{sections/method_v2}
+\input{sections/audit}
+\input{sections/classifier}
+\input{sections/experiments}
+\input{sections/crossmodal}
+\input{sections/results}
+\input{sections/results_classifier}
+\input{sections/results_crossmodal}
+\input{sections/discussion}
+\input{sections/limitations}
+\input{sections/reproducibility}
+\input{sections/conclusion}
+
+\section*{CRediT authorship contribution statement}
+\todo{author contributions in CRediT terms, for example conceptualisation, methodology, software, formal analysis, writing}
+
+\section*{Declaration of competing interest}
+\todo{competing interests, or: The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.}
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+During the preparation of this work the authors used an AI assistant (Claude, Anthropic) for code, analysis automation and drafting of the
+text. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the
+publication. \todo{confirm or adapt this statement to the actual use before submission}
+
+\section*{Data availability}
+The public data sets are available from their providers (Table~\ref{tab:data}); CT-RATE \citep{hamamci2026ctrate} is available from its
+providers under CC BY-NC-SA~4.0, and no data derived from it beyond metrics and averaged heat maps are shared. VinDr-RibCXR was used under its
+data use agreement and is not redistributed. BDCXR-3257 is public on figshare under CC BY 4.0 \citep{durjoy2026bdcxr}; the authors obtained it under a data use agreement with the
+providing hospital and follow its terms, so no image of either set is shown and nothing derived from it is redistributed. The analysis plans, their hash files, the deviations log, the code and the trained weights are described in
+Section~\ref{sec:repro}. \todo{repository link, revision hash and checksums after release approval}
+
+\section*{Acknowledgements}
+We thank the providers of the data used here: Qure.ai for the CT projections and the released bone-suppression weights, the CT-RATE team, The
+Cancer Imaging Archive and the LIDC-IDRI investigators, the authors of SZCH-X-Rays, VinDr (VinDr-RibCXR and VinDr-CXR), the Japanese Society of
+Radiological Technology (JSRT), the Node21, TBX11K and NIH ChestX-ray14 teams, and Dr.~M~R~Khan Shishu Hospital \& Institute of Child Health,
+Dhaka, for BDCXR-3257 (ethical approval REC-FSIT-2025/No:~11928). Training ran on Kaggle GPU quota. \todo{funding and colleagues}
+
+\section*{Ethics}
+This is a retrospective study of existing images. Public data sets were used under their licences, VinDr-RibCXR under its data use agreement,
+and BDCXR-3257 under the ethical approval REC-FSIT-2025/No:~11928 of Daffodil International University and a data use agreement with the
+providing hospital. No new patient data were collected, and no image of a licensed or restricted set is shown.
+
+\FloatBarrier
+\nolinenumbers
+\appendix
+\input{sections/appendix}
+
+\FloatBarrier
+\begingroup
+\singlespacing\small  % the journal typesets the reference list itself
+\setlength{\bibsep}{2pt}
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\endgroup
+
+\end{document}

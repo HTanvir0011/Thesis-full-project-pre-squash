@@ -1,0 +1,1 @@
+{"jobs": [[0, "qp_twin16", 0, 100000, 8, 0.0002, "_cnx2", "--backbone convnextv2_tiny.fcmae_ft_in22k_in1k"], [1, "qp_twin16", 0, 100000, 8, 0.0002, "_dino3s", "--backbone vit_small_patch16_dinov3.lvd1689m --enc_lr_mult 0.25"]], "done": ["qp_twin16_s0_cnx2", "qp_twin16_s0_dino3s"]}

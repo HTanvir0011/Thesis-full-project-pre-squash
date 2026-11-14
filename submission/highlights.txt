@@ -1,0 +1,5 @@
+- A counterfactual audit measures how much of a lesion a bone suppressor erases.
+- A twin lesion-invariance regulariser cuts lesion absorption to a third.
+- Multi-stream bone-suppressed inputs gave no classifier AUROC gain on 3 datasets.
+- Distilling a Swin CT teacher into X-ray classifiers did not improve accuracy.
+- Swin classifiers resisted noise, yet their Grad-CAM++ maps rarely hit lesions.

@@ -1,0 +1,22 @@
+{
+ "id": "ac_4/s4-v4-xai-ac4",
+ "title": "s4-v4-xai-ac4",
+ "code_file": "run_xai.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_4/s4-code",
+  "nih-chest-xrays/data"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_4/s4-prep-nih",
+  "ac_4/s4-v4-p0-a"
+ ],
+ "model_sources": []
+}

@@ -1,0 +1,19 @@
+{
+ "id": "ac_5/s4-prep-node21-n48",
+ "title": "s4-prep-node21-n48",
+ "code_file": "run_prep.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_5/s4-wts2",
+  "ac_5/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

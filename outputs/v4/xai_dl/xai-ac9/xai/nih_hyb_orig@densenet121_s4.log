@@ -1,0 +1,13 @@
+{
+ "run": "/kaggle/input/datasets/ac_9/s4-dn121/results/nih_hyb_orig@densenet121_s4",
+ "config": "orig",
+ "arch": "densenet121.ra_in1k",
+ "tol": 15.0,
+ "n_targets": 984,
+ "hit_rate_cam_0": 0.31097560975609756,
+ "hit_rate_attn": 0.5376016260162602,
+ "hit_rate_ig_X": 0.6504065040650406,
+ "hit_rate_ig_S": 0.0,
+ "hit_rate_ig_B": 0.0,
+ "hit_rate_ig_all": 0.6504065040650406
+}

@@ -1,0 +1,26 @@
+% Single-seed results of the final models (the ensembles average seeds 0-2; SwinV2-T seed 3 is the reserve).
+\begin{tabular}{llllll}
+\toprule
+model & seed & $A$ VinDr-RibCXR & bone PSNR$_{cal}$ SZCH held-out & $A$ QP test & bone MAE QP test \\
+\midrule
+ConvNeXt-V2-T twin & 0 & 0.051 & 21.47 & 0.099 & 0.00430 \\
+ConvNeXt-V2-T twin & 1 & 0.050 & 21.41 & 0.107 & 0.00430 \\
+ConvNeXt-V2-T twin & 2 & 0.052 & 21.40 & 0.099 & 0.00426 \\
+ConvNeXt-V2-T no twin & 0 & 0.175 & 21.37 & 0.220 & 0.00302 \\
+ConvNeXt-V2-T no twin & 1 & 0.178 & 21.46 & 0.223 & 0.00316 \\
+ConvNeXt-V2-T no twin & 2 & 0.180 & 21.43 & 0.219 & 0.00299 \\
+SwinV2-T twin & 0 & 0.072 & 21.20 & 0.120 & 0.00610 \\
+SwinV2-T twin & 1 & 0.064 & 21.19 & 0.118 & 0.00551 \\
+SwinV2-T twin & 2 & 0.071 & 21.27 & 0.118 & 0.00562 \\
+SwinV2-T twin & 3 & 0.063 & 21.22 & 0.115 & 0.00555 \\
+SwinV2-T no twin & 0 & 0.182 & 21.25 & 0.223 & 0.00352 \\
+SwinV2-T no twin & 1 & 0.184 & 21.28 & 0.217 & 0.00309 \\
+SwinV2-T no twin & 2 & 0.184 & 21.23 & 0.222 & 0.00316 \\
+RAD-DINO twin & 0 & 0.053 & 21.50 & 0.112 & 0.00548 \\
+RAD-DINO twin & 1 & 0.054 & 21.26 & 0.117 & 0.00436 \\
+RAD-DINO twin & 2 & 0.052 & 21.25 & 0.113 & 0.00410 \\
+RAD-DINO no twin & 0 & 0.164 & 21.18 & 0.213 & 0.00287 \\
+RAD-DINO no twin & 1 & 0.168 & 21.20 & 0.218 & 0.00304 \\
+RAD-DINO no twin & 2 & 0.164 & 21.17 & 0.206 & 0.00286 \\
+\bottomrule
+\end{tabular}

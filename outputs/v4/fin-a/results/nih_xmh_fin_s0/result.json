@@ -1,0 +1,32 @@
+{
+ "runs": [
+  "/kaggle/working/results/nih_hyb_orig@swinv2_tiny_window8_256_s0",
+  "/kaggle/working/results/nih_hyb_orig@swinv2_tiny_window8_256_s1",
+  "/kaggle/working/results/nih_hyb_orig@swinv2_tiny_window8_256_s2"
+ ],
+ "n_free": 9861,
+ "thresholds": {
+  "Atelectasis": 0.22052001953125,
+  "Cardiomegaly": 0.062004465609788895,
+  "Effusion": 0.19343256950378418,
+  "Infiltration": 0.308626264333725,
+  "Mass": 0.07565811276435852,
+  "Nodule": 0.086151123046875,
+  "Pneumonia": 0.02424621395766735,
+  "Pneumothorax": 0.03230946138501167,
+  "Consolidation": 0.0753275528550148,
+  "Edema": 0.0343678779900074,
+  "Emphysema": 0.011928620748221874,
+  "Fibrosis": 0.02814280055463314,
+  "Pleural_Thickening": 0.05607960745692253,
+  "Hernia": 0.0020247655920684338
+ },
+ "rate_clean": 0.6954669911773653,
+ "rate_rib": 0.152114390021296,
+ "rate_noise": 0.3171077983977284,
+ "rate_gamma": 0.06439509177568198,
+ "n_nodule": 1557,
+ "nodule_sensitivity": 0.03018625561978163,
+ "n_cam_pairs": 933,
+ "off_target": 0.7027390599250793
+}

@@ -1,0 +1,25 @@
+{
+ "gate": "G2",
+ "passed": true,
+ "synthetic_psnr_bone": 35.69261536417128,
+ "szch_vs_identity": {
+  "psnr_cal_bone": {
+   "mean_diff": 1.6335847884981103,
+   "wilcoxon_p": 5.4980694109671593e-14,
+   "cliffs_delta": 0.9733333333333334,
+   "dz": 1.177923802640922
+  },
+  "ssim_cal": {
+   "mean_diff": 0.011348938941955567,
+   "wilcoxon_p": 8.90898742966684e-14,
+   "cliffs_delta": 0.8933333333333333,
+   "dz": 2.118579966096317
+  },
+  "psnr_cal_nonbone": {
+   "mean_diff": -0.9652953801679662,
+   "wilcoxon_p": 2.705621109465988e-13,
+   "cliffs_delta": -0.8933333333333333,
+   "dz": -1.4306451920567143
+  }
+ }
+}

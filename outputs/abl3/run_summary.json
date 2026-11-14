@@ -1,0 +1,1 @@
+{"jobs": [[0, "nodule_loss", 0, 200000, 8, 0.0002], [0, "nodule_loss", 1, 200000, 8, 0.0002], [1, "clia", 2, 200000, 8, 0.0002], [1, "nodule_loss", 2, 200000, 8, 0.0002]], "done": ["clia_s2", "nodule_loss_s0", "nodule_loss_s1", "nodule_loss_s2"]}

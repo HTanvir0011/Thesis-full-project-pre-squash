@@ -1,0 +1,14 @@
+% v1 ablation on synthetic validation CTs (selection data; 3 seeds each, 200k samples): every arm against the recipe arm.
+\begin{tabular}{llllll}
+\toprule
+arm vs recipe & sites / CTs & $\Delta A$ [95\% CI] & Holm $p$ & bone-MAE lower bound vs margin & MAE non-inferior \\
+\midrule
+CLIA (insertion) & 177 & -0.033 [-0.046, -0.021] & 1.2e-06 & -0.00012 vs $-$0.00036 & yes \\
+lesion-weighted loss & 177 & -0.036 [-0.048, -0.025] & 2.2e-07 & -0.00036 vs $-$0.00036 & no \\
+CLIA + lesion-weighted loss & 177 & -0.100 [-0.119, -0.082] & 9.1e-21 & -0.00049 vs $-$0.00036 & no \\
+no frequency loss & 177 & 0.002 [-0.011, 0.014] & 0.51 & -0.00013 vs $-$0.00036 & yes \\
+no histogram matching & 177 & -0.039 [-0.055, -0.022] & 4.1e-05 & 0.00037 vs $-$0.00036 & yes \\
+no marking-ROI loss & 177 & 0.024 [0.013, 0.035] & 0.00011 & 0.00012 vs $-$0.00036 & yes \\
+no rotation & 177 & -0.008 [-0.017, 0.000] & 0.51 & -0.00005 vs $-$0.00036 & yes \\
+\bottomrule
+\end{tabular}

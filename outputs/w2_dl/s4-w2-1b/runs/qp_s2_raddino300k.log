@@ -1,0 +1,43 @@
+arm=qp cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 0, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 0.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} train CT=588 val CT=64 lesion library=1057
+QP source: train rows 21051 val rows 64
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 2333.48it/s]
+resumed at step 23899
+/kaggle/input/datasets/ac_2/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+24000 110s loss 0.0250 {'mae': 0.02103443443775177, 'psnr': 30.45880699157715, 'ssim': 0.8641472458839417, 'lcr': 0.9216446876525879, 'qp': {'mae': 0.0030750627629458904, 'psnr': 45.86476135253906}}
+26000 2150s loss 0.0214 {'mae': 0.021024849265813828, 'psnr': 30.3970947265625, 'ssim': 0.8654482364654541, 'lcr': 1.0305774211883545, 'qp': {'mae': 0.0029734252020716667, 'psnr': 46.0067138671875}}
+28000 4191s loss 0.0216 {'mae': 0.021002769470214844, 'psnr': 30.47039031982422, 'ssim': 0.863889217376709, 'lcr': 0.9768929481506348, 'qp': {'mae': 0.0029290367383509874, 'psnr': 46.091556549072266}}
+30000 6233s loss 0.0158 {'mae': 0.020423058420419693, 'psnr': 30.708635330200195, 'ssim': 0.8680722713470459, 'lcr': 0.9396226406097412, 'qp': {'mae': 0.002910667099058628, 'psnr': 46.113037109375}}
+32000 8278s loss 0.0147 {'mae': 0.02041669562458992, 'psnr': 30.722957611083984, 'ssim': 0.8676738739013672, 'lcr': 0.9677302241325378, 'qp': {'mae': 0.0028516079764813185, 'psnr': 46.231544494628906}}
+34000 10322s loss 0.0163 {'mae': 0.020574316382408142, 'psnr': 30.664447784423828, 'ssim': 0.8664063215255737, 'lcr': 0.9747065305709839, 'qp': {'mae': 0.002871342236176133, 'psnr': 46.2038688659668}}
+36000 12367s loss 0.0173 {'mae': 0.0204293355345726, 'psnr': 30.733247756958008, 'ssim': 0.8673557043075562, 'lcr': 0.9483948349952698, 'qp': {'mae': 0.0028309118933975697, 'psnr': 46.300537109375}}
+37500 13905s loss 0.0160 {'mae': 0.02052333392202854, 'psnr': 30.685894012451172, 'ssim': 0.866644561290741, 'lcr': 0.9672960042953491, 'qp': {'mae': 0.0028316709212958813, 'psnr': 46.30828857421875}}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.023989443793963595, 'psnr': 30.309326461598843, 'ssim': 0.850402825618092, 'lcr': -1.4437775075361132, 'absorption': 0.2244752465158059}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{
+ "method": "ours:/kaggle/working/runs/qp_s2_raddino300k/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.0392 +- 0.6055",
+ "mse_raw": "0.0040 +- 0.0006",
+ "ssim_raw": "0.8550 +- 0.0173",
+ "psnr_cal": "25.2329 +- 0.6998",
+ "mse_cal": "0.0030 +- 0.0005",
+ "ssim_cal": "0.8511 +- 0.0263",
+ "psnr_cal_bone": "21.3264 +- 1.4363",
+ "psnr_cal_nonbone": "26.0795 +- 0.8801",
+ "ssim_cal_bone": "0.7777 +- 0.0421",
+ "ssim_cal_nonbone": "0.8592 +- 0.0289",
+ "ssim_cal_s2": "0.9366 +- 0.0236",
+ "ssim_cal_s4": "0.9492 +- 0.0222",
+ "bone_corr_s2": "0.3398 +- 0.0911",
+ "bone_slope_s2": "0.3468 +- 0.1405",
+ "hp_ratio_nonbone": "1.0762 +- 0.1689",
+ "msssim_cal": "0.9095 +- 0.0126"
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+ours: n=450 A_mean=0.181 low-overlap=0.160 high-overlap=0.197 leak=0.0013
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/kaggle/working/runs/qp_s2_raddino300k/final_ema.pt n=400 {'mae_bone': 0.0029, 'psnr_bone': 46.4766, 'ssim_bone': 0.9867}

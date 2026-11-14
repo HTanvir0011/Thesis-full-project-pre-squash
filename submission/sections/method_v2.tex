@@ -1,0 +1,108 @@
+\section{Training on public CT projections with a twin regulariser}
+\label{sec:method_v2}
+% PLAN (about 1.5 pages). This section is new text for the v2 recipe; methods.tex (v1 recipe, physics, audit definition) is untouched.
+%   4.1 Qure projections as an exactly additive source: what a row contains, why the bone image is exact (composite = a*soft + b*bone + c*lung + d),
+%       the augmentation order of s4/qp.py, and why monotone tone curves keep the decomposition exact.
+%   4.2 Twin regulariser: definition, loss, the weight w, and the variants that form the ablation (stop-gradient, support size, whole image, number
+%       of pasted lesions, insertion without the tie term). Relation to the v1 counterfactual insertion (CLIA) in methods.tex.
+%   4.3 Ensemble and uncertainty: K=3 members, mean bone image, spread, split-conformal scale, what is calibrated where (SAP_v2.md, H5').
+%   4.4 Training budget and what is identical across arms (same optimiser and schedule as methods.tex).
+% Verify every formula below against s4/train.py, s4/qp.py and s4/uncertainty.py at the freeze commit before submission.
+\subsection{Qure projections as an exactly additive source}
+Each row of the Qure.ai data holds a composite radiograph $T$ and the translated bone, soft-tissue and lung projections $B_t$, $S_t$ and $L$
+(8-bit, $512\times512$, one sample per CT volume at 100~kVp). We verified that
+\begin{equation}
+\begin{gathered}
+T=a\,S_t+\beta\,B_t+c\,L+d,\\
+X=T/255,\\
+B=\beta\,B_t/255,\\
+S=X-B
+\end{gathered}
+\label{eq:qure}
+\end{equation}
+holds up to rounding, with a per-sample bone weight $\beta$ fitted by least squares (\path{tools/qp_prep.py}), so $B$ is the exactly
+additive bone image of the normalised input $X$. Over all \num{21887} rows the least-squares fit leaves a mean absolute residual of 0.36 grey levels per projection (largest 3.2 of 255).
+The rows are split by patient into \num{21051} training, 406 validation and 430 test projections.
+
+Training samples follow the composer of Section~\ref{sec:methods}, adapted to components that are already projected, in this order: the
+bone image is re-weighted ($\tilde B=w_bB$, $w_b$ log-uniform in $[0.6,1.7]$, so $\tilde X=S+\tilde B$ stays exact); one random affine
+transform is applied to all maps; in the arms with counterfactual insertion (Table~\ref{tab:arms}), up to three lesions are inserted into $S$
+with the bone target untouched; a monotone gamma tone curve $\gamma$ gives $X'=\gamma(\tilde X)$, $S'=\gamma(S)$ and $B'=X'-S'$; linear blur
+is applied to $X'$ and $B'$, and noise and scatter to $X'$ only. Unlike the LIDC renders, where lesions enter before the affine transform and
+the physics, insertion here follows the affine transform. Defining $B'=X'-S'$ keeps the decomposition exact under any monotone tone curve.
+
+\subsection{Twin lesion-invariance regulariser}
+Let $f$ be the suppressor, $x$ a training image and $b$ its exact bone image. A \emph{twin} of $x$ is $x^{+}=\min(x+n,1)$, where $n\ge0$ is the
+signal of a few lesion patches taken from the lesion library of \emph{training} CTs and pasted at random positions in the lung fields, in composite
+units and after all augmentation. The bone target of $x^{+}$ is the same $b$. Let $M$ be the lesion support dilated by $3$~px. The loss is
+\begin{equation}
+\begin{gathered}
+\mathcal{L}=\tfrac12\big[\mathcal{L}_{\mathrm{sup}}(f(x),b)+\mathcal{L}_{\mathrm{sup}}(f(x^{+}),b)\big]+w\,\mathcal{L}_{\mathrm{inv}},\\
+\mathcal{L}_{\mathrm{inv}}=\frac{\sum_p M_p\,\big|f(x^{+})_p-f(x)_p\big|}{\max\big(1,\sum_p M_p\big)},
+\end{gathered}
+\label{eq:twin}
+\end{equation}
+where $\mathcal{L}_{\mathrm{sup}}$ is the suppression loss of Section~\ref{sec:methods} and $w$ is the twin weight. Half of every batch consists of twins, so
+the cost per step does not change. The supervised term already asks for the unchanged bone image on $x^{+}$; $\mathcal{L}_{\mathrm{inv}}$ ties the
+two predictions directly on the lesion support. Each twin carries between one and two pasted lesions (uniform), each with a random scale and
+amplitude; the supervised term is averaged over all base images and twins of the batch, and $\mathcal{L}_{\mathrm{inv}}$ is normalised per image by
+its support and then averaged over the twins. Fig.~\ref{fig:insertion} shows one pasted lesion, its support $M$ and the unchanged bone target.
+
+\begin{figure}[htbp]
+\centering
+\safefig[0.86\linewidth]{figures/fig_lesion_insertion.pdf}
+\caption{Counterfactual lesion insertion, illustrated on a rendered LIDC-IDRI test CT; in training, the twins of the regulariser are built in
+the same way from Qure.ai projections with lesions of the training library. (a) Lesion signal $n$ of a 15~mm LIDC-IDRI nodule; (b) the
+composite with the lesion, $x+n$, and the dilated support $M$; (c) the bone target under the site, which the insertion leaves unchanged.}
+\label{fig:insertion}
+\end{figure}
+
+The ablation (Section~\ref{sec:experiments}) changes one part at a time: the twin weight $w$; a stop-gradient on $f(x)$; a support dilated further with a
+$31\times31$ window, or the whole image, instead of $M$; up to four instead of up to two pasted lesions; and lesion insertion into the base image
+without the tie term (the counterfactual insertion of Section~\ref{sec:methods}). All of these arms are in the ablation of
+Section~\ref{sec:res_twin} (development data); the twin weights form the confirmatory dose-response.
+
+\subsection{Deep ensemble and uncertainty}
+The reported model is a deep ensemble of $K=3$ suppressors trained with seeds $0$, $1$ and $2$ \citep{lakshminarayanan2017ensembles}; seed $3$ is a reserve.
+The bone image is the ensemble mean, the soft image is $x$ minus that mean, and the per-pixel spread is the ensemble standard deviation:
+\begin{equation}
+\begin{gathered}
+\bar f_p=\frac1K\sum_{k=1}^{K}f_k(x)_p,\\
+\sigma_p=\Big(\frac{1}{K-1}\sum_{k=1}^{K}\big(f_k(x)_p-\bar f_p\big)^2\Big)^{1/2},\\
+\hat s=x-\bar f.
+\end{gathered}
+\label{eq:ensemble}
+\end{equation}
+With the score $r_p=|b_p-\bar f_p|/(\sigma_p+\varepsilon)$, $\varepsilon=10^{-3}$, a split-conformal scale $q$ is the
+$\lceil (n+1)(1-\alpha)\rceil$-th smallest of the $n$ scores pooled over calibration pixels of the Qure-projection validation CTs, and the
+interval
+\begin{equation}
+\mathcal{C}_p=\big[\bar f_p-q\,(\sigma_p+\varepsilon),\;\bar f_p+q\,(\sigma_p+\varepsilon)\big]
+\label{eq:conformal}
+\end{equation}
+has nominal coverage $1-\alpha=0.9$ \citep{lei2018conformal,angelopoulos2023conformal}. Calibration treats pixels as exchangeable, so the
+guarantee is marginal over pixels, not over images.
+
+\emph{Recalibration on real pairs (post hoc).} After the intervals were found not to transfer to real radiographs
+(Section~\ref{sec:results}), a third analysis plan added an exploratory recalibration on the 24 SZCH development pairs, tested on the 51
+held-out pairs (pseudo-truth bone $b=x-s_{\mathrm{DES}}$ after a gain and offset fit). Each pixel is assigned a stratum
+\begin{equation}
+\begin{gathered}
+k(p)=3\cdot\mathbf{1}\big[\bar f_p>0.25\,p_{99}(\bar f)\big]+t(\sigma_p)\in\{0,\dots,5\},\\
+q_k=r^{(k)}_{(\lceil (n_k+1)(1-\alpha)\rceil)},
+\end{gathered}
+\label{eq:mondrian}
+\end{equation}
+where $t(\sigma_p)\in\{0,1,2\}$ is the spread tercile (edges from the calibration pixels) and $r^{(k)}_{(j)}$ the $j$-th smallest of the $n_k$
+calibration scores in stratum $k$; the interval of Eq.~\eqref{eq:conformal} then uses $q_{k(p)}$ (Mondrian calibration). The global variant
+uses one stratum, and a per-image variant replaces the pooled pixel scores by the per-image $(1-\alpha)$ quantiles, calibrated at level 0.1. The sparsification curve is the mean absolute error of the pixels that remain after removing the fraction $f\in[0,0.95]$ with the
+largest spread; AUSE is the area between this curve and the oracle curve that removes pixels by their error (0 is perfect).
+
+\subsection{Training budget}
+The suppressor keeps the nested decoder and CBAM attention of Section~\ref{sec:methods} \citep{zhou2018unetpp,woo2018cbam}. The dose-response and
+ablation arms use the SwinV2-T encoder of that section \citep{liu2022swinv2}; ours uses a ConvNeXt-V2-T encoder \citep{woo2023convnextv2}
+(FCMAE pre-training, ImageNet-22k then ImageNet-1k fine-tuning \citep{deng2009imagenet}; \texttt{timm} \citep{wightman2019timm}
+\path{convnextv2_tiny.fcmae_ft_in22k_in1k}) with a learning
+rate $0.25\times$ that of the decoder. Every v2 run is trained at $512$~px with AdamW \citep{loshchilov2019adamw} (learning rate $2\times10^{-4}$,
+batch 8), the schedule and loss of Section~\ref{sec:methods}, and \num{300000} samples (\num{37500} steps); evaluation uses the EMA weights. The
+encoder screen uses \num{100000} samples (Section~\ref{sec:experiments}). The seeds per arm are listed in the generated tables.

@@ -1,0 +1,42 @@
+arm=qp_twin16 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 16.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} bank-free (lesion library from /kaggle/input/datasets/ac_5/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 5461.62it/s]
+resumed at step 22039
+/kaggle/input/datasets/ac_5/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+24000 2019s loss 0.0321 {'qp': {'mae': 0.004574395250529051, 'psnr': 41.895240783691406}}
+26000 4098s loss 0.0365 {'qp': {'mae': 0.0044233668595552444, 'psnr': 42.30024337768555}}
+28000 6178s loss 0.0271 {'qp': {'mae': 0.004177760798484087, 'psnr': 42.883968353271484}}
+30000 8256s loss 0.0331 {'qp': {'mae': 0.004211035091429949, 'psnr': 42.85594940185547}}
+32000 10337s loss 0.0413 {'qp': {'mae': 0.004126570653170347, 'psnr': 43.01426696777344}}
+34000 12416s loss 0.0344 {'qp': {'mae': 0.004067346453666687, 'psnr': 43.169837951660156}}
+36000 14495s loss 0.0266 {'qp': {'mae': 0.004078068304806948, 'psnr': 43.14179229736328}}
+37500 16035s loss 0.0275 {'qp': {'mae': 0.004066244699060917, 'psnr': 43.171897888183594}}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{
+ "method": "ours:/kaggle/working/runs/qp_twin16_s0_raddino300k/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.3373 +- 0.6939",
+ "mse_raw": "0.0037 +- 0.0006",
+ "ssim_raw": "0.8497 +- 0.0173",
+ "psnr_cal": "25.8707 +- 0.6907",
+ "mse_cal": "0.0026 +- 0.0005",
+ "ssim_cal": "0.8461 +- 0.0268",
+ "psnr_cal_bone": "21.6783 +- 1.6158",
+ "psnr_cal_nonbone": "26.8272 +- 0.8152",
+ "ssim_cal_bone": "0.7712 +- 0.0451",
+ "ssim_cal_nonbone": "0.8544 +- 0.0292",
+ "ssim_cal_s2": "0.9324 +- 0.0240",
+ "ssim_cal_s4": "0.9483 +- 0.0225",
+ "bone_corr_s2": "0.3665 +- 0.0883",
+ "bone_slope_s2": "0.3221 +- 0.1267",
+ "hp_ratio_nonbone": "1.0946 +- 0.1703",
+ "msssim_cal": "0.9040 +- 0.0148"
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+ours: n=450 A_mean=0.045 low-overlap=0.032 high-overlap=0.054 leak=0.0013
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/kaggle/working/runs/qp_twin16_s0_raddino300k/final_ema.pt n=400 {'mae_bone': 0.0055, 'psnr_bone': 40.2153, 'ssim_bone': 0.9705}

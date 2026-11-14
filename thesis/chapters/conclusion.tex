@@ -1,0 +1,72 @@
+% Conclusion: no new results. Each answer cites the table that carries it.
+\section{Summary of findings}
+\paragraph{RQ1: is exact CT supervision enough?} No. On rendered LIDC-IDRI data with exact truth, lesion insertion lowered absorption a little
+at no cost in bone error, and the pre-specified hypothesis H1 passed (Table~\ref{tab:v1_h1}). On real radiographs, however, the v1 models
+absorbed more than twice what the reference model absorbed, and on the locked VinDr-RibCXR audit the v1 model still absorbs 0.289 of an added
+lesion. Exact supervision of the bone image does not by itself keep lesions out of it.
+
+\paragraph{RQ2: does the twin regulariser help without losing fidelity?} Yes, for bone-region fidelity. Absorption falls with the twin weight
+(H1$'$, Table~\ref{tab:dose_response}); the final ensemble absorbs 0.051 of an added lesion on VinDr-RibCXR against 0.149 for the released
+reference model and 0.178 for the matched control (H3$'$, Table~\ref{tab:audit_contrasts}), while its bone-region PSNR is non-inferior to both
+(H2$'$, Table~\ref{tab:h2}). Structural similarity to the dual-energy image missed its margin, mainly through fine texture, and on exact-truth
+data the regulariser raises the bone error. The ablation shows that the effect needs a consistency term confined to the lesion and gradients
+through both twins (Table~\ref{tab:ablation_twin}), and it appears with every encoder tried (Table~\ref{tab:encoders}).
+
+\paragraph{RQ3: does the audit measure something real?} In part. Against the matched control, real-nodule contrast rose consistently with the
+regulariser on both nodule data sets, which agrees with the audit. Against the reference model the answer depends on the data set: higher
+contrast on JSRT, lower on Node21, where the reference model suppresses more strongly (Table~\ref{tab:nodule_cnr}). The audit and the evidence
+without insertion agree on the effect of the regulariser; they do not agree on a single ranking of different models.
+
+\paragraph{RQ4: does it matter downstream, and is the output reliable?} The soft-tissue image used alone did not improve classification or
+detection, and adding it to the original image gave small gains (Tables~\ref{tab:downstream_cls} and~\ref{tab:downstream_det}). The
+ensemble spread ranks the bone error well on rendered data, and conformal intervals reach their nominal coverage there, but neither holds on
+real radiographs (Table~\ref{tab:reliability}); an exploratory recalibration on 24 real pairs restored the coverage of the intervals
+(Table~\ref{tab:bone_recal}). On paediatric radiographs the suppressor was non-inferior for pneumonia classification, kept its absorption
+ordering, and its uncertainty rose 2.7-fold (Chapter~\ref{ch:external}).
+
+\paragraph{RQ5: do classifiers gain from the suppressor's images?} Not overall. A multi-stream classifier that read the radiograph,
+soft-tissue and bone images did not improve macro-AUROC on any of three data sets, and it did not beat a control of the same capacity or
+channel stacking (H6 and H7, Table~\ref{tab:cls_primary}). The largest effect on both adult data sets was a small gain for nodules and
+masses, significant on NIH ChestX-ray14 only and offset there by a loss for diffuse findings (H8, Table~\ref{tab:cls_groups}); attribution
+maps of the soft-tissue stream located nodules and masses more often than those of the radiograph stream (H10,
+Table~\ref{tab:cls_pointing}). The suppressor's own uncertainty did not help a classifier decide when to abstain
+(Table~\ref{tab:cls_selective}).
+
+\paragraph{RQ6: does CT teach a Swin X-ray classifier?} Not with this design. Distilling a 2.5D Swin CT classifier into the X-ray model
+left the classification of real radiographs unchanged: on the five shared findings the distilled classifier differed from one started from
+ImageNet by $-0.0001$ $[-0.0016, 0.0014]$ in mean AUROC (H11), and neither pretraining on the projections nor the teacher on top of it made
+a difference (H12, Table~\ref{tab:xm_hyp}); on the projections and in zero-shot transfer the distilled models were slightly worse
+(Table~\ref{tab:xm_transfer}). The CT and X-ray heat maps of the same patient did not agree (H14, Table~\ref{tab:xm_crossmodal}). The Swin
+classifier was slightly less accurate than the DenseNet-121 of Chapter~\ref{ch:classifier} (H13), almost entirely because of hernia; per
+class it lost clearly on hernia and slightly on infiltration and matched it on the other 12 diseases (Table~\ref{tab:xm_per_class}). It was far less sensitive to image noise than DenseNet-121, and under rib emphasis the distilled classifier
+flipped slightly fewer finding-free images than the one started from ImageNet (H15, $p=0.044$ uncorrected), as did the classifier pretrained
+on the projections without the teacher (Table~\ref{tab:xm_halluc}). Grad-CAM++ of the Swin classifiers located expert boxes less than half
+as often as that of DenseNet-121, while Integrated Gradients and decoder attention did about as well (Table~\ref{tab:xm_pointing}).
+
+\section{Contributions}
+The thesis contributes a counterfactual lesion audit that makes lesion loss by bone suppressors measurable on real radiographs, a twin
+lesion-invariance regulariser that lowers it, a recipe that trains such suppressors on public data only, two pre-specified evaluations
+on locked data with downstream tasks, an external validation and a full record of deviations and negative results, and a pre-specified test,
+against a control of the same capacity, of whether classifiers gain from bone-suppressed inputs. It also contributes an explainable,
+hallucination-aware Swin framework for chest CT and X-ray, with CT-to-X-ray distillation, a test of heat-map agreement between the
+modalities and counterfactual hallucination tests, evaluated under a fourth pre-specified plan; its negative results bound what such a
+transfer can add with public data of this size.
+
+\section{Recommendations}
+Whoever evaluates a bone suppressor should report how much of an inserted lesion it absorbs, on real radiographs and at sites shared by all
+compared models, next to a measure of how much bone it removes, and not rely on PSNR and SSIM alone. Whoever uses one should show the
+suppressed image beside the original rather than instead of it, should treat the ensemble spread as a warning that the image is unusual rather
+than as a calibrated error bar, and should not use a suppressor on a population or image type it was not evaluated on. Whoever builds a
+classifier should not expect bone-suppressed inputs to raise its overall accuracy, and should test any benefit per finding type against a
+control of the same capacity. Whoever explains a Swin classifier of radiographs should prefer Integrated Gradients or decoder attention to
+Grad-CAM++ and should score the maps against expert boxes; whoever claims that a classifier is robust should test it with perturbations that
+add no disease, because accuracy did not reveal the nearly threefold difference in noise sensitivity between two encoders of almost equal
+accuracy.
+
+\section{Outlook}
+The audit applies to any image-to-image model that is meant to remove one structure and keep another. The next steps are a reader study, other
+lesion types, higher resolution, real dual-energy data for calibration, and paediatric training data. For the cross-modality framework, a
+stable and stronger CT teacher comes first: the 2.5D recipe collapsed in one of seven seeds and was weak for lung lesions, so a full 3D
+encoder and many more volumes are needed before distillation can be judged on its merits. Heat-map agreement should then be measured with
+Integrated Gradients or attention maps rather than Grad-CAM++, and disagreement between the CT and X-ray models could be tested as a signal
+for when to abstain.

@@ -1,0 +1,279 @@
+% Supplementary material of the manuscript (compile on its own: Overleaf Menu > Main document = supplementary.tex, pdfLaTeX + BibTeX).
+% Tables and figures come from the same tables/ and figures/ folders as main.tex; numbers are never retyped.
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{xcolor}
+\usepackage{siunitx}
+\usepackage{setspace}
+\usepackage[section]{placeins}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\onehalfspacing
+\setlength{\emergencystretch}{3em}
+\graphicspath{{figures/}}
+\newcommand{\safefig}[2][\linewidth]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}{\fbox{\parbox[c][2.4cm][c]{0.92\linewidth}{\centering missing figure \detokenize{#2}}}}}
+\newcommand{\fittable}[1]{\begin{adjustbox}{max width=\linewidth,max totalheight=0.8\textheight}\input{#1}\end{adjustbox}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+
+\begin{document}
+\begin{center}
+{\Large\bfseries Supplementary material}\\[0.6em]
+{\large Explainable and hallucination-aware cross-modality learning from chest CT for X-ray disease classification: lesion-faithful bone
+suppression and Swin transformer knowledge transfer}
+\end{center}
+
+\section{Deviations from the analysis plans}
+\label{sup:dev}
+The deviations log of the project records every change made after a plan was frozen, with its date and reason. For Study I the main
+deviations are described in the main text where they arise: the encoder replacement rule and tie-break (Experiments), the JSRT overlap map
+(Counterfactual lesion audit) and the post-freeze corrections (Limitations). For Study II:
+\begin{itemize}
+\item \emph{Gradient accumulation.} Swin-V2-B did not fit a 16\,GB GPU at batch size 32 and was screened with four micro-batches per step
+  (same effective batch). The other encoders ran unchanged.
+\item \emph{Encoder learning rate in the screen.} ConvNeXt-V2-T stayed at chance at the plan's learning rate. The three encoders without
+  batch normalisation were screened again with the encoder learning rate reduced fourfold; this was decided before the other screen results
+  were seen, on validation data only.
+\item \emph{Holm families.} Before any test evaluation the authors fixed how H6 and H7 would be corrected if two encoders went forward, and
+  which models H10 uses. With one encoder the families are those of the main text.
+\item \emph{Execution.} Data loading, reruns of unfinished jobs and resumption across sessions changed without changing any analysis.
+\item \emph{Repeated NIH runs.} One account's NIH soft-tissue array differed at the byte level from the other five copies. The five runs
+  trained on it (soft seeds 0, 3, 4; early seeds 2, 3) were repeated on a consistent copy before the analysis. With the superseded runs,
+  the early and soft seed ensembles would have scored 0.8279 and 0.8253 instead of 0.8273 and 0.8243; this check lies outside the plan and
+  entered no test.
+\end{itemize}
+For Study III:
+\begin{itemize}
+\item \emph{CT micro-batches.} Gradient accumulation was added to the CT stage after the freeze so that four volumes of 24 slices fit a T4
+  GPU; each step still averages the same four volumes, and the network has no batch statistics.
+\item \emph{Teacher seed 2.} The teacher of seed 2 collapsed (constant logits; no code or data fault was found). Seeds 5 and 6 were trained
+  with the unchanged recipe under a replacement rule fixed before any P1 model of seed 2 was trained; seed 5 took slot 2 (Table~\ref{tab:xm_ct_seeds}).
+\item \emph{Data handling.} The design kept everything derived from CT-RATE in the cloud environment except metrics and heat-map frames, but
+  its own account plan required the teacher outputs (logits and pooled features of the subset volumes, no images) on other accounts, which
+  was possible only through a download; the teachers' predictions and weights and the weights of the distilled projection models also
+  reached the authors' computer. Nothing derived from CT-RATE was released.
+\item \emph{Execution.} One account replaced another and prepared its own NIH copy, checked file by file against the common copy; DenseNet-121
+  reference runs were copied to an account with the common copy, because the rib-emphasis test reads the soft-tissue array; a rerun that
+  sat in the cloud queue was resubmitted unchanged. VinBigData fine-tuning, planned only if the compute quota allowed, was not run.
+\item \emph{Descriptive analyses.} The grouping of the per-class DeLong tests, the conformal analysis and the summary of the pointing game
+  were fixed after the hypothesis results were known.
+\end{itemize}
+
+\section{Additional results of Study II}
+\label{sup:cls}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_seed_spread_densenet121.pdf}
+\caption{Test macro-AUROC of every run (open circles; BDCXR-3257: each run on its own test fold) and of the seed ensembles that the tests
+compare (diamonds).}
+\label{fig:cls_seeds}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_conformal_sets_densenet121.pdf}
+\caption{Conformal prediction at nominal 0.90: (a) coverage per true class and (b) mean set size of the Mondrian sets on BDCXR-3257;
+(c) test false-negative rate and (d) mean set size under false-negative risk control on NIH ChestX-ray14. Dashed: the nominal level.}
+\label{fig:cls_conformal}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_xai_ig_densenet121.pdf}
+\caption{Integrated Gradients per input stream of one hybrid model (seed 0) on the NIH ChestX-ray14 test images of the main-text attribution
+figure.}
+\label{fig:cls_ig}
+\end{figure}
+
+\section{Additional results of Study III}
+\label{sup:xm}
+\begin{table}[htbp]
+\centering\small
+\caption{Every CT teacher run (unchanged recipe, 20 epochs): best validation and test macro-AUROC over the six findings of the CT subset.
+Slot $k$ is the teacher of P1 seed $k$.}
+\label{tab:xm_ct_seeds}
+\fittable{tables/v4_ct_seeds.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Test macro-AUROC of every single model (one seed each); the main tables use the seed ensembles. Projection models and zero-shot
+transfer: six findings; NIH classifiers: 14 diseases.}
+\label{tab:xm_seeds}
+\fittable{tables/v4_seeds.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Shared findings on the NIH test split: AUROC of the seed ensembles and paired DeLong differences with Holm over the 15 tests
+(descriptive).}
+\label{tab:xm_shared}
+\fittable{tables/v4_shared_delong.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Mean Pearson correlation of the projected CT map with the X-ray map of the same scan (matched) and of the other scans positive for
+the same finding (mismatched), maps averaged over the five seed pairs.}
+\label{tab:xm_crossmodal}
+\fittable{tables/v4_crossmodal.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Conformal risk control of the per-image false-negative rate at 0.10 on the NIH test split and selective classification by
+$1-$entropy (descriptive).}
+\label{tab:xm_conformal}
+\fittable{tables/v4_conformal.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{NIH per-class test AUROC of the seed ensembles, with the paired DeLong difference F$_\mathrm{in}$ minus DenseNet-121 and Holm over
+the 14 classes (descriptive).}
+\label{tab:xm_per_class}
+\fittable{tables/v4_per_class.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Counterfactual nodules: mean change of the Mass/Nodule score after insertion, by nodule-size tertile.}
+\label{tab:xm_nodule}
+\fittable{tables/v4_nodule_size.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Hallucination tests on the 9,861 finding-free NIH test images: share with some class above its threshold on the clean image, share
+flipped by each perturbation, inserted-nodule sensitivity and share of Grad-CAM++ mass outside the lung fields for positive lung-finding
+predictions.}
+\label{tab:xm_halluc}
+\fittable{tables/v4_halluc.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig[88mm]{figures/fig_v4_ct_training.pdf}
+\caption{Validation macro-AUROC of the CT teacher per epoch for all seven seeds. Seed 2 never left chance level, seed 6 learned late and was
+not used, and seed 0 stalled near 0.60 for 12 epochs before it learned.}
+\label{fig:xm_ct_training}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_forest.pdf}
+\caption{Pre-specified contrasts of Study III with 95\,\% bootstrap intervals: (a) AUROC contrasts of H11--H13; (b) H14; (c) H15. Filled
+markers: $p<0.05$ (Holm-adjusted for H11 and H12).}
+\label{fig:xm_forest}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_transfer.pdf}
+\caption{Macro-AUROC of single seeds (open circles) and seed ensembles (diamonds): (a) projection test split; (b, c) zero-shot transfer to
+NIH and VinBigData; (d) NIH classifiers over the 14 diseases.}
+\label{fig:xm_transfer}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig[88mm]{figures/fig_v4_crossmodal.pdf}
+\caption{Mean correlation of the CT map with the X-ray map of the same scan (filled) and of other scans positive for the same finding (open),
+for P1 and P0; in parentheses the number of maps.}
+\label{fig:xm_crossmodal}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_pointing.pdf}
+\caption{Pointing game: (a) hit rate over all 984 boxes with 95\,\% image-cluster bootstrap intervals; (b) focal (filled) and other (open)
+boxes.}
+\label{fig:xm_pointing}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_conformal.pdf}
+\caption{(a) Risk-coverage curves of the Swin classifiers (Brier score of the images kept, most confident first). (b) Test false-negative rate
+under conformal risk control at 0.10 (dashed); numbers: mean label-set size.}
+\label{fig:xm_conformal}
+\end{figure}
+
+\section{Additional results of Study I}
+\label{sup:sup1}
+\begin{table}[htbp]
+\centering\small
+\caption{First analysis plan, H1 (v1 family): lesion-aware arms against the recipe arm on synthetic LIDC test CTs with exact truth (three
+seeds each), and the 300k-sample finals as a replication. Holm over the seven contrasts of the v1 ablation.}
+\label{tab:v1_h1}
+\fittable{tables/v1_h1.tex}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_bone_uncertainty.pdf}
+\caption{Exploratory recalibration on real pairs (post hoc). (a) Per-image coverage on the 51 held-out SZCH-X-Rays pairs for global and
+Mondrian calibration, with quantiles pooled over pixels or taken per image; dashed: nominal 0.90. (b) Reliability of the Mondrian intervals
+across nominal levels; cross: the synthetic calibration. (c) Sparsification of the absolute bone error by the ensemble spread, with the
+error-sorted oracle.}
+\label{fig:bone_recal}
+\end{figure}
+
+\section{Design of Study II}
+\label{sup:cls_design}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_study_design.pdf}
+\caption{Classifier study design. (a) The three inputs for an NIH ChestX-ray14 test image: the radiograph $X$, the soft-tissue image $S$
+predicted by the suppressor and the bone image $\hat B=X-S$ (box: expert annotation of a focal finding). (b) The five configurations, all with
+the same DenseNet-121 encoder, class-query decoder and training settings. In the hybrid and the control one encoder with shared weights
+processes each stream and the decoder attends to the tokens of all three; the control receives $X$ three times. Bottom: the pre-specified
+contrasts.}
+\label{fig:cls_design}
+\end{figure}
+
+\section{Per-class comparison of Study III}
+\label{sup:xm_per_class}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_v4_per_class.pdf}
+\caption{(a) NIH per-class test AUROC of the seed ensembles of Study III. (b) F$_\mathrm{in}$ minus DenseNet-121 per class with 95\,\% DeLong
+intervals; filled markers: Holm $p<0.05$ over the 14 classes. Hernia carries almost all of the H13 difference.}
+\label{fig:xm_per_class}
+\end{figure}
+
+\section{Uncertainty in Study II}
+\label{sup:cls_selective}
+\begin{table}[htbp]
+\centering\small
+\caption{Conformal prediction at nominal 0.90: Mondrian sets on BDCXR-3257 (coverage, mean set size of 3 classes) and false-negative risk
+control on NIH (test false-negative rate, mean set size of 14 labels).}
+\label{tab:cls_unc}
+\fittable{tables/v3_conformal.tex}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\caption{Selective classification: area under the risk--coverage curve (AURC; lower is better) with score A (one minus the ensemble
+entropy), score A on the images that have a spread value, and score B (entropy and suppressor spread). On NIH, 16 of the 25,596 test images
+have an empty lung-field mask and hence no spread, so scores A and B are compared on the same 25,580 images.}
+\label{tab:cls_selective}
+\fittable{tables/v3_selective.tex}
+\end{table}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_selective_classification_densenet121.pdf}
+\caption{Risk--coverage curves for (a) BDCXR-3257 (top-1 error) and (b) NIH ChestX-ray14 (Brier score), keeping the most confident images
+first. Solid: score A; dashed: score B with the suppressor spread. Legend: AURC of score A.}
+\label{fig:cls_selective}
+\end{figure}
+\end{document}

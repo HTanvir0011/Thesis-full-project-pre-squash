@@ -1,0 +1,46 @@
+== rd_nt_s0: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s0.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== rd_nt_s1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s1.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== rd_nt_s2: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt_s2.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== recipe_v1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/audit_ribcxr/recipe_v1.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== qure: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods qure:data/qure/weights/bone_suppression.ts --out results/final/audit_ribcxr/qure.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+have results/final/audit_jsrt/rd_nt_s0.csv
+have results/final/audit_jsrt/rd_nt_s1.csv
+have results/final/audit_jsrt/rd_nt_s2.csv
+have results/final/audit_jsrt/recipe_v1.csv
+have results/final/audit_jsrt/qure.csv
+have results/final/audit_szch/rd_nt_s0.csv
+have results/final/audit_szch/rd_nt_s1.csv
+have results/final/audit_szch/rd_nt_s2.csv
+have results/final/audit_szch/recipe_v1.csv
+have results/final/audit_szch/qure.csv
+== rd_nt: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/rib/rd_nt.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== recipe_v1: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/rib/recipe_v1.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== qure: python -m s4.eval_ribcxr --root data/ribcxr_raw --method qure:data/qure/weights/bone_suppression.ts --out results/final/rib/qure.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== identity: python -m s4.eval_ribcxr --root data/ribcxr_raw --method identity --out results/final/rib/identity.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'

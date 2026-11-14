@@ -1,0 +1,11 @@
+% Hallucination tests on the 9,861 NIH test images without a finding: share of images with some class above its threshold (clean) or crossing it after the perturbation; inserted-nodule sensitivity; share of Grad-CAM++ mass outside the lung field for positive predictions of lung findings
+\begin{tabular}{llllllll}
+\toprule
+model & seeds & clean & rib emphasis & noise & gamma & nodule sensitivity & off-target Grad-CAM++ \\
+\midrule
+F$_\mathrm{in}$ & 5 & 0.686 & 0.137 & 0.293 & 0.063 & 0.028 & 0.658 \\
+F$_\mathrm{p0}$ & 5 & 0.686 & 0.127 & 0.273 & 0.056 & 0.032 & 0.733 \\
+F$_\mathrm{p1}$ & 5 & 0.686 & 0.129 & 0.277 & 0.063 & 0.031 & 0.728 \\
+DenseNet-121 (v3) & 5 & 0.645 & 0.128 & 0.781 & 0.061 & 0.032 & 0.624 \\
+\bottomrule
+\end{tabular}

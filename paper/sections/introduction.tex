@@ -1,0 +1,52 @@
+\section{Introduction}
+\label{sec:intro}
+% PLAN (about 1.5 pages, five paragraphs)
+%   P1 Clinical problem. Ribs and clavicles overlap lung lesions on chest radiographs; dual-energy subtraction (DES) is the reference but needs
+%      special hardware and extra exposure (sun2026bsldm, sun2026debonedit). Software suppression is attractive; reader and CAD studies report
+%      benefit for nodule detection (freedman2011lung, schalekamp2014cad).
+%   P2 CT-supervised suppression. Digitally reconstructed radiographs from chest CT give paired supervision without DES (angaitkar2026anatomy);
+%      diffusion models trained on real DES pairs are the other line (chen2024bsdiff, sun2026bsldm, sun2025gllcm, sun2026debonedit).
+%   P3 The gap. Suppressors are judged by fidelity to a bone or soft-tissue reference (PSNR, SSIM). A model that is rewarded for predicting bone
+%      can also absorb a lesion into the bone image. A suppressor that does nothing never absorbs a lesion, so absorption must be read together
+%      with suppression gain. No counterfactual test exists in the bone-suppression literature we know of [novelty claim only after the
+%      systematic search listed in paper/REFS_TODO.md].
+%   P4 Contributions (C1-C4): (i) counterfactual lesion audit with an exact-truth version on synthetic data and a confirmatory version on real
+%      radiographs with independent rib masks; (ii) twin lesion-invariance regulariser, with a dose-response over its weight and an ablation of
+%      its parts; (iii) a public-data recipe with a K=3 ensemble, uncertainty and a modern-encoder screen; (iv) a locked-set benchmark with
+%      downstream detection and classification, a pre-specified plan and a licensed release.
+%   P5 Outline of the paper.
+Ribs and clavicles overlap the lung fields on a chest radiograph and can obscure abnormalities \citep{angaitkar2026anatomy}.
+Dual-energy subtraction (DES) separates bone from soft tissue, but it needs dedicated hardware and a second exposure
+\citep{kuhlman2006des,sun2026bsldm,sun2026debonedit}. Software bone suppression avoids both, and reader and CAD studies have examined its effect on nodule
+detection \citep{freedman2011lung,schalekamp2014cad}.
+
+Two lines of learning-based suppression are current. One renders paired supervision from chest CT: each scan is split into bone, non-lung
+soft tissue and lung, the parts are projected separately, and a network predicts one component and recovers the other by subtraction
+\citep{angaitkar2026anatomy}. The other trains diffusion models on real DES pairs
+\citep{chen2024bsdiff,sun2026bsldm,sun2025gllcm,sun2026debonedit}. In the CT-supervised line, lesion preservation has been assessed indirectly,
+through detection gains and the contrast of boxed lesions \citep{angaitkar2026anatomy}; we measure it directly, with a known inserted signal, and
+build the measurement into training.
+
+Suppressors are judged by how closely the output matches a bone or soft-tissue reference. That judgement misses a failure that matters
+clinically: a network rewarded for predicting bone can also move lesion signal into the bone image, and the lesion then disappears from the
+suppressed radiograph. Because a model that does nothing never absorbs a lesion, absorption has to be read next to suppression gain.
+Inserted or simulated nodules have been used before to measure contrast after suppression, with a hand-built clavicle suppression method and
+with phantom images \citep{hogeweg2013suppression,takagi2020dose}, and the loss or hallucination of image content by learned image-to-image
+models is documented in other modalities \citep{cohen2018distribution,antun2020instabilities,bhadra2021hallucinations,tivnan2024hallucination}.
+In our search (PubMed, arXiv and Crossref, abstracts read) we found no audit of learned bone suppression against an exactly known, additive
+lesion signal, and no training objective aimed at it.
+
+We make four contributions.
+\begin{enumerate}
+\item A counterfactual lesion audit that measures the fraction of an inserted lesion a suppressor moves into its bone image, reported beside
+ suppression strength, with sites shared by all models and bone overlap taken from independent annotations.
+\item A twin lesion-invariance regulariser that ties the bone predictions of an image and of a copy with a pasted lesion, with a dose-response over
+ its weight and an ablation of its parts.
+\item A training recipe on public CT-derived projections only, with a three-model ensemble, split-conformal intervals and a screen of modern encoders.
+\item A pre-specified evaluation on locked sets (paired dual-energy images, an annotated rib set, real nodules and four downstream tasks) and an
+ external validation on paediatric radiographs, with every change to the analysis disclosed.
+\end{enumerate}
+
+Section~\ref{sec:related} reviews related work. Section~\ref{sec:data} describes the data, Sections~\ref{sec:methods} and~\ref{sec:method_v2} the
+methods, Section~\ref{sec:audit} the audit, Section~\ref{sec:experiments} the experiments and Section~\ref{sec:results} the results; we then discuss
+limitations and reproducibility.

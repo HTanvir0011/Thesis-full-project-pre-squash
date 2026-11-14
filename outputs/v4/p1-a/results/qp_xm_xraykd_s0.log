@@ -1,0 +1,3 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+distillation on 1600 paired training projections
+{"val": 0.7951863389526782, "test": 0.7948160444083058}

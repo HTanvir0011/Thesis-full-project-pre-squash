@@ -1,0 +1,42 @@
+\section{Deviations from the analysis plan}
+\label{app:cls_dev}
+The deviations log (supplementary) records every change after the plan was frozen, with its date and reason. In short:
+\begin{itemize}
+\item \emph{Gradient accumulation.} Swin-V2-B did not fit a 16\,GB GPU at batch size 32 and was screened with four micro-batches per step
+  (same effective batch). The other encoders ran unchanged.
+\item \emph{Encoder learning rate in the screen.} ConvNeXt-V2-T stayed at chance at the plan's learning rate. The three encoders without
+  batch normalisation were screened again with the encoder learning rate reduced fourfold; this was decided before the other screen results
+  were seen, on validation data only.
+\item \emph{Holm families.} Before any test evaluation the authors fixed how H6 and H7 would be corrected if two encoders went forward, and
+  which models H10 uses. With one encoder the families are those of Section~\ref{sec:cls_stats}.
+\item \emph{Execution.} Data loading, reruns of unfinished jobs and resumption across sessions changed without changing any analysis.
+\item \emph{Repeated NIH runs.} One account's NIH soft-tissue array differed at the byte level from the other five copies. The five runs
+  trained on it (soft seeds 0, 3, 4; early seeds 2, 3) were repeated on a consistent copy before the analysis. With the superseded runs,
+  the early and soft seed ensembles would have scored 0.8279 and 0.8253 instead of 0.8273 and 0.8243; this check lies outside the plan and
+  entered no test.
+\end{itemize}
+
+\section{Additional figures}
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_seed_spread_densenet121.pdf}
+\caption{Test macro-AUROC of every run (open circles; BDCXR-3257: each run on its own test fold) and of the seed ensembles that the tests
+compare (diamonds).}
+\label{fig:cls_seeds}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_conformal_sets_densenet121.pdf}
+\caption{Conformal prediction at nominal 0.90: (a) coverage per true class and (b) mean set size of the Mondrian sets on BDCXR-3257;
+(c) test false-negative rate and (d) mean set size under false-negative risk control on NIH ChestX-ray14. Dashed: the nominal level.}
+\label{fig:cls_conformal}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_xai_ig_densenet121.pdf}
+\caption{Integrated Gradients per input stream of one hybrid model (seed 0) on the NIH ChestX-ray14 test images of
+Fig.~\ref{fig:cls_maps}.}
+\label{fig:cls_ig}
+\end{figure}

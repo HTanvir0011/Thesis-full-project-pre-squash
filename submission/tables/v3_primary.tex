@@ -1,0 +1,16 @@
+% H6 (primary): hybrid - original, Holm over encoders x data sets; H7 (secondary): hybrid - control X x3 and hybrid - early-fused, Holm over encoders x data sets x contrasts (SAP_v3.md; DEVIATIONS.md 2026-11-04); cluster bootstrap; encoder densenet121
+\begin{tabular}{lllll}
+\toprule
+data set & hypothesis & $\Delta$ macro-AUROC [95\,\% CI] & Holm $p$ & $\Delta$ macro-AUPRC [95\,\% CI] \\
+\midrule
+NIH & H6: hybrid vs orig & +0.0001 [-0.0022, +0.0024] & 0.967 & +0.0029 [-0.0019, +0.0075] \\
+VinBigData & H6: hybrid vs orig & +0.0024 [-0.0004, +0.0053] & 0.28 & +0.0202 [-0.0051, +0.0506] \\
+BDCXR-3257 & H6: hybrid vs orig & -0.0042 [-0.0108, +0.0021] & 0.39 & -0.0060 [-0.0180, +0.0054] \\
+NIH & H7: hybrid vs ctrl & +0.0007 [-0.0018, +0.0032] & 1 & +0.0033 [-0.0001, +0.0081] \\
+VinBigData & H7: hybrid vs ctrl & -0.0009 [-0.0059, +0.0035] & 1 & +0.0014 [-0.0248, +0.0327] \\
+BDCXR-3257 & H7: hybrid vs ctrl & +0.0010 [-0.0050, +0.0071] & 1 & +0.0044 [-0.0053, +0.0143] \\
+NIH & H7: hybrid vs early & -0.0031 [-0.0055, -0.0007] & 0.066 & -0.0055 [-0.0100, -0.0012] \\
+VinBigData & H7: hybrid vs early & -0.0005 [-0.0040, +0.0029] & 1 & +0.0041 [-0.0191, +0.0304] \\
+BDCXR-3257 & H7: hybrid vs early & -0.0002 [-0.0062, +0.0059] & 1 & +0.0009 [-0.0093, +0.0109] \\
+\bottomrule
+\end{tabular}

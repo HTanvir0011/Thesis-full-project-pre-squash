@@ -1,0 +1,8 @@
+== clahe: python -m s4.eval_real --method clahe --lpips --out results/final/szch/clahe.csv
+  File "/kaggle/input/datasets/ac_8/s4-code/s4/eval_real.py", line 73, in lpips_dist
+    import lpips
+ModuleNotFoundError: No module named 'lpips'
+== rd_s2: python -m s4.eval_real --method ours:outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --lpips --out results/final/szch/rd_s2.csv
+  File "/kaggle/input/datasets/ac_8/s4-code/s4/eval_real.py", line 73, in lpips_dist
+    import lpips
+ModuleNotFoundError: No module named 'lpips'

@@ -1,0 +1,1 @@
+{"val_macro_auc": 0.8086131588512474, "test_macro_auc": 0.7724183972972886, "per_class": [0.8200517495133646, 0.7762030416524799, 0.7210004007260213], "variants": ["clahe"], "seed": 0, "epochs": 10, "split": "split_f0.npy"}

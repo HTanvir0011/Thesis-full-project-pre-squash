@@ -1,0 +1,4 @@
+== recipe_v1: python -m s4.eval_synth --ckpt $(echo ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt | sed 's/^[a-z]*://; s/+/ /g') --bank outputs/shard0/render outputs/shard1/render outputs/shard2/render --split splits/ct_split.csv --out results/final/synth/recipe_v1
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.008147852280165386, 'psnr': 38.50528607187392, 'ssim': 0.9606290180471879, 'lcr': 1.1531957102119923, 'absorption': 0.37233469973293304}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.007853519563457067, 'psnr': 38.68305244928674, 'ssim': 0.9634134682673442, 'lcr': 3.0509133239090445, 'absorption': 0.38196827625876095}
+{'n_ct': 158, 'n_sites': 317, 'mae': 0.007627727908872162, 'psnr': 38.94359727449055, 'ssim': 0.963738150988953, 'lcr': 2.153698534704745, 'absorption': 0.3904324814073862}

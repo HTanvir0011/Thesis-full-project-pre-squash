@@ -1,0 +1,34 @@
+arm=qp_twin64 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 64.0, 'n_twin': 2} bank-free (lesion library from /kaggle/input/datasets/ac_4/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+/kaggle/input/datasets/ac_4/s4-code/s4/train.py:223: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1218s loss 0.2397 {'qp': {'mae': 0.021374568343162537, 'psnr': 29.570960998535156}}
+4000 2435s loss 0.2080 {'qp': {'mae': 0.016966816037893295, 'psnr': 31.753746032714844}}
+6000 3655s loss 0.1581 {'qp': {'mae': 0.015331637114286423, 'psnr': 32.522796630859375}}
+8000 4875s loss 0.1748 {'qp': {'mae': 0.030975596979260445, 'psnr': 24.667924880981445}}
+10000 6096s loss 0.1461 {'qp': {'mae': 0.013678407296538353, 'psnr': 33.091087341308594}}
+12000 7319s loss 0.1442 {'qp': {'mae': 0.01236909069120884, 'psnr': 33.95478820800781}}
+12500 7625s loss 0.1971 {'qp': {'mae': 0.012245560996234417, 'psnr': 34.00651931762695}}
+{
+ "method": "ours:/kaggle/working/runs/qp_twin64_s1/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.2420 +- 0.6216",
+ "mse_raw": "0.0038 +- 0.0006",
+ "ssim_raw": "0.8392 +- 0.0182",
+ "psnr_cal": "25.4258 +- 0.6861",
+ "mse_cal": "0.0029 +- 0.0005",
+ "ssim_cal": "0.8349 +- 0.0270",
+ "psnr_cal_bone": "20.7219 +- 1.0171",
+ "psnr_cal_nonbone": "26.5200 +- 0.7669",
+ "ssim_cal_bone": "0.7473 +- 0.0505",
+ "ssim_cal_nonbone": "0.8446 +- 0.0289",
+ "ssim_cal_s2": "0.9214 +- 0.0236",
+ "ssim_cal_s4": "0.9420 +- 0.0216",
+ "bone_corr_s2": "0.3204 +- 0.0782",
+ "bone_slope_s2": "0.2909 +- 0.1037",
+ "hp_ratio_nonbone": "1.1242 +- 0.1744"
+}
+ours: n=450 A_mean=0.061 low-overlap=0.045 high-overlap=0.078 leak=0.0024
+/kaggle/working/runs/qp_twin64_s1/final_ema.pt n=400 {'mae_bone': 0.0124, 'psnr_bone': 33.9688, 'ssim_bone': 0.8527}

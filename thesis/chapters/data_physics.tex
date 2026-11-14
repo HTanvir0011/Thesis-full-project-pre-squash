@@ -1,0 +1,395 @@
+% PLAN (20-25 pages). The paper text on data and methods is input in full; this chapter adds what the paper has no room for.
+%   3.1 Data: paper/sections/data.tex (input below, brings its own \section). Add per-set preparation: file formats, preprocessing, orientation
+%       checks, exclusions.
+%   3.2 Methods: paper/sections/methods.tex (input below, brings its own \section; compact version of CT decomposition, projection, detector
+%       physics, suppressor, v1 supervision, audit definition, real-image protocol, statistics). When the thesis text outgrows it, split methods.tex
+%       into one file per subsection (in the paper folder) and input them here separately; do not fork the text.
+%   3.3 Thesis-only expansion (below): segmentation recipe in detail, rendering geometry and frame, attenuation tables (ICRU-44
+%       compositions, NIST tables with XCOM berger2010xcom), spectra (SpekPy poludniowski2021spekpy), beam hardening and the additivity gap, tone curves and
+%       exactness of X' = S' + B', detector effects (blur, noise, scatter), renderer tests (tests/test_renderer.py, tests/test_compose.py),
+%       orientation check, LUNA16 versus DICOM voxel check, usable-CT rules and the padded-row decision (DEVIATIONS.md, 2026-10-27).
+%   Every statement in Section sec:dp-details is read from the code (s4/, tools/, kernels/, tests/); no result of the study is typed here.
+This chapter first reproduces the data and methods text of the paper and then adds the details that the paper has no room for.
+Section~\ref{sec:dp-details} extends the paper text below without repeating it: each of its subsections gives the implementation behind one
+step of Sections~\ref{sec:data} and~\ref{sec:methods} as it stands in the code.
+
+\input{../paper/sections/data}
+
+\input{../paper/sections/methods}
+
+\section{Details that the paper omits}
+\label{sec:dp-details}
+The statements in this section are read from the code of the v1 data pipeline, whose files are named in typewriter type. A CT is segmented and projected once into areal-density maps (\path{s4/ct.py},
+\path{s4/seg.py}, \path{s4/render.py}); the maps of all usable CTs are loaded onto the GPU as one bank (\path{s4/bank.py}); and every
+training sample is composed from the bank at run time (\path{s4/xray.py}, \path{s4/compose.py}). The real radiographs of the downstream tasks
+are prepared by a separate script, described first.
+
+\subsection{Data preparation per set}
+\label{ssec:dp-prep}
+The downstream sets are converted once into fixed arrays by \path{s4/prep.py}, with one loader per set. SZCH-X-Rays and VinDr-RibCXR do not
+pass through it; they are read directly by their evaluation scripts (\path{s4/eval_real.py}, \path{s4/eval_ribcxr.py}).
+
+\paragraph{Reading and resizing.} Every image is read as one grey-level array in floating point (MetaImage through SimpleITK, PNG and JPEG
+through OpenCV at their full bit depth, colour converted to grey), area-resized to $512\times512$~px without keeping its aspect ratio, as the
+renders are (Section~\ref{ssec:dp-geom}), and min--max normalised to $[0,1]$. This is the suppressor input $x$. The variants used downstream---the
+original, the suppressed image $x-\hat b$ of the frozen ensemble and optionally the bone estimate and the suppressed image of the released model of
+the reference method \citep{angaitkar2026anatomy}, run at its native 1024~px---are clipped to $[0,1]$, area-resized to the target size $s$ and
+stored as 8-bit arrays of shape $N\times s\times s$: $s=256$~px for the classification sets (NIH ChestX-ray14, BDCXR-3257) and $s=512$~px for the
+detection and nodule sets (TBX11K, VinBigData, Node21, JSRT), whose boxes are rescaled with separate horizontal and vertical factors. For the
+detection sets the script also stores, per box, the fraction covered by strong predicted bone (above 25\% of the 99th percentile of the bone map)
+and a contrast-to-noise ratio against a surrounding ring of half the box size, for the original, the suppressed and a CLAHE image
+\citep{zuiderveld1994clahe}.
+
+\paragraph{Hash splits.} All hash splits in this work, including the LIDC patient split (\path{tools/make_split.py}), map a key $k$ to
+\begin{equation}
+  h(k) = \mathrm{int}_{16}\big(\mathrm{SHA}_8(\texttt{20261026:}k)\big) \bmod 100,
+  \label{eq:dp-hash}
+\end{equation}
+where $\mathrm{SHA}_8(\cdot)$ is the first 8 hexadecimal digits of the SHA-256 digest of its argument,
+and assign it to training if $h<70$, to validation if $70\le h<80$ and to the test set otherwise. The key is the patient identifier where a set has
+one and the image identifier otherwise, so the assignment of an image depends on its own key only and survives changes of the file list.
+
+\paragraph{Per set.} \emph{NIH ChestX-ray14} \citep{wang2017chestxray}: 14 multi-hot finding labels; the official test list is the test set, and
+the official training and validation list is split by the hash of the patient identifier into validation ($70\le h<80$) and training (all other
+values). \emph{TBX11K} \citep{liu2020tbx11k}: boxes from the COCO-format files; the official training images are split by the hash of the file name
+into training and validation, and the official validation images form the test set. \emph{VinBigData} \citep{vinbigdata2020kaggle}: images from a
+public 1024~px copy, boxes rescaled from the original image size; for each image and finding (``no finding'' is ignored) a box joins the first
+cluster whose mean box has an intersection over union above 0.4 with it and that holds no box of the same radiologist. Clusters of at least two
+radiologists become one mean box, single-reader clusters are dropped, an image whose findings are all single-reader is excluded, and an image
+without findings stays as a normal image; the split is by the hash of the image identifier. \emph{Node21} \citep{sogancioglu2024node21}: the
+processed 1024~px images (Zenodo record 5548363), read from a private copy or fetched from the archive by HTTP range requests, with the nodule
+boxes halved to 512~px and a hash split by image name; the loader stops if fewer than 99\% of the listed images are present. \emph{JSRT}
+\citep{shiraishi2000jsrt}: evaluation only, so every image is a test image; each benign or malignant nodule becomes a square box with the nodule
+diameter as side, centred on the marked position (0.175~mm pixels in the 2048~px original, divided by four). \emph{BDCXR-3257}
+\citep{durjoy2026bdcxr}: the loader checks the three class counts; the five folds are stratified by class and grouped by near-duplicate group
+(Section~\ref{sec:data}), and in each fold whole groups of the training part move to validation until it holds at least 10\% of the training-part images of each
+class.
+
+\paragraph{Unreadable images.} An image that cannot be decoded is logged and skipped, never fatal: its array rows stay zero and its name is
+listed as unreadable in \path{status.json}. Images that the annotations list but that are missing on disk are logged and left out (TBX11K,
+Node21).
+
+\subsection{Segmentation recipe}
+\label{ssec:dp-seg}
+A CT is loaded by \path{s4/ct.py} as a volume of Hounsfield units indexed $[z,y,x]$, with $z=0$ the most superior slice, clipped to
+$[-1024,3071]$~HU; the voxel spacing $(\Delta z,\Delta y,\Delta x)$ travels with it, and every rule below that is stated in millimetres is
+converted to voxels with it. \path{s4/seg.py} then builds the body, bone and lung masks in this order, because each mask uses the earlier ones.
+The three projected components, bone, lung and the rest of the body, are disjoint.
+
+\paragraph{Body.} (1)~Threshold at $\mathrm{HU}>-300$; (2)~fill the holes of every axial slice; (3)~open with a $1\times9\times9$ voxel
+structuring element (in-plane only), which cuts thin connections such as the couch off the body; (4)~keep the largest connected component. The
+order of steps 2 and 3 matters: filling first encloses the lungs on every slice with an intact chest wall, whereas an opening first could break a
+thin chest wall, and the filling would then leave the lungs out (a failure recorded in the code comment of \texttt{body\_mask}).
+
+\paragraph{Bone.} Bone follows the iterative relaxation of \citet[Algorithm~1]{angaitkar2026anatomy}. Let $R=\{\mathrm{HU}>300\}$ be the
+reference mask and $f_M(v)$ the fraction of a mask $M$ inside a cube of side 10~mm centred on voxel $v$. Starting from $M_0=R$, three steps admit
+lower thresholds only next to bone already found:
+\begin{equation}
+\begin{gathered}
+M_k = \big(\{\mathrm{HU}>\tau_k\}\cap\{v: f_{M_{k-1}}(v)\ge\theta\}\big)\cup R,\\
+(\tau_1,\tau_2,\tau_3)=(200,150,100)~\mathrm{HU},
+  \quad \theta=0.05 .
+\end{gathered}
+\label{eq:dp-bone}
+\end{equation}
+A voxel of 120~HU is bone only if at least 5\% of its 10~mm neighbourhood was bone after the second step, so the mask grows from the cortex into
+trabecular bone without admitting isolated soft-tissue voxels of the same attenuation. To keep this affordable, $f_M$ is computed on a grid
+coarsened by $\max(1,\mathrm{round}(3~\mathrm{mm}/\Delta))$ along each axis and copied back; voxels of an incomplete last block receive the
+fraction zero and can enter only through $R$. The mask is then closed with a ball of radius two voxels, which fills the marrow inside the
+cortical shell; the closing runs on the bounding box of the mask, edge-padded by 3 voxels because a binary closing in SciPy erodes structures
+that touch the array border. Components smaller than $\kappa=1\%$ of the largest one are removed (the code calls them speckle islands), and the
+renderer intersects the result with the body mask.
+
+\paragraph{Lung.} Air inside the body, $\{\mathrm{HU}<-320\}\cap M_{\mathrm{body}}$, is split into connected components, and every component with
+at least 20\% of the voxels of the largest one is kept; this keeps both lungs, connected or not, and drops small gas pockets. On every slice that
+contains lung the mask is closed with a disc of radius 5 pixels and hole-filled, so that vessels and nodules enclosed by aerated lung belong to the
+lung component, and bone voxels are removed. The trachea and main bronchi are connected air and therefore part of the lung mask, which matters
+for the frame (Section~\ref{ssec:dp-geom}).
+
+\paragraph{Soft tissue.} The non-lung soft tissue is $M_{\mathrm{soft}}=M_{\mathrm{body}}\setminus(M_{\mathrm{lung}}\cup M_{\mathrm{bone}})$.
+If the bone voxels were simply removed from it, the soft-tissue projection would carry a negative imprint of the skeleton, as if the bones were
+air. Its density inside the bone mask is therefore filled from the surrounding soft tissue by normalised convolution,
+\begin{equation}
+  \rho_{\mathrm{fill}}(v) = \frac{\big(G_\sigma*(\rho\,\mathbf{1}_{M_{\mathrm{soft}}})\big)(v)}{\big(G_\sigma*\mathbf{1}_{M_{\mathrm{soft}}}\big)(v)},
+  \label{eq:dp-fill}
+\end{equation}
+with a Gaussian $G_\sigma$ of $\sigma=4$~mm where the denominator exceeds 0.01, then $\sigma=12$ and 36~mm for voxels still unfilled deep inside
+large bones, and the density of water for any voxel left. The lung component keeps the measured density of its voxels, vessels and nodules
+included. The density $\rho=\mathrm{clip}(1+\mathrm{HU}/1000,0,3)$~g\,cm$^{-3}$ treats every voxel as water of a different density; since HU
+measure attenuation relative to water at the effective energy of the CT beam, this mixes density and composition for bone, whose composition
+enters only through the cortical-bone attenuation table (Section~\ref{ssec:dp-atten}). The simplification relative to the reference method is
+recorded in \path{DEVIATIONS.md} (2026-10-26).
+
+\paragraph{Sources of the rules.} The bone recipe follows the published method \citep[Algorithm~1]{angaitkar2026anatomy} in its structure:
+a reference mask above 300~HU, a threshold ladder of 200, 150 and 100~HU admitted by support voting with $\theta=0.05$, and pruning of
+components smaller than 1\,\% of the largest. It differs in three details: support is counted in a 10~mm cube instead of a window of $15^3$
+voxels, the first pass starts from the reference mask instead of from all voxels, and the reference method's closings at every step (balls of
+radius 1 and 2) are replaced by one radius-2 closing after the ladder. The body, lung and soft-tissue steps are choices of this work: the
+reference method removes the bed and clips intensities, segments the lungs with a pretrained model, and fills the bone voxels of the soft-tissue
+volume by diffusion inpainting; this work uses the morphology listed above (fill-then-open order, $1\times9\times9$ opening, 20\,\% rule,
+radius-5 closing), a coarse grid and a normalised-convolution fill.
+
+\paragraph{Failure modes.} The code handles three: the fill-then-open order of the body mask, the border erosion of SciPy's closing, and
+trachea-only slices at the top of the scan, which the frame does not count as lung (Section~\ref{ssec:dp-geom}). Others follow from the thresholds
+and are not detected. Any voxel above 300~HU becomes bone whatever its anatomy, so calcified nodules or lymph nodes, densely contrast-filled vessels
+and metal would enter the bone target; lung disease denser than $-320$~HU belongs to the lung component only where the slice-wise closing encloses
+it; and a couch that the opening does not detach stays in the body. Gross failures are screened by the usable-CT rules of
+Section~\ref{sec:methods}, which \path{tools/make_split.py} applies to the metadata of every render and records as named reasons in the split
+file; the lungs count as cut by the scan when their extent (Section~\ref{ssec:dp-geom}) starts in the first two or ends in the last two slices.
+How often the threshold-based failures occurred was not measured: no step of the pipeline counts calcified nodules, contrast or metal in the
+bone target, so their effect on the v1 models is unknown. The v2 models are trained on the Qure.ai projections and do not depend on this
+segmentation.
+
+\subsection{Rendering geometry}
+\label{ssec:dp-geom}
+\paragraph{Orientation and sources.} The DICOM loader accepts only axial series: the orientation of the first slice must equal $(1,0,0,0,1,0)$ to
+within 0.02 in every direction cosine. It sorts the slices by position, puts the head first and skips series with fewer than 80 CT slices,
+duplicate positions, a spacing that deviates anywhere from the median by more than 25\%, slices of unequal size or an unreadable file; a skipped
+CT is logged and never stops the run. With this orientation the row index $y$ runs from anterior to posterior and the column index $x$ from the
+patient's right to the patient's left, so a projection along $y$ shows the head at the top and the patient's right on the viewer's left, the
+display convention of a posteroanterior radiograph.
+
+Each series is read from the mounted DICOM copy (606 of the 1\,018 series, \path{DEVIATIONS.md}, 2026-10-26), otherwise from the LUNA16
+MetaImage copy \citep{setio2017luna16}, otherwise downloaded from TCIA (\path{kernels/render/render_shard.py}); the source is recorded with
+each render. The MetaImage loader accepts uncompressed 16-bit volumes only and locates a nodule slice from its $z$ position in millimetres, whereas
+the DICOM loader matches the SOP instance identifier of the annotation. The agreement of the two copies was checked by
+\path{kernels/orient_check/check.py} on 12 series spread over those present in both: shapes, spacings, the mean absolute HU difference for all
+eight combinations of axis flips and the first slice of every consensus nodule located either way. The outcome is given in
+Section~\ref{sec:methods}.
+
+\paragraph{Projection and the AP view.} Each component is projected by a parallel-beam sum along the anteroposterior axis,
+\begin{equation}
+  a_c[z,x]=\frac{\Delta y}{10}\sum_y\rho_c[z,y,x]\quad(\mathrm{g\,cm^{-2}},\ \Delta y\ \text{in mm}),
+  \label{eq:dp-project}
+\end{equation}
+which is the same for a beam entering from the front (AP) or the back (PA); the raw images of the two views differ by a horizontal mirror. The
+renderer stores the PA convention, and the composer draws a horizontal mirror with probability 0.5 inside the affine transform that it shares
+between all maps (\texttt{random\_affine} in \path{s4/compose.py}), so that both handednesses occur in training. Divergent-beam magnification,
+which does differ between AP and PA, is not modelled.
+
+\paragraph{Frame.} The frame (\texttt{frame\_box} in \path{s4/render.py}) is a box in the $[z,x]$ plane of the projection:
+\begin{itemize}
+\item Lung extent $L$: from the first to the last slice whose lung cross-section exceeds 8~cm$^2$. Trachea-only slices must not count, or every
+scan that starts in the neck would look cut at the apex and the frame would be centred too high.
+\item Width: $W=1.08$ times the left--right extent of the body mask over all slices, centred on the body.
+\item Height: $H=\mathrm{clip}(L+60~\mathrm{mm},\,0.75\,W,\,1.2\,W)$, centred on the lungs.
+\item Placement: if the scan is at least $H$ long, the frame is slid along $z$ until it lies inside the scan, so that no row is padded; otherwise
+it stays centred and the rows beyond the scan are padded.
+\end{itemize}
+The code comment calls $0.75\le H/W\le1.2$ the aspect range of real radiographs and notes that short LIDC scans cannot reach the upper end.
+No source for this range was found; it is a design choice of this work.
+The box is area-resized to $512\times512$ pixels, so one pixel covers $W/512$~mm horizontally and $H/512$~mm vertically: the frame is squashed to
+a square exactly as real radiographs are squashed by \path{s4/prep.py}, and a render and a radiograph of the same aspect ratio carry the same
+distortion. The two-dimensional lung and body masks and the lesion signals are framed in the same way with zero padding; the background of a lesion
+signal is the median density of a three-voxel ring around the nodule inside the lung and outside bone.
+
+\paragraph{Padded rows.} Where the frame extends beyond the scan, the renderer repeats the first or last projected row (edge padding) and records
+the number of padded frame rows at the top and bottom, $\mathrm{round}(512\,p/(z_1-z_0))$ for $p$ padded slices of a frame spanning $z_1-z_0$
+slices. Edge padding turns the last projected row into vertical streaks. On 2026-10-27 two rules changed together (\path{DEVIATIONS.md}): of the
+renders, 38\% needed more than the original limit of 25 padded rows because their scans are shorter than $0.75\,W$, so the usability limit was
+raised to 50 rows in total (10\% of the frame); and the padded rows are set to air, zero areal density in all three components, when the renders
+are loaded into the bank (\path{s4/bank.py}), instead of keeping the streaks. The renders on disk are unchanged. A row of air has no bone, so its
+bone target stays zero under every tone curve (Section~\ref{ssec:dp-gap}).
+
+\subsection{Attenuation and spectra}
+\label{ssec:dp-atten}
+\paragraph{Materials and tables.} The bone, non-lung soft-tissue and lung components are given the cortical bone, soft tissue and lung tissue of
+ICRU Report~44 \citep{icru1989report44}. Cortical bone differs from the other two by its calcium and phosphorus content, which raises its
+photoelectric absorption at low energy; soft tissue and lung tissue have nearly the same composition, and their tabulated mass attenuation
+coefficients differ by less than 2\% over the energy grid used here, so the lung and soft-tissue components differ almost only through density.
+Table~\ref{tab:icru44} lists the compositions as tabulated by NIST \citep{hubbell2004xraymass}. The renderer itself does not use the nominal
+densities: it takes the density of every voxel from the CT (Section~\ref{ssec:dp-atten}), and the composition enters only through the
+attenuation table of each material.
+\begin{table}[htbp]
+\centering\small
+\caption{ICRU-44 compositions used through the NIST attenuation tables: density and elemental weight fractions (NIST SRD 126, Table~2).}
+\label{tab:icru44}
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{@{}lccccccccccccc@{}}
+\toprule
+Material & $\rho$ (g/cm$^3$) & H & C & N & O & Na & Mg & P & S & Cl & K & Ca \\
+\midrule
+Cortical bone & 1.920 & 0.034 & 0.155 & 0.042 & 0.435 & 0.001 & 0.002 & 0.103 & 0.003 & -- & -- & 0.225 \\
+Soft tissue & 1.060 & 0.102 & 0.143 & 0.034 & 0.708 & 0.002 & -- & 0.003 & 0.003 & 0.002 & 0.003 & -- \\
+Lung tissue & 1.050 & 0.103 & 0.105 & 0.031 & 0.749 & 0.002 & -- & 0.002 & 0.003 & 0.003 & 0.002 & -- \\
+\bottomrule
+\end{tabular}\end{adjustbox}
+\end{table}
+The coefficients $(\mu/\rho)_c(E)$ are the NIST tabulations for these materials (Table~4 of the NIST X-ray mass attenuation coefficient pages,
+which rest on the XCOM cross sections \citep{berger2010xcom}).
+These pages are the NIST X-ray mass attenuation coefficient tables \citep{hubbell2004xraymass}, not the XCOM program.
+\path{tools/build_xray_tables.py} downloads the three pages, keeps them in \path{s4/data/nist_raw/} for provenance, keeps the rows between 8
+and 200~keV, separates the duplicate energies at absorption edges by $10^{-6}$~keV and interpolates $\ln(\mu/\rho)$ linearly in $\ln E$ onto a
+1~keV grid from 10 to 150~keV. The result is committed as \path{s4/data/xray_tables.json}, so no run depends on the NIST server. On this grid
+the ratio of the bone to the soft-tissue coefficient is about 3.5 at 30~keV, 1.5 at 60~keV and 1.1 at 100~keV, which is why bone contrast falls
+with tube voltage.
+
+\paragraph{Spectra.} Tube spectra come from SpekPy \citep{poludniowski2021spekpy} for a tungsten anode at $12^\circ$, with 1~keV bins, the
+\texttt{kqp} physics option and 2.5~mm of aluminium filtration, at 60 to 140~kVp in 10~kV steps. Each spectrum is interpolated onto the
+10--150~keV grid and normalised to unit sum; the SpekPy version is recorded in the provenance field of the table file. Photons below 10~keV,
+which the aluminium filter makes negligible, are not represented.
+
+\paragraph{Detector and lookup tables.} The detector is energy-integrating, so each photon is weighted by its energy. With the normalised weight
+$p(E)=\phi(E)\,E/\sum_{E'}\phi(E')\,E'$, the pixel value of component $c$ at areal density $a$ is
+\begin{equation}
+  P_c(a) = -\ln\sum_E p(E)\,\exp\!\big(-(\mu/\rho)_c(E)\,a\big),
+  \label{eq:dp-pixel}
+\end{equation}
+as in Section~\ref{sec:methods}. For each voltage and material, $P_c$ is tabulated at 8\,192 points from 0 to 80~g\,cm$^{-2}$ and interpolated
+linearly on the GPU, with larger areal densities clamped to the end of the table. The renders store areal densities, so one render serves every
+voltage. The composer holds tables for 70 to 140~kVp; training draws one of 80, 90, \ldots, 130~kVp per sample with equal probability
+(\path{s4/train.py}), and validation uses 100~kVp.
+
+\subsection{Additivity gap and tone curves}
+\label{ssec:dp-gap}
+\paragraph{Why the components are not additive.} For the whole body, with areal densities $\mathbf a=(a_c)_c$ along a ray, the pixel value is
+\begin{equation}
+  P(\mathbf a) = -\ln\sum_E p(E)\,\exp\!\Big(-\sum_c(\mu/\rho)_c(E)\,a_c\Big),
+  \label{eq:dp-whole}
+\end{equation}
+while the composer uses the separate $P_c(a_c)$ of Equation~\eqref{eq:dp-pixel}. For a monochromatic beam at $E_0$ both are linear and
+$P(\mathbf a)=\sum_c(\mu/\rho)_c(E_0)\,a_c=\sum_cP_c(a_c)$: the components add exactly. For a polychromatic beam they do not. Writing
+$p_a(E)\propto p(E)\exp(-(\mu/\rho)_c(E)\,a)$ for the spectrum after $a$~g\,cm$^{-2}$ of material $c$,
+\begin{equation}
+\begin{gathered}
+P_c'(a)=\mathrm{E}_{p_a}\big[(\mu/\rho)_c\big]>0,\\
+P_c''(a)=-\mathrm{Var}_{p_a}\big[(\mu/\rho)_c\big]\le0 ,
+\end{gathered}
+\label{eq:dp-concave}
+\end{equation}
+so each further gram per square centimetre attenuates less than the previous one, because the low-energy photons, which are attenuated most, go
+first: beam hardening. The same mechanism couples the components: inside the body, the beam that reaches the bone has already been hardened by
+the surrounding soft tissue, and the bone attenuates it less than it would attenuate the unhardened beam.
+
+\emph{Claim.} If every $(\mu/\rho)_c$ is non-increasing in $E$ on the support of $p$, then $P(\mathbf a)\le\sum_cP_c(a_c)$: the sum of separately
+projected components overestimates the attenuation of the whole body.
+
+\emph{Proof.} The functions $f_c(E)=\exp(-(\mu/\rho)_c(E)\,a_c)$ are non-negative and non-decreasing. For two such functions $f,h$, Chebyshev's sum
+inequality with weights $p$ gives $\sum_Ep\,f\,h\ge(\sum_Ep\,f)(\sum_Ep\,h)$; a product of non-negative non-decreasing functions is again of this
+kind, so induction over the components gives $\sum_Ep\prod_cf_c\ge\prod_c\sum_Ep\,f_c$, and applying the decreasing function $-\ln$ to both sides
+yields the claim.
+
+The condition holds for the three tables of Section~\ref{ssec:dp-atten}, whose coefficients decrease monotonically on the 10--150~keV grid,
+above the absorption edges of the constituent elements. The size of the gap for one representative ray is given in Section~\ref{sec:methods}, and
+\path{tests/test_renderer.py} checks it against a fixed gate.
+Figure~\ref{fig:additivity_gap} shows the gap over the range of the renders: it reaches about 8\,\% of the joint projection at 80~kVp, falls
+with the tube voltage, and grows with the bone areal density.
+\begin{figure}[htbp]
+\centering
+\safefig{figures/additivity_gap.pdf}
+\caption{Beam-hardening gap of separately projected components, $(P_{\mathrm{bone}}+P_{\mathrm{soft}}-P)/P$, against the soft-tissue areal
+density for three bone areal densities and three tube voltages (attenuation tables and spectra of the renderer; \texttt{tools/paper\_extras.py}).}
+\label{fig:additivity_gap}
+\end{figure}
+
+\paragraph{What the composer does with the gap.} The composer never forms $P(\mathbf a)$. With per-sample quantiles $q_\alpha$ it adds weighted
+component images,
+\begin{equation}
+\begin{gathered}
+S=\frac{1}{1.5}\,\frac{s-q_{0.01}(s)}{q_{0.995}(s)-q_{0.01}(s)},\quad s=P_{\mathrm{nl}}+g\,P_{\mathrm{lung}},\\
+B=\frac{1}{1.5}\,\frac{w\,P_{\mathrm{bone}}}{q_{0.99}(P_{\mathrm{bone}})},\\
+X=S+B,
+\end{gathered}
+\label{eq:dp-compose}
+\end{equation}
+with $g\sim U(1,3)$, $w\sim U(0.2,0.5)$ and $1.5=1+\max w$ keeping $X$ within about $[0,1]$. The input is thus exactly additive in the logarithmic
+domain by construction, and the bone target is exactly its bone term. The gap separates the composed input from a physically exact radiograph of
+the same CT; it is not an error of the target. The design trades physical exactness of the input, which the random weights and the quantile
+normalisation loosen further, for exactness of the target.
+
+\paragraph{Tone curves.} A clinical radiograph is not the log-attenuation image itself: detector response, vendor processing and display apply a
+monotone grey-level transform. The composer draws one transform $\gamma$ per sample (\texttt{apply\_tone} in \path{s4/compose.py}), piecewise
+linear between knots $(\xi_j,\eta_j)$ and constant outside them:
+\begin{itemize}
+\item \emph{Gamma curve}: $\xi_j=1.5\,j/64$ for $j=0,\ldots,64$ and $\eta_j=\xi_j^{\,e}$ with $e\sim U(0.7,1.4)$.
+\item \emph{Histogram matching}: $\xi_j$ are the 257 quantiles of $X$ at probabilities $j/256$ and $\eta_j$ the 257 stored quantiles of a real
+radiograph drawn from the reference set of Section~\ref{sec:methods}, both plus a ramp from 0 to $10^{-5}$ that makes the knots strictly increasing.
+\end{itemize}
+In both cases $\eta_j$ is non-decreasing, so $\gamma$ is non-decreasing on the whole real line; the curve fitted to $X$ is also applied to $S$.
+Training uses histogram matching unless an arm says otherwise; validation uses the gamma curve without detector effects or lesion insertion, so
+that all arms are scored on the same images.
+
+\paragraph{Exactness under the tone curve.} The composer sets
+\begin{equation}
+\begin{gathered}
+X'=\gamma(X),\\
+S'=\gamma(S),\\
+B'=X'-S' .
+\end{gathered}
+\label{eq:dp-tone}
+\end{equation}
+\emph{Claim.} For every non-decreasing $\gamma$: (i) $X'=S'+B'$ exactly; (ii) $B'\ge0$; (iii) $B'=0$ wherever $B=0$; (iv) if $\gamma$ is
+continuous and piecewise linear with largest slope $\lambda$, then wherever $B>0$, $B'=\bar\gamma'B$ with
+$\bar\gamma'=B^{-1}\int_S^{S+B}\gamma'(t)\,\mathrm dt\in[0,\lambda]$.
+
+\emph{Proof.} (i) holds by the definition of $B'$, for any $\gamma$. (ii) $P_{\mathrm{bone}}\ge0$ because $P_c(0)=0$ and $P_c'>0$
+(Equation~\eqref{eq:dp-concave}); $w>0$ and the quantile in the denominator is bounded below by $10^{-6}$ in the code, so $B\ge0$, $X\ge S$ in
+every pixel and $\gamma(X)\ge\gamma(S)$. (iii) $B=0$ gives $X=S$, hence $B'=0$. (iv) A continuous piecewise-linear $\gamma$ is absolutely
+continuous, so $\gamma(S+B)-\gamma(S)=\int_S^{S+B}\gamma'(t)\,\mathrm dt$ with $0\le\gamma'\le\lambda$ almost everywhere.
+
+Two consequences matter. First, $B'$ is in general not $\gamma(B)$ but the bone signal times the mean slope of the curve over the grey levels the
+bone spans in that pixel, so the same bone appears stronger where the curve is steep; it is exactly the quantity whose subtraction leaves the
+tone-mapped soft tissue, $X'-B'=\gamma(S)$, which $\gamma(B)$ would not be for a non-linear curve. Second, by (iii) the target is zero wherever the
+bank holds no bone, the padded rows included.
+
+\paragraph{Detector effects.} With detector effects on, the default for training, three effects follow the tone curve. Let $X'_b=G_\sigma*X'$
+and $B'_b=G_\sigma*B'$, with $G_\sigma$ a separable Gaussian (replicate padding) whose $\sigma\sim U(0,1.2)$~px is drawn per sample with
+probability 0.5 and applied when $\sigma>0.05$~px. Then
+\begin{equation}
+\begin{gathered}
+X'_{\mathrm{det}} = X'_b + u_1\big(0.004+0.02\sqrt{\max(X'_b,0)}\big)\,\varepsilon + 0.08\,u_2\,\big(G_{20}*X'_b\big),\\
+B'_{\mathrm{det}} = B'_b ,
+\end{gathered}
+\label{eq:dp-detector}
+\end{equation}
+with $\varepsilon\sim\mathcal N(0,1)$ per pixel and $u_1,u_2\sim U(0,1)$ per sample: noise whose standard deviation grows with the square root of
+the intensity above a floor, and a low-frequency copy of the image (Gaussian of 20~px) with up to 8\% of its amplitude as scatter. Only the blur
+touches the bone target, and because it is linear and identical on $X'$ and $B'$, $X'_b-B'_b=G_\sigma*S'$ and the decomposition stays exact.
+Noise and scatter are added to the input only, so the image the network should leave after subtracting its bone estimate contains them: it is
+taught to keep noise and scatter in the suppressed image. The loss uses the bone target only; the returned soft-tissue image is $S'$ before the
+detector effects and serves validation, which runs without them. The code names no source for the noise and scatter constants; they are
+augmentations of plausible form, not a calibrated detector model.
+
+\subsection{Tests}
+\label{ssec:dp-tests}
+The pipeline has 32 unit tests in eight files under \path{tests/}. None needs data, a GPU or a network connection: every test builds its own
+input (a CT phantom, a minimal LIDC annotation file, a MetaImage volume, a small fake projection pack or random scores), and the only repository
+file they read is the committed \path{s4/data/xray_tables.json}. They run on the CPU from the repository root with
+\begin{verbatim}
+python -m pytest tests -q
+\end{verbatim}
+and need NumPy, SciPy, scikit-image, OpenCV, pydicom, PyTorch, timm, scikit-learn and pytest; \path{pytest.ini} sets the test path and writes
+temporary files to \path{outputs/pytest_tmp}.
+
+\paragraph{\texttt{test\_renderer.py} (7 tests).} A phantom of $120\times160\times200$ voxels ($2.5\times1.5\times1.5$~mm) with an elliptic body of
+40~HU, two elliptic lungs of $-850$~HU, a spine cylinder of 600~HU and four rib rings of 700~HU gives closed-form answers. The tests check that
+(1)~the bone mask holds more than 99\% of the voxels above 300~HU and none below $-500$~HU; (2)~the lung volume is within 15\% of the analytic
+one; (3)~the projection of a cylinder of 1.6~g\,cm$^{-3}$ equals chord length times density to 8\%; (4)~component pixel values add exactly (to
+$10^{-3}$) for a 60~keV monochromatic beam, and at 100~kVp the relative gap for 20~g\,cm$^{-2}$ of soft tissue and 3~g\,cm$^{-2}$ of bone stays
+below a gate of 0.15 fixed in advance (the test prints the value; the paper reports it); (5)~every lookup table starts at zero and is strictly
+increasing; (6)~for a nodule of 30~HU in lung of $-850$~HU the background density is 0.15~g\,cm$^{-3}$ to 0.03 and the peak excess areal density
+is within 12\% of its closed form; (7)~a full render gives three finite, non-negative $512\times512$ maps with bone and uncut lungs, and a volume of
+air raises the skip exception.
+
+\paragraph{\texttt{test\_compose.py} (6 tests).} (1)~The GPU lookup agrees with the NumPy evaluation of Equation~\eqref{eq:dp-pixel} to
+$2\times10^{-4}$; (2)~the affine transform without rotation, scaling, shift and mirror is the identity; (3)~lesion insertion never changes the
+bone or non-lung soft-tissue map and adds lesion signal and mask; (4)~$X'=S'+B'$ holds to $10^{-6}$ with $B'\ge-10^{-6}$ at 80, 100, 120 and
+140~kVp; (5)~histogram matching gives the composed image the median of the reference to 0.02 and keeps $B'$ non-negative; (6)~the suppressor runs
+forward and backward at 256~px with finite loss and gradients, and the SSIM of an image with itself is 1.
+
+\paragraph{\texttt{test\_io.py} (5) and \texttt{test\_qp.py} (2).} On LIDC annotation files written by the test, the series identifier is read,
+two readers form one consensus nodule with the right reader count, malignancy and slice, one reader is not a consensus, and of three readers the
+distant one is left out; a synthetic MetaImage volume is put head first, located by $z$ position, and rejected if shorter than 80 slices. On a fake
+pack in the format of the v2 source (Section~\ref{sec:method_v2}), $X'=S'+B'$ holds to $10^{-5}$ with a non-negative bone image, lesion insertion
+changes the input while the bone target keeps more than 90\% of its sum, and with detector effects on, $X'-B'-S'$ is no longer zero, because noise
+and scatter reach the input only.
+
+\paragraph{Statistics tests (12).} The other four files check the evaluation code on constructed cases: the paired DeLong test
+\citep{delong1988auc} against the AUCs of scikit-learn and its rejection rate under the null (\path{test_delong.py}); FROC, average precision
+and one-to-one box matching on known boxes (\path{test_froc.py}); the Holm correction \citep{holm1979simple}, clustered bootstrap intervals,
+the Wilcoxon test \citep{wilcoxon1945individual} and the non-inferiority rule (\path{test_stats.py}); and conformal coverage and sparsification
+error of the uncertainty estimates (\path{test_uncertainty.py}).
+
+The tests cover the steps whose errors would silently change the supervision. Beyond the single phantom render they do not check the frame placement
+and padded-row counts, the per-set loaders of \path{s4/prep.py} or the GPU bank; these are checked only through the counts and logs that their
+runs print.
+Two parts of the pipeline have no unit test: the frame box (padding counts on a short scan) and the VinBigData consensus rule.

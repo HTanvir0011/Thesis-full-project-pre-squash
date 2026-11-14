@@ -1,0 +1,22 @@
+% Structured abstract, at most 250 words (Medical Image Analysis). Every number is copied from the generated tables (results/final/stats_held.json,
+% results/bdcxr/stats.json); keep it in step with the results section when the tables change.
+\textbf{Background.} Bone suppression removes ribs and clavicles from chest radiographs without dual-energy hardware and helps readers find nodules
+behind bone \citep{freedman2011lung}. Suppressors can be trained on CT-derived projections, but a network predicting the bone image can move
+lesion signal into it, deleting the lesion; fidelity metrics miss this.
+
+\textbf{Purpose.} To measure how much of a lesion a bone suppressor removes, and to lower it without losing fidelity.
+
+\textbf{Methods.} A counterfactual audit adds nodules from held-out CTs to real radiographs and reports the absorption $A$, the fraction of the
+added signal moved into the predicted bone image. We train ConvNeXt-V2-T UNet++ suppressors on public CT-derived projections with a twin
+regulariser that ties the bone predictions of an image and of a copy with a pasted lesion (three-model ensemble). A pre-specified plan
+compares them with a released CT-supervised model and a no-twin control on dual-energy pairs, VinDr-RibCXR, real nodules, downstream tasks
+and 3,257 paediatric radiographs.
+
+\textbf{Results.} Absorption fell with the twin weight (slope $-0.023$ $[-0.025,-0.022]$). On VinDr-RibCXR ours absorbed
+0.051, the released model 0.149 (difference $-0.098$ $[-0.108,-0.089]$) and the control 0.178, at non-inferior bone-region PSNR ($-0.06$\,dB,
+bound $-0.15$\,dB, margin 0.5\,dB); SSIM missed its margin. Real-nodule contrast was mixed. The soft image alone did not improve
+downstream tasks; conformal intervals did not transfer to real images (coverage 0.14, nominal 0.90; post hoc recalibration: 0.89). On
+paediatric radiographs classification was non-inferior and absorption stayed low (0.084 versus 0.217).
+
+\textbf{Conclusions.} Suppressors of equal fidelity differ threefold in lesion absorption, which should be audited before use; a twin
+regulariser lowers it. \todo{release statement and repository link after release approval}

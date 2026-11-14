@@ -1,0 +1,24 @@
+# Local analysis environment (Python 3.14). Training ran in Kaggle GPU kernels on Kaggle's own Python image; kernels/ holds that code.
+numpy==2.5.2
+scipy==1.16.3
+scikit-learn==1.9.1
+pandas==3.1.0
+matplotlib==3.11.2
+torch==2.14.0
+torchvision==0.29.1
+timm==1.0.30
+pillow==12.3.0
+pydicom==3.0.2
+SimpleITK==2.5.6
+scikit-image==0.26.0
+opencv-python==5.0.0.93
+spekpy==2.5.4
+pyarrow==26.0.0
+huggingface_hub==2.3.0
+kaggle==2.2.4
+pymupdf==1.28.2
+pytest==9.1.1
+tqdm==4.70.1
+lpips==0.1.4
+python-docx==1.2.0
+pyyaml==6.0.3

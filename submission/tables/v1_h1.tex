@@ -1,0 +1,11 @@
+% First analysis plan, H1: lesion-aware arms against the recipe arm on synthetic LIDC test CTs (3 seeds each, 200k samples), and the 300k-sample finals of CLIA and recipe as a replication. Holm over the seven contrasts of the v1 ablation.
+\begin{tabular}{llllll}
+\toprule
+arm vs recipe & sites / CTs & $\Delta A$ [95\% CI] & Holm $p$ & bone-MAE lower bound vs margin & MAE non-inferior \\
+\midrule
+CLIA (insertion) & 317 & -0.022 [-0.032, -0.013] & 3.6e-05 & -0.00014 vs $-$0.00040 & yes \\
+lesion-weighted loss & 317 & -0.019 [-0.027, -0.012] & 1.7e-06 & -0.00037 vs $-$0.00040 & yes \\
+CLIA + lesion-weighted loss & 317 & -0.066 [-0.078, -0.055] & 4.6e-24 & -0.00053 vs $-$0.00040 & no \\
+CLIA, 300k finals (replication) & 146 & -0.024 [-0.034, -0.014] & 9.5e-07 (Wilcoxon) & -0.00009 vs $-$0.00039 & yes \\
+\bottomrule
+\end{tabular}

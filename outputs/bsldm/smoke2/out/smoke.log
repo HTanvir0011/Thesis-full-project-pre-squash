@@ -1,0 +1,20 @@
+/usr/local/lib/python3.13/dist-packages/monai/utils/module.py:399: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  pkg = __import__(module)  # top level module
+/usr/local/lib/python3.13/dist-packages/generative/networks/layers/vector_quantizer.py:86: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @torch.cuda.amp.autocast(enabled=False)
+/usr/local/lib/python3.13/dist-packages/generative/networks/layers/vector_quantizer.py:124: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @torch.cuda.amp.autocast(enabled=False)
+{
+ "image": "107.png",
+ "sec_fp32": 147.6,
+ "sec_fp16": 161.5,
+ "peak_gb_fp32": 2.72,
+ "peak_gb_fp16": 3.98,
+ "mean_abs_diff": 0.00022589165018871427,
+ "max_abs_diff": 0.11882352828979492,
+ "range_fp32": [
+  -0.007410407066345215,
+  1.141440987586975
+ ],
+ "fp16_ok": true
+}

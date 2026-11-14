@@ -1,0 +1,63 @@
+\section{Related work}
+\label{sec:related}
+% PLAN (four subsections, about 1.5 pages). Describe a cited paper only as far as its abstract or title supports; check each claim against the PDF
+% before submission.
+%   2.1 Bone suppression: classical and CNN methods (suzuki2006mtann, yang2017cascade, gusarev2017deep); diffusion methods on real DES pairs
+%       (chen2024bsdiff, sun2026bsldm, sun2025gllcm, sun2026debonedit). SZCH-X-Rays was introduced with BS-LDM and released with DeBoneDiT.
+%   2.2 CT-supervised suppression (angaitkar2026anatomy; CT-RATE hamamci2026ctrate as the CT source of the projections we train on). What we reuse
+%       (projections, released weights as comparator) and what we change (backbone, resolution, regulariser, evaluation).
+%   2.3 Evaluation of restoration models for lesion fidelity: lesion insertion and removal, nodule generation (the NODE21 generation track,
+%       sogancioglu2024node21), hallucination in generative restoration. [citations to be found, see paper/REFS_TODO.md]
+%   2.4 Uncertainty and encoders: deep ensembles (lakshminarayanan2017ensembles), split conformal prediction (lei2018conformal,
+%       angelopoulos2023conformal); modern encoders screened here (liu2022swinv2, woo2023convnextv2, simeoni2025dinov3, perezgarcia2025raddino).
+\subsection{Bone suppression}
+Early learning-based rib suppression used massive-training artificial neural networks \citep{suzuki2006mtann}; later work used convolutional
+networks, for example a cascade of multi-scale networks in the gradient domain \citep{yang2017cascade} and other deep models
+\citep{gusarev2017deep}. Recent methods train diffusion models on paired radiographs and DES soft-tissue images
+\citep{chen2024bsdiff,sun2026bsldm,sun2025gllcm,sun2026debonedit}; the SZCH-X-Rays data set was compiled for BS-LDM \citep{sun2026bsldm} and made
+public with DeBoneDiT \citep{sun2026debonedit}; these methods train on hundreds of paired images, at up to $1024\times1024$ pixels.
+
+\subsection{CT-supervised suppression}
+\citet{angaitkar2026anatomy} build digitally reconstructed radiographs from chest CT, project bone, non-lung soft tissue and lung
+separately, and train models that predict one component. Their projections are released on the Hugging Face Hub and are built from CT-RATE volumes
+\citep{hamamci2026ctrate}: the release holds \num{21887} projections whose volume names are those of CT-RATE. We train on these projections and use the released weights as the main comparator. Our models differ in encoder and resolution (ConvNeXt-V2-T
+at 512~px against SwinV2-B at 1024~px) and in sample budget, and add the twin regulariser, the ensemble and the audit.
+
+\subsection{Evaluating lesion fidelity}
+Learned image-to-image models can remove or invent content: distribution matching in translation networks can drop or hallucinate lesions
+\citep{cohen2018distribution}, deep reconstruction can be unstable to small structures \citep{antun2020instabilities}, and hallucinations of
+learned reconstruction have been defined and measured \citep{bhadra2021hallucinations,tivnan2024hallucination}. Inserting known features or signals into
+images is an established way to test learned MRI reconstruction \citep{cheng2020addressing} and the effect of learned denoising on signal
+detection \citep{li2021assessing}. For bone
+suppression, simulated nodules were inserted to measure contrast after a hand-built clavicle suppression method \citep{hogeweg2013suppression},
+and a phantom with a simulated nodule at many positions was used to measure contrast after bone suppression \citep{takagi2020dose}. These
+studies measure lesion contrast; our audit measures the fraction of a known additive lesion signal that a learned suppressor moves into its
+bone image, on real radiographs, and is shared by every model compared.
+
+\subsection{Uncertainty and encoders}
+Deep ensembles give a simple predictive-uncertainty estimate \citep{lakshminarayanan2017ensembles}, and split-conformal prediction turns an error score into
+intervals with a coverage guarantee under exchangeability \citep{lei2018conformal,angelopoulos2023conformal}. We use both for the bone image
+(Section~\ref{sec:experiments}). For the encoder we start from SwinV2-T \citep{liu2022swinv2} and screen ConvNeXt V2 \citep{woo2023convnextv2},
+DINOv3 \citep{simeoni2025dinov3} and RAD-DINO \citep{perezgarcia2025raddino} under the same recipe: a modern convolutional encoder, a general
+self-supervised vision transformer and a vision transformer pre-trained on chest radiographs.
+\subsection{Suppressed images as classifier inputs, explanations and classification uncertainty}
+Bone-suppressed images have been used to classify tuberculosis-consistent findings \citep{rajaraman2021bone}. A suppressed image can be
+given to a classifier alone, stacked with the radiograph as channels, or as a separate input stream; the last two add computation, which a fair
+comparison has to match. For
+multi-label chest radiograph classification we use a class-query decoder over spatial tokens, as in query-based multi-label heads
+\citep{liu2021query2label,ridnik2023mldecoder}, so that the attention of each class on each input stream can be read out. Attribution maps are
+computed with Grad-CAM++ \citep{chattopadhay2018gradcampp} and Integrated Gradients \citep{sundararajan2017axiomatic} and scored with the
+pointing game \citep{zhang2018topdown}. For classification uncertainty we use conformal risk control of the false-negative rate
+\citep{angelopoulos2022crc}, class-conditional (Mondrian) conformal sets \citep{vovk2005algorithmic} and selective classification with the
+area under the risk--coverage curve \citep{geifman2017selective,geifman2019bias}.
+
+\subsection{Knowledge transfer from CT and trustworthy radiograph classifiers}
+Knowledge distillation trains a student to match the tempered outputs of a teacher \citep{hinton2015distilling}, and cross-modal
+distillation uses paired images to transfer supervision from a modality with rich signal to one without it \citep{gupta2016crossmodal}. For
+the chest, CT-RATE pairs non-contrast CT volumes with findings extracted from their reports \citep{hamamci2026ctrate}, and the released
+projections of its volumes \citep{angaitkar2026anatomy} supply a radiograph-like view of the same scans, which makes distillation from CT to
+radiographs possible with public data alone. Gradient-based heat maps such as Grad-CAM++ were developed for convolutional networks
+\citep{chattopadhay2018gradcampp} but are widely applied to transformers; their localisation can be scored against expert annotations with
+the pointing game \citep{zhang2018topdown}. Hallucination has been defined and measured mainly for learned image reconstruction
+\citep{bhadra2021hallucinations,tivnan2024hallucination}; for classifiers we test it as the appearance of a finding under perturbations
+that add none, and as the response to counterfactual lesions.

@@ -1,0 +1,58 @@
+\section{Counterfactual lesion audit}
+\label{sec:audit}
+% PLAN (about 1.5 pages). The definition of A is already in methods.tex (Lesion-absorption audit); this section states the protocol and its limits.
+%   5.1 Definition and reading of A: slope of the change in the bone estimate on the inserted signal; A=0 keeps the lesion, A=1 removes it; A=0 is
+%       reached by doing nothing, so A is always reported next to a suppression gain; A can leave [0,1].
+%   5.2 Sites and lesions: lesions from held-out CTs (library built from the TEST split, s4/lesion_lib.py), six sites per image at alpha=1, sites drawn
+%       once with a fixed seed and shared by all models (s4/audit_real.py), lung masks from a published network, bone overlap from independent masks.
+%   5.3 Why the audit is not circular: the regulariser pastes lesions to teach invariance and the audit pastes lesions to measure it. Mitigations:
+%       held-out lesion library, different image domain, independent rib masks, and evidence that does not use insertion (H4' in SAP_v2.md).
+%   5.4 Variants: exact-truth audit on the Qure-projection test split (secondary), SZCH audit (development evidence only), amplitude sweep.
+%   5.5 Statistics (SAP_v2.md H1', H3'): image-cluster bootstrap, slope of A on log2(1+w), Holm over contrasts.
+\subsection{Definition}
+For a suppressor $f$ that outputs the bone image, an image $x$ and a lesion signal $n\ge0$ in composite-image units, the absorption at amplitude
+$\alpha$ is
+\begin{equation}
+A=\frac{\big\langle f(x+\alpha n)-f(x),\;\alpha n\big\rangle}{\big\langle \alpha n,\;\alpha n\big\rangle},
+\label{eq:absorption}
+\end{equation}
+with both inner products taken over the lesion support. $A=0$ means that the lesion stays in the soft-tissue image and $A=1$ that it was removed with
+the bone; $A$ is a regression slope and can fall outside $[0,1]$. A model that does nothing has $A=0$, so $A$ is reported together with a suppression
+gain and never alone. Two suppression measures are paired with $A$: the bone-region PSNR on the held-out SZCH pairs and, on VinDr-RibCXR, the
+reduction of gradient energy on rib-boundary pixels (the rib benchmark).
+
+\subsection{Sites and lesions}
+Lesions come from the CTs of the LIDC-IDRI test split only, so no audited lesion was seen in training. On each real radiograph six sites are drawn at random
+positions inside the lung fields at $\alpha=1$; the sites depend only on the image, its lung mask, the lesion library and a fixed seed, and are shared by
+every model. Lung masks come from the PSPNet anatomical segmentation model of TorchXRayVision \citep{cohen2022torchxrayvision}, eroded by
+49~px at $1024$~px so that a site lies inside the lung field; the model comes from the ChestX-Det project \citep{lian2021chestxdet}, whose paper does not fully
+document its training data. The library holds 296 nodules
+(4.0 to 37.6~mm, median 7.1~mm); six sites per image give 1,470 sites on VinDr-RibCXR, 1,482 on JSRT and 450 on SZCH. Because the PSPNet masks
+differ slightly between GPUs, evaluations run on cloud GPUs read the lung masks exported on the machine of the final table, so every model is
+scored on identical sites.
+The bone overlap of a site is measured with independent information, never with a model output: the radiologist rib masks of VinDr-RibCXR
+\citep{nguyen2021ribcxr} for the confirmatory audit, and the real dual-energy bone signal on SZCH. A site \emph{overlaps bone} when at least 15\,\% of its
+support lies on an annotated rib. On JSRT no bone reference exists; the plan named the consensus of the bone maps of ours and of the reference
+model, but the audit took the overlap from the reference model's bone map alone (secondary analysis; recorded as a deviation).
+
+\subsection{Why the audit is not circular}
+The twin regulariser pastes lesions to teach invariance, and the audit pastes lesions to measure it, so a model could pass the audit by learning the
+insertion artefact. Four design choices limit this. The audit lesions come from CTs that were never used for training; the audit images are real
+radiographs, whereas the training composites are synthetic; the confirmatory audit uses rib masks that no model has seen; and the claim that the
+regulariser helps is also tested with evidence that does not use insertion: contrast of real nodules on JSRT and Node21 and detection recall of real
+lesions grouped by bone overlap (Section~\ref{sec:experiments}). These choices limit the circularity but cannot remove it: a model that recognises
+pasted signal in general could still score well, which is why the evidence without insertion is reported beside the audit (Section~\ref{sec:limitations}).
+
+\subsection{Variants}
+\emph{Exact-truth audit.} On the Qure-projection test split the lesion is added to the soft component, the true bone image is known, and the
+bone error inside the lesion support can be measured against it in addition to $A$. \emph{SZCH audit.} It ran on all 75 SZCH images during development
+and is reported as development evidence only (Section~\ref{sec:data}). \emph{Amplitude sweep.} $A$ is recomputed for
+$\alpha\in\{0.25,0.5,1,2,4\}$ on the 450 SZCH sites (development data, supplementary material). For $\alpha\le1$ the absorption is flat
+(v1 model 0.301--0.306, no-twin model 0.215--0.218, reference model 0.134--0.136), so the leak is linear in the lesion amplitude; at $\alpha=2$ and
+4 it falls for every model, where the added signal starts to saturate at the top of the intensity range.
+
+\subsection{Statistics}
+Site-level differences between models are paired; confidence intervals are image-cluster bootstrap intervals; the dose-response over the twin weight is
+the slope of $A$ on $\log_2(1+w)$ with an image-cluster bootstrap interval, and the contrasts of ours against the reference model and against the
+no-twin control are adjusted with the Holm procedure (SAP\_v2.md). Bootstrap intervals use \num{10000} resamples for mean absorption and contrasts,
+\num{2000} for the overlap interaction and 500 for the dose-response slope, always resampling whole images with replacement.

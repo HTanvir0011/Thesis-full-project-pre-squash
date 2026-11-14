@@ -1,0 +1,47 @@
+arm=qp_twin8 cfg={'detector': True, 'tone': 'hist', 'w_roi': 2.5, 'w_nod': 0.0, 'n_insert': 3, 'rot_deg': 15.0, 'qp_frac': 1.0, 'w_inv': 8.0, 'n_twin': 2, 'inv_sg': False, 'inv_k': 0} bank-free (lesion library from /kaggle/input/datasets/ac_5/s4-code/s4/data/lib_train.npz)
+QP source: train rows 21051 val rows 64
+image-space lesion library 1056
+/kaggle/input/datasets/ac_5/s4-code/s4/train.py:236: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  log.write(json.dumps(dict(step=step, loss=float(loss), **{k: float(v) for k, v in parts.items()}, sec=round(time.time() - t0))) + "\n")
+2000 1204s loss 0.1475 {'qp': {'mae': 0.019959064200520515, 'psnr': 21.469602584838867}}
+4000 2414s loss 0.1823 {'qp': {'mae': 0.012356676161289215, 'psnr': 28.438297271728516}}
+6000 3625s loss 0.1654 {'qp': {'mae': 0.010351434350013733, 'psnr': 34.0687255859375}}
+8000 4833s loss 0.0936 {'qp': {'mae': 0.008203038014471531, 'psnr': 36.777687072753906}}
+10000 6040s loss 0.1015 {'qp': {'mae': 0.010835180059075356, 'psnr': 35.70099639892578}}
+12000 7249s loss 0.0651 {'qp': {'mae': 0.007992246188223362, 'psnr': 37.63177490234375}}
+14000 8457s loss 0.0791 {'qp': {'mae': 0.006899144034832716, 'psnr': 39.040061950683594}}
+16000 9667s loss 0.0747 {'qp': {'mae': 0.0068749976344406605, 'psnr': 39.02882766723633}}
+18000 10875s loss 0.0575 {'qp': {'mae': 0.007593086920678616, 'psnr': 38.394287109375}}
+20000 12084s loss 0.0774 {'qp': {'mae': 0.0060135130770504475, 'psnr': 40.05659103393555}}
+22000 13291s loss 0.0600 {'qp': {'mae': 0.0057646045461297035, 'psnr': 40.06200408935547}}
+24000 14500s loss 0.0658 {'qp': {'mae': 0.00576945673674345, 'psnr': 40.50811767578125}}
+26000 15709s loss 0.0403 {'qp': {'mae': 0.005530384369194508, 'psnr': 40.670936584472656}}
+28000 16919s loss 0.0659 {'qp': {'mae': 0.005287358537316322, 'psnr': 41.07018280029297}}
+30000 18129s loss 0.0406 {'qp': {'mae': 0.005244225729256868, 'psnr': 41.09311294555664}}
+32000 19338s loss 0.0437 {'qp': {'mae': 0.005233410745859146, 'psnr': 41.103572845458984}}
+34000 20548s loss 0.0544 {'qp': {'mae': 0.005213932599872351, 'psnr': 41.134033203125}}
+36000 21758s loss 0.0420 {'qp': {'mae': 0.0051880329847335815, 'psnr': 41.20672607421875}}
+37500 22666s loss 0.0678 {'qp': {'mae': 0.005218681413680315, 'psnr': 41.161048889160156}}
+{
+ "method": "ours:/kaggle/working/runs/qp_twin8_s0_300k/final_ema.pt",
+ "n": 75,
+ "psnr_raw": "24.1698 +- 0.6252",
+ "mse_raw": "0.0039 +- 0.0006",
+ "ssim_raw": "0.8491 +- 0.0175",
+ "psnr_cal": "25.4228 +- 0.6781",
+ "mse_cal": "0.0029 +- 0.0005",
+ "ssim_cal": "0.8442 +- 0.0273",
+ "psnr_cal_bone": "21.4297 +- 1.5598",
+ "psnr_cal_nonbone": "26.3012 +- 0.8043",
+ "ssim_cal_bone": "0.7644 +- 0.0469",
+ "ssim_cal_nonbone": "0.8530 +- 0.0296",
+ "ssim_cal_s2": "0.9307 +- 0.0240",
+ "ssim_cal_s4": "0.9467 +- 0.0223",
+ "bone_corr_s2": "0.3308 +- 0.0883",
+ "bone_slope_s2": "0.3130 +- 0.1224",
+ "hp_ratio_nonbone": "1.0964 +- 0.1716",
+ "msssim_cal": "0.8973 +- 0.0160"
+}
+ours: n=450 A_mean=0.094 low-overlap=0.078 high-overlap=0.099 leak=0.0016
+/kaggle/working/runs/qp_twin8_s0_300k/final_ema.pt n=400 {'mae_bone': 0.0052, 'psnr_bone': 41.3017, 'ssim_bone': 0.9641}

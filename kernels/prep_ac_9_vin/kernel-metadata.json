@@ -1,0 +1,22 @@
+{
+ "id": "ac_9/s4-prep-vin",
+ "title": "s4-prep-vin",
+ "code_file": "run_prep.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "xhlulu/vinbigdata-chest-xray-resized-png-1024x1024",
+  "ac_9/s4-wts3",
+  "ac_9/s4-code"
+ ],
+ "competition_sources": [
+  "vinbigdata-chest-xray-abnormalities-detection"
+ ],
+ "kernel_sources": [],
+ "model_sources": []
+}

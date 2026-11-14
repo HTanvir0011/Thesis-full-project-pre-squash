@@ -1,0 +1,4 @@
+ens: n=1800 A_mean=0.084 low-overlap=0.044 high-overlap=0.136 leak=0.0016
+ens: n=1800 A_mean=0.251 low-overlap=0.140 high-overlap=0.372 leak=0.0019
+qure: n=1800 A_mean=0.217 low-overlap=0.087 high-overlap=0.362 leak=0.0008
+identity: n=1800 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000

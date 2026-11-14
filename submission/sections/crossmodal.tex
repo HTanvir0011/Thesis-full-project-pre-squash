@@ -1,0 +1,82 @@
+\section{Study III: knowledge transfer from CT to radiograph classifiers with Swin transformers}
+\label{sec:xm}
+% Fourth analysis plan (SAP_v4.md with DESIGN_v4.md), hash-frozen in freeze_v4.json on 8 November 2026 before the first v4 training run.
+% Numbers in Section sec:xm_results come from tables/v4_*.tex (tools/xm_tables.py) and results/final_xm_stats.json; do not retype them.
+Studies I and II used CT only to render training images. Study III asks whether CT can teach a radiograph classifier directly: a CT
+classifier is distilled \citep{hinton2015distilling} into X-ray models on projections of the same volumes \citep{angaitkar2026anatomy}, and
+one transformer family serves both modalities so that their heat maps can be compared in the same patient. Five hypotheses were fixed in a
+fourth analysis plan, hash-frozen on 8 November 2026 before any model of this study was trained.
+
+\subsection{Data}
+\label{sec:xm_data}
+CT-RATE \citep{hamamci2026ctrate} provides non-contrast chest CT volumes with report-derived findings, and every Qure.ai projection is built
+from one CT-RATE volume (Section~\ref{sec:data}). Six findings are shared: lung opacity, pleural effusion, atelectasis, cardiomegaly,
+consolidation and lung lesion. The CT subset holds one reconstruction per patient, every validation and test patient of the projection split
+and \num{1600} training patients drawn with a fixed seed (\num{2156} volumes: \num{1600} training, 259 validation, 297 test). Volumes that
+CT-RATE lists as not showing the chest or not scanned head first and supine were excluded, together with their projections, leaving
+\num{20533} training, 396 validation and 415 test projections. Each volume was reduced in the cloud environment to 24 axial slices over the
+lung extent with three Hounsfield windows as channels (lung, mediastinum, bone), cropped to the body at 256\,px. CT-RATE is CC BY-NC-SA~4.0;
+our design was stricter and kept everything derived from it in the cloud accounts except metrics and $32\times32$ heat-map frames, but in
+practice teacher outputs, predictions and model weights were also transferred to the authors' computer (Section~\ref{sec:limitations}).
+None of these is redistributed, and no CT image is shown. NIH ChestX-ray14 and
+VinBigData are used with the splits of Study II. Pleural effusion, atelectasis, cardiomegaly and consolidation map to the classes of the
+same name and lung lesion to NIH Mass or Nodule (VinBigData Nodule/Mass); these five are the exactly mapped shared findings. Lung opacity maps
+only approximately to NIH Infiltration and is reported but not tested.
+
+\subsection{Models and training}
+\label{sec:xm_models}
+All models use SwinV2-T (\texttt{swinv2\_tiny\_window8\_256}, ImageNet-1k weights; \citealp{liu2022swinv2,wightman2019timm}) with the
+class-query decoder of Study II, a learning rate of $3\times10^{-4}$ with the encoder at a quarter of it, model selection on the validation
+split and five seeds per model (Fig.~\ref{fig:architecture}c). The \emph{CT teacher} is a 2.5D network: the encoder processes each of the 24
+slices with the three windows as colour channels, each slice yields $8\times8$ tokens with a two-dimensional sine code and a learned
+slice-depth embedding, and the decoder attends over the tokens of all slices (20 epochs, four volumes per step); a volumetric Swin network did
+not fit a T4 GPU at a useful batch size. The \emph{projection model} P0 learns the six findings from the projections (15 epochs, batch 32);
+P1 adds, on the \num{1600} training projections whose volume is in the CT subset, a distillation and an alignment term. For a paired
+projection $k$ with student logits $z_k$, teacher logits $t_k$ and pooled decoder outputs $e_k$ (student) and $e^{\mathrm{T}}_k$ (teacher),
+\begin{equation}
+\mathcal{L}=\mathcal{L}_{\mathrm{BCE}}(z,y)+\lambda_{\mathrm{kd}}\,T^{2}\,\mathcal{L}_{\mathrm{BCE}}\!\big(z_k/T,\,\sigma(t_k/T)\big)
++\lambda_{\mathrm{al}}\big(1-\cos(We_k,\,e^{\mathrm{T}}_k)\big),
+\label{eq:kd}
+\end{equation}
+with $y$ the six finding labels, $\mathcal{L}_{\mathrm{BCE}}$ the binary cross-entropy averaged over findings, $\sigma$ the logistic
+function, $T=2$,
+$\lambda_{\mathrm{kd}}=1$, $\lambda_{\mathrm{al}}=0.5$ and $W$ a learned linear map; half of every P1 batch is drawn from the paired rows,
+and P1 seed $k$ distils from the teacher of slot $k$. The \emph{radiograph classifiers} F$_\mathrm{in}$, F$_\mathrm{p0}$ and F$_\mathrm{p1}$
+start from ImageNet, P0 and P1 (encoder and decoder loaded, heads re-initialised) and are trained on the 14 NIH diseases for 10 epochs with
+the radiograph as the only input; the five DenseNet-121 radiograph-only runs of Study II are the convolutional reference (trained for 20
+epochs at the full encoder learning rate, the pre-specified rule for batch-normalised encoders). Teacher seed 2 did
+not learn (validation macro-AUROC 0.46--0.54 in every epoch, constant logits). Before any P1 model of seed 2 was trained we fixed a rule:
+train seeds 5 and 6 with the unchanged recipe and give slot 2 to seed 5 unless its logits were constant (per-class standard deviation below
+0.01), otherwise to seed 6. Seed 5 learned, so the teachers of slots 0--4 are seeds 0, 1, 5, 3 and 4 (Supplementary Table~S1).
+
+\subsection{Explanations, cross-modal agreement and hallucination tests}
+\label{sec:xm_xai}
+For the radiograph classifiers we computed Grad-CAM++ on the last encoder stage \citep{chattopadhay2018gradcampp}, Integrated Gradients
+\citep{sundararajan2017axiomatic} and the attention of the last decoder layer, scored with the pointing game on the 984 NIH expert boxes
+\citep{zhang2018topdown} at the 15\,px tolerance of Study II. For each CT test scan positive for a finding, the teacher's slice-wise
+Grad-CAM++ maps were stacked and summed along the anteroposterior axis, giving a frontal map in the geometry of the paired projection. CT and
+X-ray maps were cropped to their own lung boxes, resized to $32\times32$, scaled to sum to one and averaged over the five seed pairs.
+Agreement is the Pearson correlation of the matched maps, and the null correlates the CT map with the X-ray maps of the other scans positive
+for the same finding. A pre-specified orientation check on the attenuation frames alone (correlation 0.472 as they were, 0.435 mirrored)
+left the maps unmirrored.
+
+We call a report of a finding that the image does not contain a hallucination. On the \num{9861} NIH test images without any finding, with
+seed-mean probabilities and per-class thresholds at 90\,\% specificity on the validation split, the hallucination rate is the share of
+images in which some class moves from at most to above its threshold after a perturbation that adds no disease: rib emphasis (the radiograph
+plus half of the bone image of the Study~I suppressor), Gaussian noise ($\sigma=0.02$) or a gamma of 0.8. Counterfactual nodules from the
+audit library (Section~\ref{sec:audit}) were pasted into lung fields of images whose Mass and Nodule scores were at most their thresholds;
+sensitivity is the share in which either score crosses it. Off-target attribution is the share of Grad-CAM++ mass outside the lung fields for
+positive predictions of lung findings.
+
+\subsection{Hypotheses and statistics}
+\label{sec:xm_stats}
+A model's prediction is the mean of its seeds' probabilities. H11 (primary) compares F$_\mathrm{p1}$ with F$_\mathrm{in}$ in the mean NIH
+test AUROC of the five shared findings; H12 compares F$_\mathrm{p1}$ with F$_\mathrm{p0}$ and F$_\mathrm{p0}$ with F$_\mathrm{in}$; H13
+compares F$_\mathrm{in}$ with DenseNet-121 in the 14-disease macro-AUROC; that reference had been evaluated on the NIH test split in Study II
+about ten hours before this plan was frozen, so its score was known when H13 was specified (no Swin model existed yet). These contrasts use a paired patient-cluster bootstrap
+(\num{10000} resamples, two-sided percentile $p$-values, Eq.~\eqref{eq:bootp}); H11 and the two H12 contrasts form one Holm family. H14 is
+the mean per-map difference between matched and mismatched correlation (scan-cluster bootstrap) and H15 the mean per-image difference in the
+rib-emphasis flip between F$_\mathrm{p1}$ and F$_\mathrm{in}$ (patient-cluster bootstrap). The CT teacher, the projection models and their
+zero-shot transfer, per-class DeLong tests \citep{delong1988auc}, conformal risk control of the false-negative rate at 0.10
+\citep{angelopoulos2022crc} and the pointing game are descriptive; the grouping of the DeLong tests and the pointing-game summary were fixed
+after the hypothesis results were known.

@@ -1,0 +1,13 @@
+[{"stream_name":"stdout","time":1.133407729,"data":"s4.prep ['--dataset', 'bdcxr', '--weights', 'cnx_t16_s0.pt+cnx_t16_s1.pt+cnx_t16_s2.pt', '--qure', 'none', '--arrays', 'orig,soft,soft_qure', '--tag', 'bdcxr']\n"}
+,{"stream_name":"stderr","time":4.258456968,"data":"usage: prep.py [-h] --dataset {nih,tbx,vin,node21,jsrt} --weights WEIGHTS\n"}
+,{"stream_name":"stderr","time":4.25851361,"data":"               [--qure QURE] [--arrays ARRAYS] [--tag TAG] [--limit LIMIT]\n"}
+,{"stream_name":"stderr","time":4.258520013,"data":"               [--worker WORKER] [--nworkers NWORKERS]\n"}
+,{"stream_name":"stderr","time":4.258523824,"data":"prep.py: error: argument --dataset: invalid choice: 'bdcxr' (choose from 'nih', 'tbx', 'vin', 'node21', 'jsrt')\n"}
+,{"stream_name":"stdout","time":4.403765694,"data":"PREP rc 2\n"}
+,{"stream_name":"stderr","time":6.696186571,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":6.696218077,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":6.992931122,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":6.992968884,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":8.538464306,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":9.553869833,"data":"[NbConvertApp] Writing 277199 bytes to __results__.html\n"}
+]

@@ -1,0 +1,20 @@
+[{"stream_name":"stdout","time":5.596185961,"data":"s4.prep ['--dataset', 'node21', '--weights', 'cnx_nt_s0.pt+cnx_nt_s1.pt+cnx_nt_s2.pt', '--qure', 'off', '--arrays', 'orig,soft', '--tag', 'node21']\n"}
+,{"stream_name":"stdout","time":27.124637351,"data":"node21 images: 4882 arrays: ['orig', 'soft']\n"}
+,{"stream_name":"stdout","time":83.534219818,"data":"[w1] 0/2441 19s\n"}
+,{"stream_name":"stdout","time":83.535690814,"data":"[w0] 0/2441 19s\n"}
+,{"stream_name":"stdout","time":613.698026406,"data":"[w0] 1600/2441 549s\n"}
+,{"stream_name":"stdout","time":617.650978547,"data":"[w1] 1600/2441 553s\n"}
+,{"stream_name":"stdout","time":894.873495681,"data":"[w0] done 2441 ok, 0 unreadable\n"}
+,{"stream_name":"stdout","time":900.644708915,"data":"[w1] done 2441 ok, 0 unreadable\n"}
+,{"stream_name":"stdout","time":901.985695302,"data":"box CNR orig: n=1474 mean=0.210\n"}
+,{"stream_name":"stdout","time":901.986972426,"data":"box CNR soft: n=1474 mean=0.276\n"}
+,{"stream_name":"stdout","time":901.989135187,"data":"box CNR clahe: n=1474 mean=0.307\n"}
+,{"stream_name":"stdout","time":901.990810231,"data":"DONE node21 ok 4882 bad 0 in 875s\n"}
+,{"stream_name":"stdout","time":902.432348747,"data":"PREP rc 0\n"}
+,{"stream_name":"stderr","time":904.487631869,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":904.4876738,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":904.760960909,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":904.760986677,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":905.546675433,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":906.558449463,"data":"[NbConvertApp] Writing 277187 bytes to __results__.html\n"}
+]

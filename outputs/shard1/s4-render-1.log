@@ -1,0 +1,45 @@
+[{"stream_name":"stdout","time":8.926171135,"data":"shard 1/3: 339 CTs: mount 202, luna 119, tcia 18; 339 with xml; roots /kaggle/input/datasets/washingtongold/lidcidri30 /kaggle/input/datasets/vafaeii/luna16\n"}
+,{"stream_name":"stdout","time":435.766622489,"data":"10 / 339 427s {'name': 'LIDC-IDRI-0035_51898613', 'status': 'ok', 'seconds': 94.7, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":720.186908907,"data":"20 / 339 711s {'name': 'LIDC-IDRI-0056_62698069', 'status': 'ok', 'seconds': 156.4, 'source': 'mount', 'trunc': False, 'nodules': 3}\n"}
+,{"stream_name":"stdout","time":1160.01122577,"data":"30 / 339 1151s {'name': 'LIDC-IDRI-0098_77745271', 'status': 'ok', 'seconds': 91.1, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":1503.12863736,"data":"40 / 339 1494s {'name': 'LIDC-IDRI-0122_48741492', 'status': 'ok', 'seconds': 91.7, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":1970.536760715,"data":"50 / 339 1962s {'name': 'LIDC-IDRI-0151_46672998', 'status': 'ok', 'seconds': 117.1, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":2302.037685074,"data":"60 / 339 2293s {'name': 'LIDC-IDRI-0168_92562523', 'status': 'ok', 'seconds': 227.2, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":2599.625108306,"data":"70 / 339 2591s {'name': 'LIDC-IDRI-0210_30599234', 'status': 'ok', 'seconds': 103.1, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":2895.831759185,"data":"80 / 339 2887s {'name': 'LIDC-IDRI-0237_49816111', 'status': 'ok', 'seconds': 99.3, 'source': 'mount', 'trunc': False, 'nodules': 3}\n"}
+,{"stream_name":"stdout","time":3057.713757065,"data":"85 / 339 3049s {'name': 'LIDC-IDRI-0262_03085629', 'status': 'skipped', 'reason': 'non-axial orientation [-1.0, 0.0, 0.0, 0.0, -1.0, 0.0]'}\n"}
+,{"stream_name":"stdout","time":3224.368303216,"data":"90 / 339 3215s {'name': 'LIDC-IDRI-0271_96491341', 'status': 'ok', 'seconds': 95.7, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":3830.027846933,"data":"100 / 339 3821s {'name': 'LIDC-IDRI-0304_40828684', 'status': 'ok', 'seconds': 212.7, 'source': 'mount', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":3896.628753504,"data":"102 / 339 3888s {'name': 'LIDC-IDRI-0313_41162930', 'status': 'skipped', 'reason': 'non-axial orientation [-1.0, 0.0, 0.0, 0.0, -1.0, 0.0]'}\n"}
+,{"stream_name":"stdout","time":4415.12945888,"data":"110 / 339 4406s {'name': 'LIDC-IDRI-0332_57657094', 'status': 'ok', 'seconds': 196.1, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":5140.031860004,"data":"120 / 339 5131s {'name': 'LIDC-IDRI-0364_71452136', 'status': 'ok', 'seconds': 135.9, 'source': 'mount', 'trunc': False, 'nodules': 0}\n"}
+,{"stream_name":"stdout","time":5629.952645633,"data":"130 / 339 5621s {'name': 'LIDC-IDRI-0387_83808192', 'status': 'ok', 'seconds': 124.1, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":6235.387643431,"data":"140 / 339 6226s {'name': 'LIDC-IDRI-0423_15322775', 'status': 'skipped', 'reason': 'non-axial orientation [-1.0, 0.0, 0.0, 0.0, -1.0, 0.0]'}\n"}
+,{"stream_name":"stdout","time":7321.27969749,"data":"150 / 339 7312s {'name': 'LIDC-IDRI-0449_94488842', 'status': 'ok', 'seconds': 115.7, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":8023.227885442,"data":"160 / 339 8014s {'name': 'LIDC-IDRI-0473_62251777', 'status': 'ok', 'seconds': 256.8, 'source': 'mount', 'trunc': False, 'nodules': 4}\n"}
+,{"stream_name":"stdout","time":8827.946366005,"data":"170 / 339 8819s {'name': 'LIDC-IDRI-0511_44981056', 'status': 'ok', 'seconds': 108.3, 'source': 'mount', 'trunc': False, 'nodules': 0}\n"}
+,{"stream_name":"stdout","time":8833.048388039,"data":"172 / 339 8824s {'name': 'LIDC-IDRI-0514_31252230', 'status': 'skipped', 'reason': 'slice spacing varies by 18.00 of median'}\n"}
+,{"stream_name":"stdout","time":9381.36419207,"data":"180 / 339 9372s {'name': 'LIDC-IDRI-0520_18056430', 'status': 'ok', 'seconds': 548.1, 'source': 'mount', 'trunc': False, 'nodules': 0}\n"}
+,{"stream_name":"stdout","time":10099.20068431,"data":"190 / 339 10090s {'name': 'LIDC-IDRI-0562_26082729', 'status': 'ok', 'seconds': 317.0, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":10849.4581173,"data":"200 / 339 10841s {'name': 'LIDC-IDRI-0596_65815359', 'status': 'ok', 'seconds': 302.0, 'source': 'mount', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":11617.779993354,"data":"210 / 339 11609s {'name': 'LIDC-IDRI-0632_16228517', 'status': 'ok', 'seconds': 124.8, 'source': 'luna', 'trunc': False, 'nodules': 0}\n"}
+,{"stream_name":"stdout","time":12160.606072436,"data":"220 / 339 12152s {'name': 'LIDC-IDRI-0656_06147014', 'status': 'ok', 'seconds': 275.4, 'source': 'luna', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":12793.516437781,"data":"230 / 339 12785s {'name': 'LIDC-IDRI-0686_95082004', 'status': 'ok', 'seconds': 203.0, 'source': 'luna', 'trunc': False, 'nodules': 13}\n"}
+,{"stream_name":"stdout","time":13525.707929011,"data":"240 / 339 13517s {'name': 'LIDC-IDRI-0719_13875884', 'status': 'ok', 'seconds': 103.4, 'source': 'tcia', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":14361.276973151,"data":"250 / 339 14352s {'name': 'LIDC-IDRI-0743_32249911', 'status': 'ok', 'seconds': 223.4, 'source': 'luna', 'trunc': False, 'nodules': 3}\n"}
+,{"stream_name":"stdout","time":14985.326927283,"data":"260 / 339 14976s {'name': 'LIDC-IDRI-0779_72696845', 'status': 'ok', 'seconds': 166.0, 'source': 'luna', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":15666.212245611,"data":"270 / 339 15657s {'name': 'LIDC-IDRI-0794_86318345', 'status': 'ok', 'seconds': 494.8, 'source': 'luna', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":16449.133087005,"data":"280 / 339 16440s {'name': 'LIDC-IDRI-0827_27653819', 'status': 'ok', 'seconds': 526.3, 'source': 'luna', 'trunc': False, 'nodules': 3}\n"}
+,{"stream_name":"stdout","time":17326.319092107,"data":"290 / 339 17317s {'name': 'LIDC-IDRI-0872_66833277', 'status': 'ok', 'seconds': 107.7, 'source': 'tcia', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":17839.667344549,"data":"300 / 339 17831s {'name': 'LIDC-IDRI-0896_46128864', 'status': 'ok', 'seconds': 173.4, 'source': 'luna', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":18748.688759653,"data":"310 / 339 18740s {'name': 'LIDC-IDRI-0929_88132029', 'status': 'ok', 'seconds': 258.1, 'source': 'luna', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":19528.153354339,"data":"320 / 339 19519s {'name': 'LIDC-IDRI-0947_19512644', 'status': 'ok', 'seconds': 557.0, 'source': 'luna', 'trunc': False, 'nodules': 2}\n"}
+,{"stream_name":"stdout","time":19985.96853028,"data":"330 / 339 19977s {'name': 'LIDC-IDRI-0983_80126785', 'status': 'ok', 'seconds': 98.1, 'source': 'tcia', 'trunc': False, 'nodules': 1}\n"}
+,{"stream_name":"stdout","time":20679.833279565,"data":"DONE {'ok': 335, 'exists': 0, 'skipped': 4, 'error': 0} 20671s\n"}
+,{"stream_name":"stderr","time":20683.321191094,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":20683.321234276,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":20683.754300129,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":20683.754349424,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":20685.647398462,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":20687.039063186,"data":"[NbConvertApp] Writing 311605 bytes to __results__.html\n"}
+]

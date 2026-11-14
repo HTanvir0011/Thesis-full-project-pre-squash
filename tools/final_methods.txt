@@ -1,0 +1,46 @@
+# Methods for the locked-set evaluation (tools/final_local.sh). One "name=spec" per line; W = outputs/final_v2/weights.
+# kinds: ours:<ckpt> (one model), ens:<ckpt>+<ckpt>+... (mean bone image), qure:<torchscript>, identity, clahe, homomorphic.
+# Tags after '|' pick the steps a method runs in (szch audit rib qp synth jsrt). Edit only before tools/freeze_v2.py; after it, append-only.
+# Headline = ConvNeXt-V2-T (DECISIONS.md 2026-10-31 and 2026-11-01): ours = twin16 K=3 seeds 0-2, notwin = same recipe without the twin loss K=3. tools/final_stats.py tests the names ours / notwin / qure.
+ours=ens:W/qp_twin16_s0_cnx2_300k/final_ema.pt+W/qp_twin16_s1_cnx2_300k/final_ema.pt+W/qp_twin16_s2_cnx2_300k/final_ema.pt | szch audit rib qp jsrt
+ours_s0=ours:W/qp_twin16_s0_cnx2_300k/final_ema.pt | szch audit qp
+ours_s1=ours:W/qp_twin16_s1_cnx2_300k/final_ema.pt | szch audit qp
+ours_s2=ours:W/qp_twin16_s2_cnx2_300k/final_ema.pt | szch audit qp
+notwin=ens:W/qp_s0_cnx2_300k/final_ema.pt+W/qp_s1_cnx2_300k/final_ema.pt+W/qp_s2_cnx2_300k/final_ema.pt | szch audit rib qp jsrt
+notwin_s0=ours:W/qp_s0_cnx2_300k/final_ema.pt | szch audit qp
+notwin_s1=ours:W/qp_s1_cnx2_300k/final_ema.pt | szch audit qp
+notwin_s2=ours:W/qp_s2_cnx2_300k/final_ema.pt | szch audit qp
+# SwinV2-T pair (the encoder named in SAP_v2.md; also the dose-response family of H1'): swin = twin16 K=3 (seed 3 is the reserve), swin_nt = no twin K=3
+swin=ens:W/twin16_s0/final_ema.pt+W/twin16_s1/final_ema.pt+W/twin16_s2/final_ema.pt | szch audit rib qp
+swin_s0=ours:W/twin16_s0/final_ema.pt | szch audit qp
+swin_s1=ours:W/twin16_s1/final_ema.pt | szch audit qp
+swin_s2=ours:W/twin16_s2/final_ema.pt | szch audit qp
+swin_s3=ours:W/twin16_s3/final_ema.pt | szch audit qp
+swin_nt=ens:W/qp_s0_300k/final_ema.pt+W/qp_s1_300k/final_ema.pt+W/qp_s2_300k/final_ema.pt | szch audit rib qp
+swin_nt_s0=ours:W/qp_s0_300k/final_ema.pt | szch audit qp
+swin_nt_s1=ours:W/qp_s1_300k/final_ema.pt | szch audit qp
+swin_nt_s2=ours:W/qp_s2_300k/final_ema.pt | szch audit qp
+w4_s0=ours:W/twin4_s0/final_ema.pt | szch audit qp
+w4_s1=ours:W/twin4_s1/final_ema.pt | szch audit qp
+w8_s0=ours:W/twin8_s0/final_ema.pt | szch audit qp
+w8_s1=ours:W/twin8_s1/final_ema.pt | szch audit qp
+w32_s0=ours:W/twin32_s0/final_ema.pt | szch audit qp
+w32_s1=ours:W/twin32_s1/final_ema.pt | szch audit qp
+w64_s0=ours:W/twin64_s0/final_ema.pt | szch audit qp
+w64_s1=ours:W/twin64_s1/final_ema.pt | szch audit qp
+# RAD-DINO pair (third encoder, secondary): rd = twin16 K=3, rd_nt = no twin K=3
+rd=ens:W/qp_twin16_s0_raddino300k/final_ema.pt+W/qp_twin16_s1_raddino300k/final_ema.pt+W/qp_twin16_s2_raddino300k/final_ema.pt | szch audit rib qp
+rd_s0=ours:W/qp_twin16_s0_raddino300k/final_ema.pt | szch audit qp
+rd_s1=ours:W/qp_twin16_s1_raddino300k/final_ema.pt | szch audit qp
+rd_s2=ours:W/qp_twin16_s2_raddino300k/final_ema.pt | szch audit qp
+rd_nt=ens:W/qp_s0_raddino300k/final_ema.pt+W/qp_s1_raddino300k/final_ema.pt+W/qp_s2_raddino300k/final_ema.pt | szch audit rib qp
+rd_nt_s0=ours:W/qp_s0_raddino300k/final_ema.pt | szch audit qp
+rd_nt_s1=ours:W/qp_s1_raddino300k/final_ema.pt | szch audit qp
+rd_nt_s2=ours:W/qp_s2_raddino300k/final_ema.pt | szch audit qp
+# controls
+clia_v1=ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt | szch audit rib qp synth jsrt
+recipe_v1=ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt | szch audit rib synth
+qure=qure:data/qure/weights/bone_suppression.ts | szch audit rib qp
+identity=identity | szch audit rib qp
+clahe=clahe | szch rib
+homomorphic=homomorphic | szch rib

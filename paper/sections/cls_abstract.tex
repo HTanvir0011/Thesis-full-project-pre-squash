@@ -1,0 +1,22 @@
+% Structured abstract, at most 250 words. Every number is copied from paper/tables/v3_*.tex; keep it in step with cls_results.tex.
+\textbf{Background.} Bone suppression helps radiologists find nodules hidden by ribs, and suppressed images have been proposed as
+classifier inputs. A suppressor computes its output from the radiograph, so any gain must come from its learned prior; a fair test must
+control for network capacity.
+
+\textbf{Purpose.} To test whether the soft-tissue and bone images of a CT-supervised suppressor improve a chest radiograph classifier,
+and for which findings.
+
+\textbf{Methods.} A DenseNet-121 classifier was trained on five inputs: the radiograph; the soft-tissue image; radiograph,
+soft-tissue and bone images stacked as channels; the same three as streams of a shared encoder (hybrid); and the radiograph in all
+three streams (capacity control). Five seeds on NIH ChestX-ray14 (25,596 test images), VinBigData (2,943) and a paediatric pneumonia set
+(3,257, five folds) gave 175 runs. A pre-specified plan fixed the tests: paired cluster bootstrap of seed ensembles, Holm correction.
+
+\textbf{Results.} The hybrid did not improve macro-AUROC over the radiograph (NIH $+0.0001$ $[-0.0022,0.0024]$; VinBigData
+$+0.0024$ $[-0.0004,0.0053]$; paediatric $-0.0042$ $[-0.0108,0.0021]$) nor over the capacity control or channel stacking. For nodules
+and masses the soft-tissue input raised the mean AUROC on NIH ($+0.0089$ $[0.0040,0.0140]$, Holm $p=0.002$), with a similar,
+non-significant estimate on VinBigData ($+0.0083$); on NIH, diffuse findings lost ($-0.0032$ to $-0.0052$). Soft-tissue stream maps hit
+nodules and masses more often than radiograph maps (interaction $+0.145$ $[0.092,0.199]$). The suppressor's uncertainty did not
+improve selective classification.
+
+\textbf{Conclusions.} Bone-suppressed inputs did not make these classifiers more accurate overall; their largest effect on both adult
+datasets was a small gain for nodules and masses, significant on NIH only.

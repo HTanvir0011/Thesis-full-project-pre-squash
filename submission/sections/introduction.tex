@@ -1,0 +1,72 @@
+\section{Introduction}
+\label{sec:intro}
+Chest CT resolves in three dimensions the anatomy that a radiograph superimposes on one plane, and it can therefore supervise radiograph
+models in ways that radiographs alone cannot. The bone and soft-tissue components of a projected CT are known exactly, and findings can be
+learned from CT without the overlap of ribs, heart and mediastinum. Both uses are now practical with public data, through projections
+rendered from chest CT \citep{angaitkar2026anatomy} and through CT volumes paired with report-derived findings \citep{hamamci2026ctrate}.
+Yet CT-supervised models of radiographs are judged mostly by image fidelity or classification accuracy, and these measures hide three
+clinically relevant failures: a model may erase a lesion, report a finding that is absent, or justify its output with a map that points
+elsewhere. This paper builds CT-supervised models of chest radiographs and tests them for all three.
+
+Ribs and clavicles overlap the lung fields and can obscure abnormalities. Dual-energy subtraction (DES) separates bone from soft tissue but
+needs dedicated hardware and a second exposure \citep{kuhlman2006des,sun2026bsldm}. Software bone suppression avoids both; radiologists find
+more nodules with suppressed images \citep{freedman2011lung}, and suppressed images have been compared with computer-aided detection
+\citep{schalekamp2014cad} and used as classifier inputs \citep{rajaraman2021bone}. Current learning-based suppressors either render paired
+supervision from chest CT, projecting bone, non-lung soft tissue and lung separately \citep{angaitkar2026anatomy}, or train diffusion models
+on real DES pairs \citep{chen2024bsdiff,sun2026bsldm,sun2025gllcm,sun2026debonedit}. In the CT-supervised line, lesion preservation has been
+assessed only indirectly, through detection gains and the contrast of boxed lesions \citep{angaitkar2026anatomy}.
+
+Suppressors are judged by how closely their output matches a bone or soft-tissue reference. A network rewarded for predicting bone can,
+however, move lesion signal into the bone image, so that the lesion disappears from the suppressed radiograph; and because a model that does
+nothing never absorbs a lesion, absorption has to be read next to suppression strength. Simulated nodules have been used to measure contrast
+after hand-built clavicle suppression and in phantoms \citep{hogeweg2013suppression,takagi2020dose}, and learned image-to-image models are
+known to remove or invent content in other modalities
+\citep{cohen2018distribution,antun2020instabilities,bhadra2021hallucinations,tivnan2024hallucination}. In our search (PubMed, arXiv and
+Crossref) we found no audit of learned bone suppression against an exactly known, additive lesion signal, and no training objective aimed
+at it.
+
+Whether suppression helps a classifier is a separate question. The suppressed images are computed from the radiograph and add no
+information that a classifier could not extract itself; a gain must come from the prior the suppressor learned from CT or from the way a
+network uses the extra images. Because a network that reads three images spends three times the computation, a gain can be credited to
+suppression only against a control of the same capacity, and seed variation and analytic flexibility can easily produce spurious
+differences \citep{varoquaux2022failures,simmons2011falsepositive}.
+
+CT can also teach a radiograph classifier directly. Knowledge distillation trains a student to match a teacher's softened outputs
+\citep{hinton2015distilling}, and cross-modal distillation transfers supervision between modalities through paired images
+\citep{gupta2016crossmodal}. Because each Qure.ai projection is built from one CT-RATE volume, a CT classifier can teach an X-ray model on
+images of the same patients, and one transformer family \citep{liu2022swinv2} can serve both modalities, so that their heat maps can be
+compared in the same patient. Whether such a transfer improves real-radiograph classification, aligns the two models' explanations or
+reduces hallucinated findings has not been tested.
+
+We address these questions in three studies with analysis plans that were hash-frozen before testing. Study~I measures and reduces lesion
+erasure by CT-supervised bone suppressors, Study~II tests whether classifiers gain from the suppressed images, and Study~III distils a Swin
+CT teacher into Swin radiograph classifiers. Our contributions are:
+\begin{enumerate}
+\item a counterfactual lesion audit that measures the fraction of an inserted lesion moved into the bone image, at sites shared by all
+ models and reported beside suppression strength;
+\item a twin lesion-invariance regulariser, with a dose-response over its weight and an ablation of its parts, trained on public
+ CT-derived projections in a three-model ensemble with split-conformal intervals;
+\item a pre-specified evaluation on locked sets (paired dual-energy images, an annotated rib set, real nodules, downstream detection and
+ classification) and an external validation on paediatric radiographs, with every deviation disclosed;
+\item a pre-specified test of bone-suppressed classifier inputs (five configurations including a multi-stream network and a
+ capacity-matched control, 175 runs on three datasets) with per-finding analyses, attribution maps scored against expert boxes and
+ conformal uncertainty;
+\item a cross-modality framework that distils a 2.5D Swin CT teacher into Swin X-ray classifiers through paired projections, evaluated for
+ accuracy against a convolutional reference, CT--X-ray heat-map agreement, localisation and hallucination under perturbations that add no
+ disease.
+\end{enumerate}
+Fig.~\ref{fig:workflow} summarises the three studies and Fig.~\ref{fig:architecture} the models.
+
+\begin{figure}[htbp]
+\centering
+\safefig{figures/fig_workflow.pdf}
+\caption{Workflow of the three studies, from data to models, evaluation and the main result. All hypotheses were fixed in analysis plans that
+were hash-frozen before testing; training ran in cloud GPU kernels, and every reported number is computed by scripts from the saved
+outputs.}
+\label{fig:workflow}
+\end{figure}
+
+Section~\ref{sec:related} reviews related work and Section~\ref{sec:data} the data. Sections~\ref{sec:methods} to~\ref{sec:audit}
+describe the suppressors and the audit, Section~\ref{sec:classifier} the classifier study and Section~\ref{sec:experiments} the
+experiments of Studies~I and~II; Section~\ref{sec:xm} presents the cross-modality study, Section~\ref{sec:results} reports all results,
+and Sections~\ref{sec:discussion} to~\ref{sec:conclusion} discuss them.

@@ -1,0 +1,20 @@
+{
+ "id": "ac_8/s4-prep-tbx",
+ "title": "s4-prep-tbx",
+ "code_file": "run_prep.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "omareldash75/tbx11k-original-dataset-with-bounding-boxes",
+  "ac_8/s4-wts3",
+  "ac_8/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [],
+ "model_sources": []
+}

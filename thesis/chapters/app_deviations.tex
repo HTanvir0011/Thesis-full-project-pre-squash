@@ -1,0 +1,80 @@
+% Follows DEVIATIONS.md entry by entry (dates and substance copied); each item says what changed, why, and how it changes the reading.
+The entries below follow \path{DEVIATIONS.md} of the repository in date order. Each says what changed, why, and how it affects the reading of
+the results.
+\begin{description}
+\item[2026-10-26, physics.] The renderer uses a water-equivalent density with per-component ICRU-44 attenuation, an energy-integrating
+ detector and a W-anode spectrum; scatter, noise and blur are applied at training time rather than rendered. \emph{Effect:} the v1 renders are a
+ simplified physical model; they concern the v1 study only.
+\item[2026-10-26, model size.] SwinV2-Tiny at $512$~px instead of the reference SwinV2-Base at $1024$~px, for compute reasons; the nested
+ decoder covers the encoder stages with a plain tail to full resolution. \emph{Effect:} comparisons with the reference model mix the
+ regulariser with resolution and capacity; the matched no-twin control isolates the regulariser.
+\item[2026-10-26, LIDC sources.] Part of the series came from a Kaggle copy, the rest from LUNA16 (checked voxel-identical to DICOM) or the TCIA
+ API; the frame is a body crop with a bounded aspect ratio. \emph{Effect:} none on the results; recorded for reproducibility.
+\item[2026-10-26, MIMIC-CXR and Node21.] MIMIC-CXR was dropped (not needed, credentialed access). Node21 was not available as a ready copy;
+ it was later fetched from its Zenodo record inside a cloud kernel. \emph{Effect:} none.
+\item[2026-10-27, usable CTs.] Short scans needed many padded frame rows; the limit was raised to 50 rows and padded rows are set to air.
+ \emph{Effect:} more CTs usable for v1; no locked set involved.
+\item[2026-10-27, learning rate.] The pilot passed its gate and a check on synthetic validation CTs kept $2\times10^{-4}$ for every arm; no real
+ image was used. \emph{Effect:} none.
+\item[2026-10-27, SZCH looked at.] The pre-specified comparison with the reference model was looked at on all 75 SZCH pairs after the v1
+ ablation. SZCH became a development set (24 development, 51 held-out images) and its audit development evidence only; the confirmatory audit
+ moved to VinDr-RibCXR and JSRT. \emph{Effect:} the main deviation of the project; it is why the second plan exists and why only the 51 held-out
+ pairs support fidelity claims.
+\item[2026-10-27, secondary metrics.] Band-limited SSIM, the fidelity of the removed signal and a high-frequency energy ratio were added after
+ the SSIM gap was seen. \emph{Effect:} they explain the gap; they do not replace the pre-specified metrics.
+\item[2026-10-27, Qure projections.] The public Qure.ai projections became the v2 training source after their exact additivity was verified;
+ split by patient. \emph{Effect:} the weights inherit CC BY-NC-SA 4.0.
+\item[2026-10-29, second plan.] SAP\_v2.md was written after the v2 recipe had been developed on development data; held-out SZCH PSNR and SSIM of
+ screening runs had been printed by a screening tool. \emph{Effect:} disclosed; no decision used them, and the tool was changed.
+\item[2026-10-29, encoder screen and ablation arms.] Added as exploratory, with an encoder learning rate of $0.25\times$ for vision
+ transformers fixed in advance; ConvNeXt-V2-T diverged at the full rate and was rerun at $0.25\times$. \emph{Effect:} the rerun extends a rule
+ written for another encoder type.
+\item[2026-10-29, accidental start.] A dry-run listing started the held-out uncertainty evaluation by mistake; it was stopped after two minutes
+ before writing any output. \emph{Effect:} none; the driver now guards that step.
+\item[2026-10-31, BS-LDM.] The released BS-LDM weights were run as an extra baseline outside the analysis plan, with a seeded sampler and our SZCH
+ preprocessing. \emph{Effect:} descriptive only; its audit sites were drawn before the masks were pinned and are not paired with the others.
+\item[2026-10-31, replacement and tie-break.] Rule R2 first promoted RAD-DINO, then the pre-declared tie-break between the two encoders that met
+ R2 chose ConvNeXt-V2-T at two seeds each; the matched no-twin control is the same encoder. With three seeds the gap moved 0.0005 outside the
+ tie band; the choice was not reopened. \emph{Effect:} both encoders are reported on the locked sets; the selection used no locked number.
+\item[2026-11-01, stored weights.] Seven of 27 evaluated checkpoints carry overflowed (infinite) batch-normalisation variances from mixed-precision
+ training in one decoder node. \emph{Effect:} the results describe the stored models as they are; cloud and local outputs agree to 0.0024\,dB.
+\item[2026-11-03, cloud evaluation and mask pinning.] The last locked-set outputs were computed on cloud GPUs. Because lung masks differ between
+ GPUs, an optional mask cache was added to the audit and rib-benchmark code so that every model is scored on the sites of the final tables; the
+ sites were checked to be identical file by file. \emph{Effect:} a post-freeze code change that leaves the computation unchanged when the cache is
+ not used.
+\item[2026-11-03, synthetic-bank path.] A wrong path in the evaluation driver would have loaded no CT for the synthetic evaluation; fixed before
+ it ran. \emph{Effect:} none on results.
+\item[2026-11-03, BDCXR-3257 duplicates.] The planned hash rule chained most of the paediatric images into one group; replaced, before any model
+ ran, by a correlation rule. The 2\,\% lung-mask rule of the audit is applied to the eroded mask (no image affected). \emph{Effect:} the folds
+ are balanced; repeated images of one child cannot be detected without identifiers.
+\item[2026-11-03, independent recheck.] Two independent reviews of the statistics and the code found and fixed: an interaction bootstrap that
+ dropped repeated draws (intervals about 25\,\% too narrow; one exploratory reading changed), an incomplete implementation of the downstream
+ analysis (now with the planned bootstrap intervals), detection metrics that depended on the order of tied scores (up to 0.00055), missing Holm
+ correction for the real-nodule contrasts, missing intervals for the reliability results (rerun identical), and the overlap source of the JSRT
+ audit (the reference model's map instead of the consensus map). The multiplicity rule was stated explicitly. \emph{Effect:} no
+ pre-specified verdict changed; all corrected numbers are those of this thesis.
+\item[2026-11-03, v1 H1 record.] A recheck entry had described the v1 H1 test as missing; it had been computed on 27 October 2026 on the test CTs
+ with all three lesion-aware arms. The analysis of the 300k finals is a replication. \emph{Effect:} both are reported (Table~\ref{tab:v1_h1}).
+\item[3--7 November, v3.] \todo{summarise the v3 entries of DEVIATIONS.md (3 to 7 November) here}
+\item[2026-11-08, CT micro-batches.] Gradient accumulation was added to the CT stage after the freeze so that four volumes of 24 slices fit a
+ T4 GPU; each step still averages the same four volumes and the network has no batch statistics, so the step is unchanged. \emph{Effect:}
+ none on the computation; the frozen hash of the CT code no longer matches the file.
+\item[2026-11-08, accounts.] At the author's request one cloud account took the place of another; it prepared its own NIH copy, which was
+ compared file by file with the common copy before use. \emph{Effect:} none.
+\item[2026-11-09, CT teacher outputs and seed 2.] The design keeps everything derived from CT-RATE in the cloud except metrics and heat-map
+ frames, but its own account plan needs the teacher outputs (logits and pooled features of the subset volumes, no images) on other accounts,
+ which is possible only through a download; the standard download also brought the teachers' weights and predictions to the author's
+ computer. Teacher seed 2 collapsed (constant logits; no code or data fault found). Seeds 5 and 6 were trained with the unchanged recipe
+ under a rule fixed before any P1 model of seed 2 (Section~\ref{sec:xm_models}), and seed 5 took slot 2. \emph{Effect:} a disclosed
+ conflict with the design's data rule (nothing was released); the CT recipe is seed-unstable (Section~\ref{sec:xm_discussion}).
+\item[2026-11-09, last kernels.] The weights of the distilled projection models moved through the author's computer to the only account
+ holding CT-RATE, for the cross-modal maps and the VinBigData zero-shot transfer (the same conflict as above). The DenseNet-121 reference runs
+ were copied to an account with the common NIH copy, because one account's soft image differed and the rib-emphasis test reads it. The
+ pointing-game launcher gained a run filter that leaves the v3 behaviour unchanged. A zero-shot run that failed because it started before its
+ model was written was rerun unchanged. VinBigData fine-tuning, planned only if the quota allowed, was not run (about 50 GPU hours).
+ \emph{Effect:} none on the hypotheses; one descriptive analysis is missing.
+\item[2026-11-10, collection and descriptive summaries.] A rerun that sat in the cloud queue for nine hours was resubmitted unchanged. CT
+ teacher seed 5's predictions, first downloaded without them, were fetched like those of the other seeds. The pointing-game summary, the
+ grouping of the per-class DeLong tests and the conformal analysis were fixed after the hypothesis results were known
+ (Section~\ref{sec:xm_stats}). \emph{Effect:} these descriptive results are post hoc in form; no hypothesis test was affected.
+\end{description}

@@ -1,0 +1,1 @@
+{"jobs": [[0, "xm", "ct", "ct", 5, 20, "--stage", "ct", "--arch", "swinv2_tiny_window8_256.ms_in1k", "--accum", "4"], [1, "xm", "ct", "ct", 6, 20, "--stage", "ct", "--arch", "swinv2_tiny_window8_256.ms_in1k", "--accum", "4"]], "done": ["ct_xm_ct_s5", "ct_xm_ct_s6"], "done_before": [], "unfinished": [], "warm_up": {}, "warm_up_s": 7}

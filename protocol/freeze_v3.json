@@ -1,0 +1,58 @@
+{
+ "created": "2026-11-03T21:51:32",
+ "git_commit": "5e7e69f0d1206aef1d19cbb04e8d7ed3de3943ce",
+ "files": {
+  "SAP_v3.md": "32d5d361fac1f0de0a3476080d310d8cfd9e7475a4fea2b18ea3db9fef38beb8",
+  "DESIGN_v3.md": "63248cd3b779b2689f508bd00be8436b99337acf10777651872c7d8e463d8dce",
+  "config.yaml": "c07ff4d92717ddfcd93b056b411403f746dfbb1c1133ff88400354d7e97b4a37",
+  "s4/cls_hybrid.py": "2085fe6cc13c8ad16a7cc7c14fa81d684fb61adab48919d0f21b8041879296cd",
+  "s4/uq_conformal.py": "d1680a1ec16585e311c64449087507c28fcae182c49c6236feaa6396ad2b1150",
+  "s4/xai_multistream.py": "a1d21c5330dea4bf3ee8607ad2cb7f08203d69eb0203e3b27e888f6feb0716be",
+  "tools/hybrid_stats.py": "0a746de4f76d8027048b548e051e02ff5312d6a4415bd8c196527d047d192ce1",
+  "kernels/down/run_down.py": "75c824d86a3abe52f21e30fd33200c23eac6c1feeb8b4d625e1f4d60149732ff"
+ },
+ "splits": {
+  "ac_6-s4-prep-nih/nih/split.npy": "b754892dcf1525f134f9f1da9767405cd6cb1cb1b825df654de9b8ecf04b882b",
+  "ac_6-s4-prep-nih/nih/ids.json": "d12b3863edb51823ba0a8bd6d4be001ff2334724aa9488fb9f3eee4458858fe7",
+  "ac_9-s4-prep-vin/vin/split.npy": "b004541480a16923b69ea513029399cd809af6a0733793884cf3e4e4dfd9e2c5",
+  "ac_8-s4-prep-bdcxr/bdcxr/split_f0.npy": "12d16d304899d73a9a9a1e2970727c14f7964e5c3890ba9fdad37d23c961d0c8",
+  "ac_8-s4-prep-bdcxr/bdcxr/split_f1.npy": "83dbe6911e7d53a77f1ed722556ab311e2eb0a8ecc2df848a1a06b8ba7684c11",
+  "ac_8-s4-prep-bdcxr/bdcxr/split_f2.npy": "4b5277147092a724ea01bd7d61bf3e0e3cfc05a13ae4dadfdc4493c4d0533056",
+  "ac_8-s4-prep-bdcxr/bdcxr/split_f3.npy": "e514ad6ba44d1d9a578e962b3cdd56235001dfe0a81c47eb3d8ce917008171a5",
+  "ac_8-s4-prep-bdcxr/bdcxr/split_f4.npy": "2a0ec79663df8ec9c2ff50bc445a19bec349abb8d64e6c2d5b92278aac1566cc"
+ },
+ "screen": {
+  "encoders": [
+   "densenet121.ra_in1k",
+   "convnextv2_tiny.fcmae_ft_in22k_in1k",
+   "hf:microsoft/rad-dino",
+   "swinv2_base_window16_256.ms_in1k"
+  ],
+  "data": "nih",
+  "config": "orig",
+  "seed": 0,
+  "epochs": 10,
+  "rule": "best validation macro-AUROC goes forward with DenseNet-121; within 0.005 of the best the cheaper (GPU time per epoch) wins"
+ },
+ "main": {
+  "configs": [
+   "orig",
+   "soft",
+   "early",
+   "hybrid",
+   "ctrl"
+  ],
+  "epochs": 20,
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "size": 256,
+  "batch": 32,
+  "lr": 0.0003
+ },
+ "primary": "H6: hybrid > orig in macro-AUROC per data set (NIH, VinBigData, BDCXR-3257), Holm over the three"
+}

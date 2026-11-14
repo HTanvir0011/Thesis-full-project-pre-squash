@@ -1,0 +1,40 @@
+== rd_s2: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_s2.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== rd_nt: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/final_v2/weights/qp_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_ribcxr/rd_nt.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== clia_v1: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/audit_ribcxr/clia_v1.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+== identity: python -m s4.audit_real --dataset ribcxr --root data/ribcxr_raw --lib outputs/lesions_test.npz --methods identity --out results/final/audit_ribcxr/identity.csv
+    w = csv.DictWriter(fh, list(rows[0]))
+                                ~~~~^^^
+IndexError: list index out of range
+have results/final/audit_jsrt/rd_s2.csv
+have results/final/audit_jsrt/rd_nt.csv
+have results/final/audit_jsrt/clia_v1.csv
+have results/final/audit_jsrt/identity.csv
+have results/final/audit_szch/rd_s2.csv
+have results/final/audit_szch/rd_nt.csv
+have results/final/audit_szch/clia_v1.csv
+have results/final/audit_szch/identity.csv
+== rd: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/final_v2/weights/qp_twin16_s0_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s1_raddino300k/final_ema.pt+outputs/final_v2/weights/qp_twin16_s2_raddino300k/final_ema.pt --out results/final/rib/rd.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== clia_v1: python -m s4.eval_ribcxr --root data/ribcxr_raw --method ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/rib/clia_v1.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== clahe: python -m s4.eval_ribcxr --root data/ribcxr_raw --method clahe --out results/final/rib/clahe.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'
+== homomorphic: python -m s4.eval_ribcxr --root data/ribcxr_raw --method homomorphic --out results/final/rib/homomorphic.csv
+    if raw.ndim == 3:
+       ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'ndim'

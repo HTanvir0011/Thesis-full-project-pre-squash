@@ -1,0 +1,43 @@
+% Negative and null results, in neutral words. Numbers are copied from the generated tables, DECISIONS.md (development data) and
+% results/final/stats_held.json.
+Every run or question that did not give the expected benefit, or any benefit, is listed here.
+\begin{description}
+\item[N1] \emph{Lesion-weighted loss in v1.} It lowered absorption on synthetic validation CTs but sat on the bone-error margin, and combined
+ with insertion it missed the margin by about 6\,\% (Table~\ref{tab:v1_ablation}); it was therefore not selected, although on the test CTs it
+ was non-inferior (Table~\ref{tab:v1_h1}).
+\item[N2] \emph{Lesion insertion on the Qure source.} Adding counterfactual insertion to the Qure-projection source did not lower real-image
+ absorption in the screening (0.218 against 0.216) or in the ablation at the full budget (0.191 against 0.190; Table~\ref{tab:ablation_twin}).
+\item[N3] \emph{Mixed sources.} Mixing LIDC renders with the Qure projections gave higher absorption than the Qure source alone (0.286, and 0.269
+ with insertion, against 0.216 in round 1 of the screening).
+\item[N4] \emph{Backbone size.} SwinV2-B instead of SwinV2-T changed absorption by about one seed spread (0.189 against 0.216 without the twin
+ term, 0.063 against 0.073--0.103 with it, both at the screening budget) and did not remove the fidelity cost of large twin weights; it was not pursued.
+\item[N5] \emph{Training length.} Three times more samples changed absorption and fidelity within the seed spread (for example 0.071 against
+ a mean of 0.086 at $w=16$), but made the seeds agree more closely.
+\item[N6] \emph{Large twin weights.} At $w=64$ two seeds disagreed (absorption 0.020 and 0.061, development PSNR 21.27 and 20.80\,dB); on the
+ locked sets $w=32$ and 64 lower bone-region PSNR by about 0.3\,dB (Table~\ref{tab:dose_response}).
+\item[N7] \emph{SSIM gap to the reference model.} Not closed: SSIM$_{cal}$ misses its margin by 0.013 at the lower bound (Table~\ref{tab:h2}).
+ With identical smoothing of all outputs the gap halved on development data, and with a band limit of $\sigma=4$ it nearly vanishes on the held-out
+ pairs (0.946 against 0.948); the rest is attributed to fine texture and possibly to the lower output resolution, which was not tested.
+\item[N8] \emph{Encoders not promoted.} DINOv3 ViT-S/16 did not improve on SwinV2-T at the screening budget; RAD-DINO missed rule R1 on PSNR by
+ 0.05\,dB (it later met R2 and is reported as a secondary encoder); ConvNeXt-V2-T diverged at the full encoder learning rate
+ (Table~\ref{tab:app_screen}).
+\item[N9] \emph{Failed or mixed confirmatory results.}
+ SSIM non-inferiority against the reference model (H2$'$) failed.
+ Real-nodule contrast on Node21 rose less with ours than with the reference model ($-0.025$ $[-0.033,-0.018]$; H4$'$a).
+ The soft-tissue image used alone did not improve downstream classification or detection (H4$'$b): NIH macro-AUROC $-0.001$
+ $[-0.004,0.003]$, VinBigData CPM $-0.009$ $[-0.016,-0.002]$; no difference in differences by bone overlap excluded zero, and on TBX11K it could
+ not be estimated.
+ Conformal intervals calibrated on synthetic data covered 0.139 of real bone pixels at a nominal 0.90 (H5$'$).
+ On BDCXR-3257 the soft image was non-inferior but not superior for pneumonia classification.
+\item[N10] \emph{CT-to-X-ray distillation (v4).} Distilling a CT teacher into the X-ray model did not improve the NIH classifier: on the
+ shared findings F$_\mathrm{p1}$ minus F$_\mathrm{in}$ was $-0.0001$ $[-0.0016,0.0014]$ (H11), and neither H12 contrast differed
+ (Table~\ref{tab:xm_hyp}). On the projections and in zero-shot transfer the distilled models were slightly worse
+ (Table~\ref{tab:xm_transfer}).
+\item[N11] \emph{Cross-modal heat-map agreement (v4).} The CT and X-ray maps of the same scan correlated no better than those of different
+ scans (H14: $+0.0076$ $[-0.0068,0.0223]$), and all mean correlations were negative (Table~\ref{tab:xm_crossmodal}).
+\item[N12] \emph{Swin against DenseNet-121 (v4).} The Swin classifier was not better than DenseNet-121 (H13: $-0.0049$
+ $[-0.0085,-0.0015]$), mostly because of hernia (Table~\ref{tab:xm_per_class}), and its Grad-CAM++ maps hit the NIH boxes less than half as
+ often (Table~\ref{tab:xm_pointing}).
+\item[N13] \emph{CT teacher stability (v4).} One of seven CT teacher runs collapsed and another learned only in its last epochs
+ (Table~\ref{tab:xm_ct_seeds}).
+\end{description}

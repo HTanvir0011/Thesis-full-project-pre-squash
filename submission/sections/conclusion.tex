@@ -1,0 +1,14 @@
+\section{Conclusion}
+\label{sec:conclusion}
+CT-supervised models of chest radiographs can fail in ways that fidelity and accuracy metrics do not show. Bone suppressors that match a
+dual-energy reference equally well differed threefold in how much of a lesion they moved into their bone image; a counterfactual audit makes
+this loss measurable on real radiographs, and a twin lesion-invariance regulariser trained on public CT-derived projections lowered it to a
+third of a released CT-supervised model's, at non-inferior bone-region fidelity, with the effect replicated across encoders and on
+paediatric radiographs. Read as separate streams, bone-suppressed images did not improve the overall accuracy of classifiers on any of three
+datasets against a control of the same capacity, and as extra channels they added at most small gains; the most consistent effect was a
+small gain for nodules and masses. Distilling a 2.5D Swin CT teacher into Swin
+radiograph classifiers through paired projections did not improve their accuracy, and the CT and X-ray Grad-CAM++ maps of the same patient
+did not agree; Swin Grad-CAM++ localised lesions poorly, whereas Integrated Gradients and decoder attention localised about as well as for a
+convolutional network, and the Swin classifiers were far less sensitive to image noise than DenseNet-121. Lesion erasure, hallucination and localisation
+should therefore be audited before CT-supervised models are used on radiographs, and gains from suppressed inputs or from CT teachers should
+be expected, and tested, for specific findings rather than overall.

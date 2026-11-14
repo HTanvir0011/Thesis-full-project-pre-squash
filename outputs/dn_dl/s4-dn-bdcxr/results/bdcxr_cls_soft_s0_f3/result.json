@@ -1,0 +1,1 @@
+{"val_macro_auc": 0.7897408595131665, "test_macro_auc": 0.7991093773314047, "per_class": [0.8658373205741627, 0.8253808798324127, 0.7061099315876387], "variants": ["soft"], "seed": 0, "epochs": 10, "split": "split_f3.npy"}

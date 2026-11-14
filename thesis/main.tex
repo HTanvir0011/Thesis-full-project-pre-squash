@@ -1,0 +1,243 @@
+% =============================================================================================================
+% Thesis: an explainable, hallucination-aware Swin framework for chest CT and X-ray (CT-supervised bone suppression, lesion absorption and
+% the twin regulariser; bone-suppressed classifier inputs; CT-to-X-ray distillation, Chapter ch:crossmodal).
+% It shares tables, figures, section files and the bibliography with ../paper.
+%
+% Build (inside thesis/):   pdflatex main && bibtex main && pdflatex main && pdflatex main
+% Rules (same as the paper)
+%   1. No result is typed by hand. Result tables are \input from ../paper/tables (tools/final_stats.py, tools/paper_extras.py,
+%      tools/bdcxr_stats.py), figures come from ../paper/figures; numbers quoted in the text are copied from those files or from
+%      results/final/stats_held.json and results/bdcxr/stats.json.
+%   2. Chapters \input paper sections where the text overlaps; each paper section is input at most once (labels stay unique). The paper's
+%      results.tex is NOT input: the result chapters define the same labels with thesis-length text.
+%   3. Red [TODO: ...] markers are the places where text or a decision is still missing.
+% =============================================================================================================
+\documentclass[11pt,a4paper,openany]{report}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{siunitx}
+\usepackage{setspace}
+\usepackage{adjustbox}
+\usepackage{microtype}
+\usepackage[section]{placeins}
+\usepackage[authoryear,round]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\onehalfspacing
+
+% ---- layout (same as paper/main.tex) ---------------------------------------------------------------------------
+\setlength{\emergencystretch}{3em}   % justified lines stretch instead of running into the margin
+\def\UrlBreaks{\do\/\do\.\do\_\do\-}  % file paths in \path{...} may break after / . _ -
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+% Look for \input files, tables and figures in the paper folder as well as in thesis/
+\makeatletter
+\def\input@path{{../paper/}}
+\makeatother
+\graphicspath{{../paper/}}
+
+% ---- helpers (keep identical to paper/main.tex) ---------------------------------------------------------------
+% Red to-do marker. The argument is detokenized, so file names with underscores are safe; use plain ASCII and no
+% macros, no percent sign and no empty line inside \todo{...}.
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: \detokenize{#1}]}}
+% Generated table, shrunk to the text width or 80 % of the page height when larger (never enlarged): \fittable{tables/name.tex}
+\newcommand{\fittable}[1]{\begin{adjustbox}{max width=\linewidth,max totalheight=0.8\textheight}\input{#1}\end{adjustbox}}
+% Figure that falls back to a red box when the PDF has not been generated yet: \safefig[width]{figures/name.pdf}
+\newcommand{\safefig}[2][\linewidth]{%
+  \IfFileExists{#2}%
+    {\includegraphics[width=#1]{#2}}%
+    {\fbox{\parbox[c][2.4cm][c]{0.92\linewidth}{\centering\todo{missing figure #2}}}}}
+% some bibliography styles print DOI fields through \doi{...}
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+% Paper sections shared by the two papers and the thesis name the other paper; here they point to chapters instead
+% (paper/main.tex and paper/main_cls.tex define the paper wording).
+\newcommand{\companion}[1]{Chapter~\ref{#1}}
+\newcommand{\companioncite}{}
+\newcommand{\clsstudy}{the pre-specified study of Chapter~\ref{ch:classifier}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\LARGE\bfseries Development of an Explainable and Hallucination-Aware Swin Transformer Based Framework for Cross Modality Chest CT and
+X-Ray Disease Classification\par}
+\vspace{0.8em}
+{\Large Lesion-faithful CT-supervised bone suppression, a counterfactual lesion audit and CT-to-X-ray knowledge transfer\par}
+\vspace{3em}
+{\large A thesis submitted in partial fulfilment of the requirements for the degree of\par}
+\vspace{0.5em}
+{\large \todo{degree and programme}\par}
+\vspace{3em}
+{\large by\par}
+\vspace{0.5em}
+{\Large Tanvir Hossin\par}
+{\large \todo{student ID}\par}
+\vspace{3em}
+{\large Supervisor: \todo{name, title}\par}
+\vfill
+{\large \todo{department}\par}
+{\large \todo{university}\par}
+\vspace{1em}
+{\large \todo{month and year of submission}\par}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+I declare that this thesis is my own work and has not been submitted for any other degree or qualification. Work by others is acknowledged
+by citation, and the data sets are used under the terms stated in Chapter~\ref{ch:ethics}.
+\todo{department wording of the declaration, signature and date; AI-assistance statement: an AI assistant (Claude, Anthropic) was used for code, analysis automation and drafting, and the author reviewed its output -- adapt to the department rules}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Chest CT shows in three dimensions what a chest radiograph superimposes on one plane. This thesis develops two kinds of model in which CT
+supervises the reading of radiographs, bone suppressors and Swin transformer classifiers, and asks of each whether it can be trusted:
+whether it keeps what it should keep, whether it reports findings that are not there, and whether its explanations point at the disease.
+
+The first part concerns bone suppressors trained on projections rendered from CT, where the bone image is known exactly. Such a network may
+move part of a lesion into the bone image and so delete it from the suppressed radiograph, which fidelity metrics do not show. We introduce
+a counterfactual lesion audit, which adds nodules from CT scans unseen in training to real radiographs at fixed sites and
+measures the absorption $A$, the fraction of the added signal that moves into the predicted bone image, and a twin lesion-invariance
+regulariser, which ties the bone predictions of a training image and of a copy with a pasted lesion. Two studies with pre-specified plans
+trained suppressors on LIDC-IDRI renders and on the public Qure.ai projections, and every change to the plans is reported. The regulariser
+lowered absorption in a dose-dependent way. On VinDr-RibCXR, unseen during development, the final three-model ensemble
+absorbed about a third of the lesion signal that a released CT-supervised model absorbed and less than a third of what a matched control
+without the regulariser absorbed, with non-inferior bone-region fidelity on held-out dual-energy pairs; the effect replicated with three
+encoders and on 3,257 paediatric radiographs from Bangladesh. Not everything held: structural similarity to the dual-energy image missed its
+margin, real-nodule contrast rose more than with the reference model on one data set and less on another, the suppressed image alone did
+not improve downstream classification or detection, and intervals calibrated on synthetic data did not cover real errors until a post hoc
+recalibration on 24 real pairs. A third pre-specified study, 175 classifier runs on three data sets, found no gain in overall accuracy from
+the soft-tissue and bone images against a control of the same capacity, only a small gain for nodules and masses, significant on NIH
+ChestX-ray14 alone.
+
+The second part builds an explainable, hallucination-aware Swin framework for cross-modality chest CT and X-ray classification. A 2.5D
+SwinV2 teacher learns six findings from CT-RATE volumes, an X-ray model learns them from projections of the same volumes with and without
+distillation from the teacher, and both initialise NIH ChestX-ray14 classifiers. Under a fourth pre-specified plan, distillation did not
+improve the classification of real radiographs (difference in mean AUROC $-0.0001$, 95\,\% interval $-0.0016$ to $0.0014$), and the CT and
+X-ray heat maps of the same patient did not agree. Grad-CAM++ maps of the Swin classifiers located expert boxes less than half as often as
+those of a DenseNet-121, whereas Integrated Gradients and decoder attention localised about as well. The Swin classifiers were far less
+sensitive to image noise than DenseNet-121 (27--29\,\% against 78\,\% of finding-free images flipped), and rib emphasis
+flipped slightly fewer images after distillation (12.9\,\% against 13.7\,\%, $p=0.044$, uncorrected), as it did after pretraining on the
+projections without the teacher.
+
+Across both parts, models of equal accuracy or fidelity differed widely in what they erased, invented or highlighted. Lesion absorption,
+hallucination and localisation should therefore be measured before CT-supervised models are used on radiographs.
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\todo{personal acknowledgements: supervisor, lab, family, funding}
+This work used public and licensed data provided by Qure.ai, the CT-RATE team, The Cancer Imaging Archive and the LIDC-IDRI investigators, the
+authors of SZCH-X-Rays, VinDr (VinDr-RibCXR and VinDr-CXR), the Japanese Society of Radiological Technology, the Node21, TBX11K and NIH
+ChestX-ray14 teams, and Dr.~M~R~Khan Shishu Hospital \& Institute of Child Health, Dhaka, which provided BDCXR-3257 under the ethical approval
+REC-FSIT-2025/No:~11928. Training ran on Kaggle GPU quota.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{Abbreviations and symbols}
+\addcontentsline{toc}{chapter}{Abbreviations and symbols}
+\begin{longtable}{@{}lp{0.74\linewidth}@{}}
+$A$ & lesion absorption (Chapter~\ref{ch:audit}) \\
+AUPRC & area under the precision-recall curve \\
+AURC & area under the risk-coverage curve (selective classification) \\
+AUROC & area under the receiver operating characteristic curve \\
+CBAM & convolutional block attention module \\
+CLIA & counterfactual lesion insertion augmentation (lesions pasted into training images) \\
+CNR & contrast-to-noise ratio \\
+CPM & competition performance metric (mean FROC sensitivity) \\
+DES & dual-energy subtraction \\
+EMA & exponential moving average of the weights \\
+FNR & false-negative rate \\
+F$_\mathrm{in}$, F$_\mathrm{p0}$, F$_\mathrm{p1}$ & NIH classifiers initialised from ImageNet, P0 and P1 (Chapter~\ref{ch:crossmodal}) \\
+FROC & free-response receiver operating characteristic \\
+H1$'$--H5$'$ & confirmatory hypotheses of the second analysis plan \\
+H6--H10 & hypotheses of the third analysis plan (Chapter~\ref{ch:classifier}) \\
+H11--H15 & hypotheses of the fourth analysis plan (Chapter~\ref{ch:crossmodal}) \\
+IG & Integrated Gradients (attribution method) \\
+$K$ & number of ensemble members \\
+LPIPS & learned perceptual image patch similarity \\
+P0, P1 & projection models without and with distillation from the CT teacher (Chapter~\ref{ch:crossmodal}) \\
+PSNR, PSNR$_{cal}$ & peak signal-to-noise ratio, after a per-image gain and offset fit \\
+QP & the Qure.ai CT projections (training source of the second study) \\
+SSIM & structural similarity \\
+$w$ & twin weight of the lesion-invariance regulariser \\
+$x$, $b$, $s$ & radiograph, bone image, soft-tissue image ($s=x-b$) \\
+\end{longtable}
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+\chapter{Introduction}\label{ch:intro}
+\input{chapters/introduction}
+
+\chapter{Background}\label{ch:background}
+\input{chapters/background}
+
+\chapter{Data and physics}\label{ch:data}
+\input{chapters/data_physics}
+
+\chapter{The v1 study: lesion-faithful supervision from LIDC-IDRI}\label{ch:v1}
+\input{chapters/v1_study}
+
+\chapter{The v2 method: Qure projections and the twin regulariser}\label{ch:v2}
+\input{chapters/v2_method}
+
+\chapter{The counterfactual lesion audit}\label{ch:audit}
+\input{chapters/audit}
+
+\chapter{Benchmark and downstream tasks}\label{ch:benchmark}
+\input{chapters/benchmark_downstream}
+
+\chapter{Reliability}\label{ch:reliability}
+\input{chapters/reliability}
+
+\chapter{External validation on paediatric radiographs}\label{ch:external}
+\input{chapters/external_validation}
+
+\chapter{Bone-suppressed inputs for chest radiograph classifiers}\label{ch:classifier}
+\input{chapters/classifier_study}
+
+\chapter{An explainable, hallucination-aware Swin framework for chest CT and X-ray}\label{ch:crossmodal}
+\input{chapters/crossmodal}
+
+\chapter{Discussion and limitations}\label{ch:discussion}
+\input{chapters/discussion_limitations}
+
+\chapter{Reproducibility and ethics}\label{ch:ethics}
+\input{chapters/reproducibility_ethics}
+
+\chapter{Conclusion}\label{ch:conclusion}
+\input{chapters/conclusion}
+
+\appendix
+\chapter{Deviations from the plan}\label{app:deviations}
+\input{chapters/app_deviations}
+
+\chapter{Negative and null results}\label{app:negative}
+\input{chapters/app_negative}
+
+\chapter{Additional tables}\label{app:extra}
+\input{sections/appendix_tables}
+
+\chapter{Classifier study: deviations and additional figures}\label{app:classifier}
+\input{sections/cls_appendix}
+
+\chapter{CLAIM 2024 checklist}\label{app:claim}
+\input{sections/claim_checklist}
+
+\bibliographystyle{plainnat}
+\bibliography{../paper/refs}
+
+\end{document}

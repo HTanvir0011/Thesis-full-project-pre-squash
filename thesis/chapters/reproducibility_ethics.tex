@@ -1,0 +1,59 @@
+% Reproducibility and ethics. Licence facts are copied from the pages listed in paper/REFS_TODO.md (read on 2026-11-03); unread terms are marked.
+\input{../paper/sections/reproducibility}
+
+\section{Licences and terms of use}
+Each data set was used under its own terms; the licence pages listed in the reference notes of the repository were read on 3 November 2026.
+\begin{description}
+\item[LIDC-IDRI] (The Cancer Imaging Archive) CC BY 3.0; the renders and the lesion library are derived from it, so any release that contains
+ lesion patches carries the attribution and the data DOI.
+\item[Qure.ai CT projections] CC BY-NC-SA 4.0 on the Hugging Face Hub. Weights trained on them inherit the non-commercial, share-alike terms.
+\item[CT-RATE] Gated on the Hugging Face Hub, CC BY-NC-SA 4.0, no redistribution; it was not used directly, only through the projections.
+\item[SZCH-X-Rays] CC BY-NC 4.0; its images may be shown with attribution, which is why every qualitative figure of this thesis uses them.
+\item[VinDr-RibCXR] A signed data use agreement: non-commercial research only, no redistribution without permission, the original images and
+ annotations are not to be modified, and the data set page is cited. The images were processed only on the licence holder's computer and
+ private cloud account; lesions were added only in memory for the audit and no modified image was stored or shared; only metrics left these
+ environments.
+\item[VinBigData] The Kaggle competition built on the VinDr-CXR images; its rules allow non-commercial research and academic use. It was
+ processed only in cloud accounts that had accepted the rules.
+\item[JSRT] Free of charge after registration with the Japanese Society of Radiological Technology, but not in the public domain: the
+ archived request form forbids distributing images and commercial use. No JSRT image is shown or redistributed.
+\item[Node21] CC BY-NC-ND 4.0: modified Node21 images may not be redistributed, and none is.
+\item[TBX11K] Data under CC BY 4.0 (code under CC BY-NC-SA 4.0).
+\item[NIH ChestX-ray14] No named licence; use is unrestricted provided the download site is linked, the NIH Clinical Center acknowledged and the
+ data set paper cited \citep{wang2017chestxray}.
+\item[BDCXR-3257] Published on figshare under CC BY 4.0 \citep{durjoy2026bdcxr}; this thesis follows the stricter data use agreement between
+ the hospital and the author's research group, which allows academic use and publication of derived results but not redistribution or public
+ release of the radiographs.
+\end{description}
+Pretrained encoders carry their own terms, read on their model pages: the ConvNeXt V2 weights used for the final model are CC BY-NC 4.0;
+RAD-DINO is MIT-licensed and described by its authors as shared for research only and not for clinical practice; the DINOv3 weights fall under
+the DINOv3 License, which requires derivatives to carry the same agreement and publications to acknowledge DINOv3. A release of the final
+ensemble has to respect both the CC BY-NC-SA 4.0 terms of the training projections and the CC BY-NC 4.0 terms of the ConvNeXt V2 weights.
+
+\section{Data protection and privacy}
+All data are retrospective and were de-identified by their providers. No attempt was made to re-identify any person, and no data set was
+linked to another at the level of individuals. Licensed and restricted data (VinDr-RibCXR, VinBigData, BDCXR-3257) were processed only by
+their licence holders or within accounts permitted to hold them, and only aggregate metrics, predictions and statistics left those
+environments. File names and per-image results of these sets are not released. No credential was ever written into a file of the repository,
+a notebook or a log; access tokens were kept in local files outside the repository and are to be rotated before any release.
+\todo{state the data protection law and institutional policy that apply to the author's institution}
+
+\section{Ethical considerations}
+This is a retrospective study of existing images and did not involve new patients. BDCXR-3257 was used under the ethical approval
+REC-FSIT-2025/No:~11928 of Daffodil International University and the data use agreement with the providing hospital; the public and licensed
+data sets were used under their terms. \todo{institutional ethics statement for the thesis as a whole: approval or exemption}
+
+The main ethical risk of the subject itself is the one the thesis measures: a bone suppressor that removes lesions can hide disease from a
+reader who trusts the suppressed image. The models of this thesis are for research only and are not medical devices; they were not evaluated
+for clinical use, by readers, or on populations beyond those described. Their failures are reported with the same weight as their successes,
+including the cases where the reference model did better and the conditions under which the uncertainty estimates do not hold. A suppressed image
+should be shown beside the original, never instead of it.
+
+\section{Release plan}
+Nothing has been published yet; release requires the author's explicit decision. The planned release consists of the three checkpoints of the
+final ensemble, the inference code, a model card that states the training data, the intended use, the measured limitations and the licence,
+and optionally a demonstration that processes uploaded images in memory and stores nothing. Training, evaluation and table scripts, the
+analysis plans, the decision and deviation logs and the freeze files can be released because they contain no data. Nothing derived from
+VinDr-RibCXR, VinBigData or BDCXR-3257 images, and no real radiograph other than SZCH-X-Rays examples with their licence line, will be released.
+Before publication the checkpoints are inspected for embedded paths or names, their SHA-256 hashes are written into the model card, and all
+access tokens used during the project are rotated. The checklist is kept in \path{release/README.md}.

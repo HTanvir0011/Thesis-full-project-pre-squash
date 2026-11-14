@@ -1,0 +1,7 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+resumed from /kaggle/working/results/bdcxr_hyb_hybrid@densenet121_s0_f0/ckpt.pt at epoch 1
+/kaggle/input/datasets/ac_8/s4-code/s4/cls_hybrid.py:288: RuntimeWarning: Mean of empty slice
+  json.dump(dict(val_macro_auc=best[0], test_macro_auc=float(np.nanmean(auc)), per_class=auc.tolist(), config=a.config, arch=a.arch,
+/kaggle/input/datasets/ac_8/s4-code/s4/cls_hybrid.py:291: RuntimeWarning: Mean of empty slice
+  print(json.dumps(dict(val=best[0], test=float(np.nanmean(auc)))))
+{"val": 0.5483073881887819, "test": NaN}

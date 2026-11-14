@@ -1,0 +1,20 @@
+{
+ "id": "ac_1/s4-v4-ct-b",
+ "title": "s4-v4-ct-b",
+ "code_file": "run_down.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_1/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_1/s4-ctprep"
+ ],
+ "model_sources": []
+}

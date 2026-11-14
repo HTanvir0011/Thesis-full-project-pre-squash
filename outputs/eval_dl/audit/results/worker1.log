@@ -1,0 +1,24 @@
+== rd_nt_s1: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --out results/final/audit_jsrt/rd_nt_s1.csv
+ours: n=1482 A_mean=0.119 low-overlap=0.066 high-overlap=0.185 leak=0.0011
+== rd_nt_s2: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_jsrt/rd_nt_s2.csv
+ours: n=1482 A_mean=0.110 low-overlap=0.065 high-overlap=0.166 leak=0.0011
+== clia_v1: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/audit_jsrt/clia_v1.csv
+ens: n=1482 A_mean=0.210 low-overlap=0.098 high-overlap=0.310 leak=0.0015
+== recipe_v1: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/audit_jsrt/recipe_v1.csv
+ens: n=1482 A_mean=0.229 low-overlap=0.122 high-overlap=0.321 leak=0.0016
+== qure: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods qure:data/qure/weights/bone_suppression.ts --out results/final/audit_jsrt/qure.csv
+qure: n=1482 A_mean=0.118 low-overlap=0.056 high-overlap=0.214 leak=0.0004
+== identity: python -m s4.audit_real --dataset jsrt --root data/jsrt/images --lib outputs/lesions_test.npz --overlap_ref qure:data/qure/weights/bone_suppression.ts --methods identity --out results/final/audit_jsrt/identity.csv
+identity: n=1482 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000
+== rd_nt_s1: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s1_raddino300k/final_ema.pt --out results/final/audit_szch/rd_nt_s1.csv
+ours: n=450 A_mean=0.177 low-overlap=0.161 high-overlap=0.187 leak=0.0011
+== rd_nt_s2: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods ours:outputs/final_v2/weights/qp_s2_raddino300k/final_ema.pt --out results/final/audit_szch/rd_nt_s2.csv
+ours: n=450 A_mean=0.182 low-overlap=0.167 high-overlap=0.188 leak=0.0013
+== clia_v1: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/clia_s0/final_ema.pt+outputs/fin_all/weights/clia_s1/final_ema.pt+outputs/fin_all/weights/clia_s2/final_ema.pt --out results/final/audit_szch/clia_v1.csv
+ens: n=450 A_mean=0.293 low-overlap=0.252 high-overlap=0.306 leak=0.0012
+== recipe_v1: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods ens:outputs/fin_all/weights/recipe_s0/final_ema.pt+outputs/fin_all/weights/recipe_s1/final_ema.pt+outputs/fin_all/weights/recipe_s2/final_ema.pt --out results/final/audit_szch/recipe_v1.csv
+ens: n=450 A_mean=0.314 low-overlap=0.278 high-overlap=0.326 leak=0.0013
+== qure: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods qure:data/qure/weights/bone_suppression.ts --out results/final/audit_szch/qure.csv
+qure: n=450 A_mean=0.134 low-overlap=0.114 high-overlap=0.142 leak=0.0003
+== identity: python -m s4.audit_real --dataset szch --root data/szch --lib outputs/lesions_test.npz --methods identity --out results/final/audit_szch/identity.csv
+identity: n=450 A_mean=0.000 low-overlap=0.000 high-overlap=0.000 leak=0.0000

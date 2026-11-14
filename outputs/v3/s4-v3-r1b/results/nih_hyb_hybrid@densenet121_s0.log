@@ -1,0 +1,3 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+resumed from /kaggle/input/notebooks/ac_6/s4-v3-r1a/results/nih_hyb_hybrid@densenet121_s0/ckpt.pt at epoch 1
+{"val": 0.5416798504599797, "test": 0.515541512229239}

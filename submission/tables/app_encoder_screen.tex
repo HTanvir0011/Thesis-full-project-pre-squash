@@ -1,0 +1,12 @@
+% Encoder screen at the reduced budget (development data; rule R1). ConvNeXt-V2-T at the full encoder learning rate diverged and is not listed.
+\begin{tabular}{llllll}
+\toprule
+encoder (twin, $w=16$, 100k samples) & seeds & $A$ (SZCH audit) & bone PSNR$_{cal}$ dev-24 & SSIM$_{cal}$ dev-24 & QP val MAE \\
+\midrule
+SwinV2-T & 3 & 0.086 & 21.77 & 0.843 & 0.0072 \\
+SwinV2-B & 1 & 0.063 & 21.79 & 0.844 & 0.0069 \\
+DINOv3 ViT-S/16 (encoder lr $\times0.25$) & 1 & 0.081 & 21.49 & 0.847 & 0.0056 \\
+RAD-DINO ViT-B/14 (encoder lr $\times0.25$) & 2 & 0.053 & 21.55 & 0.846 & 0.0050 \\
+ConvNeXt-V2-T (encoder lr $\times0.25$) & 2 & 0.066 & 21.86 & 0.846 & 0.0052 \\
+\bottomrule
+\end{tabular}

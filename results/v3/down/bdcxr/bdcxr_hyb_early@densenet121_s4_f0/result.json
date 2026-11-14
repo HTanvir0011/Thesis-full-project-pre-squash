@@ -1,0 +1,1 @@
+{"val_macro_auc": 0.8199272685391635, "test_macro_auc": 0.8277346585054706, "per_class": [0.8823766794853535, 0.8478984602580106, 0.7529288357730476], "config": "early", "arch": "densenet121.ra_in1k", "seed": 4, "epochs": 20, "split": "split_f0.npy", "routing_mean": [[1.0], [1.0], [1.0]]}

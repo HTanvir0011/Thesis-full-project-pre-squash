@@ -1,0 +1,9 @@
+[{"stream_name":"stdout","time":42.336468416,"data":"vin /kaggle/input/notebooks/ac_1/s4-prep-vin/vin 39.9 s {'orig.npy': 'a746339ae7474a1e143eb30571a720d455c332611de63d4b76a6e20f62ac9529', 'soft.npy': 'dee4e9ab9bfaebd845ffc27992c457bc669eb2ac374c9ca740af129059534fdb', 'split.npy': 'b004541480a16923b69ea513029399cd809af6a0733793884cf3e4e4dfd9e2c5', 'patient.npy': '3e60f2884e7b4117a0e01a01e7dbb18e24a15446702f612ca7d871b4ec3de9a1', 'ids.json': '38408cfb07d75a88dadfdd7ca5f2c649c66ae7169d216c195af3b7b16adfe576', 'ann.json': 'ac06fb61c19a9583488de837657f5ad5ab4bc18e58a81232f1f12fcb17221eb2', 'status.json': 'a0aea1af84249afc81bb721c4a1866a21155b20389e6a8a33ab217ffef911f81'}\n"}
+,{"stream_name":"stdout","time":42.336555036,"data":"ALL DONE 41s\n"}
+,{"stream_name":"stderr","time":45.353678818,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":45.353716928,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":46.004044474,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":46.004079564,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":48.503632969,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":49.94576651,"data":"[NbConvertApp] Writing 276485 bytes to __results__.html\n"}
+]

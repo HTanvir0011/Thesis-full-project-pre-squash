@@ -1,0 +1,14 @@
+% SAP_v4.md H11-H15: differences of the seed ensembles, 10000 bootstrap resamples (NIH: patient clusters; H14: scans; H15: patients); Holm over H11 and the two H12 contrasts
+\begin{tabular}{lllll}
+\toprule
+hypothesis & contrast & estimate [95\,\% CI] & $p$ & Holm $p$ \\
+\midrule
+H11 (primary) & F$_\mathrm{p1}$ $-$ F$_\mathrm{in}$, mean AUROC of the 5 shared findings & -0.0001 [-0.0016, +0.0014] & 0.912 & 0.912 \\
+H12 & F$_\mathrm{p1}$ $-$ F$_\mathrm{p0}$, same & -0.0008 [-0.0022, +0.0006] & 0.247 & 0.742 \\
+H12 & F$_\mathrm{p0}$ $-$ F$_\mathrm{in}$, same & +0.0007 [-0.0008, +0.0023] & 0.342 & 0.742 \\
+H13 & F$_\mathrm{in}$ $-$ DenseNet-121, NIH macro-AUROC (14 classes) & -0.0049 [-0.0085, -0.0015] & 0.005 & -- \\
+H14 & P1: matched $-$ mismatched CT/X-ray map correlation & +0.0076 [-0.0068, +0.0223] & 0.301 & -- \\
+(descriptive) & P0: matched $-$ mismatched CT/X-ray map correlation & -0.0087 [-0.0228, +0.0056] & 0.235 & -- \\
+H15 & F$_\mathrm{p1}$ $-$ F$_\mathrm{in}$, rib-emphasis flip rate & -0.0080 [-0.0159, -0.0003] & 0.044 & -- \\
+\bottomrule
+\end{tabular}

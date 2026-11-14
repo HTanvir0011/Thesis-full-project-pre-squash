@@ -1,0 +1,13 @@
+% Seed-ensemble test metrics per configuration, descriptive (BDCXR-3257: out-of-fold); encoder densenet121
+\begin{tabular}{lllllll}
+\toprule
+data set (test images) & metric & orig & soft & early & hybrid & ctrl \\
+\midrule
+NIH (25,596) & macro-AUROC & 0.8241 & 0.8243 & 0.8273 & 0.8242 & 0.8235 \\
+NIH (25,596) & macro-AUPRC & 0.3026 & 0.3067 & 0.3110 & 0.3055 & 0.3022 \\
+VinBigData (2,943) & macro-AUROC & 0.9615 & 0.9659 & 0.9644 & 0.9639 & 0.9648 \\
+VinBigData (2,943) & macro-AUPRC & 0.5513 & 0.5801 & 0.5674 & 0.5715 & 0.5701 \\
+BDCXR-3257 (3,257) & macro-AUROC & 0.8461 & 0.8381 & 0.8421 & 0.8418 & 0.8409 \\
+BDCXR-3257 (3,257) & macro-AUPRC & 0.7312 & 0.7222 & 0.7243 & 0.7252 & 0.7209 \\
+\bottomrule
+\end{tabular}

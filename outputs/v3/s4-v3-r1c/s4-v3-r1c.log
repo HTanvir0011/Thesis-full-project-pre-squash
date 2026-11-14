@@ -1,0 +1,13 @@
+[{"stream_name":"stdout","time":8.298427406,"data":"warm-up /kaggle/input/notebooks/ac_8/s4-prep-bdcxr/bdcxr/orig.npy [0.21, 1.3]\n"}
+,{"stream_name":"stdout","time":8.501039820999999,"data":"warm-up /kaggle/input/notebooks/ac_8/s4-prep-bdcxr/bdcxr/soft.npy [0.21, 1.5]\n"}
+,{"stream_name":"stdout","time":8.501106964,"data":"warm-up total 5s\n"}
+,{"stream_name":"stdout","time":80.30507376,"data":"bdcxr_hyb_hybrid@densenet121_s0_f0 rc 75 (checkpoint saved, continues in the next session) 72s\n"}
+,{"stream_name":"stdout","time":80.410074616,"data":"bdcxr_hyb_orig@densenet121_s0_f0 rc 0  72s\n"}
+,{"stream_name":"stdout","time":80.411004881,"data":"ALL DONE\n"}
+,{"stream_name":"stderr","time":82.956294249,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":82.956322543,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":83.37900085,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":83.379030794,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":84.266945579,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":85.702798921,"data":"[NbConvertApp] Writing 309189 bytes to __results__.html\n"}
+]

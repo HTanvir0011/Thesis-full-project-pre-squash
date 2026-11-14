@@ -1,0 +1,21 @@
+{
+ "id": "ac_6/s4-v3-r1b",
+ "title": "s4-v3-r1b",
+ "code_file": "run_down.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_tpu": false,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "ac_6/s4-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "ac_6/s4-prep-nih",
+  "ac_6/s4-v3-r1a"
+ ],
+ "model_sources": []
+}

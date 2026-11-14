@@ -1,0 +1,118 @@
+[{"stream_name":"stdout","time":173.883677708,"data":"{\n"}
+,{"stream_name":"stdout","time":173.883772556,"data":" \"python\": \"3.13.15\",\n"}
+,{"stream_name":"stdout","time":173.883778063,"data":" \"cpus\": 4,\n"}
+,{"stream_name":"stdout","time":173.883781483,"data":" \"platform\": \"Linux-6.18.55+-x86_64-with-glibc2.39\",\n"}
+,{"stream_name":"stdout","time":173.883785755,"data":" \"ram_gb\": 31.3,\n"}
+,{"stream_name":"stdout","time":173.88379114,"data":" \"working_free_gb\": 19.5,\n"}
+,{"stream_name":"stdout","time":173.88379448,"data":" \"torch\": \"2.11.0+cpu\",\n"}
+,{"stream_name":"stdout","time":173.883797585,"data":" \"timm\": \"1.0.29\",\n"}
+,{"stream_name":"stdout","time":173.883800521,"data":" \"numpy\": \"2.1.3\",\n"}
+,{"stream_name":"stdout","time":173.883803412,"data":" \"scipy\": \"1.16.3\",\n"}
+,{"stream_name":"stdout","time":173.883806357,"data":" \"pandas\": \"2.3.3\",\n"}
+,{"stream_name":"stdout","time":173.883809344,"data":" \"sklearn\": \"1.6.1\",\n"}
+,{"stream_name":"stdout","time":173.883812583,"data":" \"skimage\": \"0.25.2\",\n"}
+,{"stream_name":"stdout","time":173.883815444,"data":" \"cv2\": \"4.14.0\",\n"}
+,{"stream_name":"stdout","time":173.883818371,"data":" \"pydicom\": \"3.0.2\",\n"}
+,{"stream_name":"stdout","time":173.883821218,"data":" \"SimpleITK\": \"2.5.6\",\n"}
+,{"stream_name":"stdout","time":173.883824235,"data":" \"lpips\": \"MISSING (ModuleNotFoundError)\",\n"}
+,{"stream_name":"stdout","time":173.883827279,"data":" \"torchmetrics\": \"1.9.0\",\n"}
+,{"stream_name":"stdout","time":173.883830203,"data":" \"statsmodels\": \"0.15.0\",\n"}
+,{"stream_name":"stdout","time":173.883833161,"data":" \"totalsegmentator\": \"MISSING (ModuleNotFoundError)\",\n"}
+,{"stream_name":"stdout","time":173.883836559,"data":" \"internet_hf\": 200,\n"}
+,{"stream_name":"stdout","time":173.883839433,"data":" \"input_top\": {\n"}
+,{"stream_name":"stdout","time":173.883842377,"data":"  \"datasets\": [\n"}
+,{"stream_name":"stdout","time":173.883845246,"data":"   \"washingtongold\"\n"}
+,{"stream_name":"stdout","time":173.883848883,"data":"  ]\n"}
+,{"stream_name":"stdout","time":173.883851773,"data":" },\n"}
+,{"stream_name":"stdout","time":173.883854513,"data":" \"n_patients\": 3,\n"}
+,{"stream_name":"stdout","time":173.883857473,"data":" \"n_series\": 896,\n"}
+,{"stream_name":"stdout","time":173.883860358,"data":" \"n_xml\": 2118,\n"}
+,{"stream_name":"stdout","time":173.883863217,"data":" \"walk_s\": 171,\n"}
+,{"stream_name":"stdout","time":173.883866036,"data":" \"slices_per_series\": {\n"}
+,{"stream_name":"stdout","time":173.883869164,"data":"  \"min\": 1,\n"}
+,{"stream_name":"stdout","time":173.883872041,"data":"  \"median\": 131,\n"}
+,{"stream_name":"stdout","time":173.883874896,"data":"  \"max\": 733\n"}
+,{"stream_name":"stdout","time":173.883877754,"data":" },\n"}
+,{"stream_name":"stdout","time":173.883880468,"data":" \"series_lt_100_slices\": 295,\n"}
+,{"stream_name":"stdout","time":173.88388338,"data":" \"sample_thickness_mm\": [\n"}
+,{"stream_name":"stdout","time":173.883886313,"data":"  2.0,\n"}
+,{"stream_name":"stdout","time":173.883889094,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.8838918,"data":"  1.0,\n"}
+,{"stream_name":"stdout","time":173.883894505,"data":"  1.0,\n"}
+,{"stream_name":"stdout","time":173.883897243,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883900046,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883902881,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.883905618,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.883908331,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883915866,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883918896,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883921798,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.883924575,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.883927326,"data":"  3.0,\n"}
+,{"stream_name":"stdout","time":173.883951673,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.88395965,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.883964141,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.883969373,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883973508,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883977783,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883982138,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.883986308,"data":"  2.0,\n"}
+,{"stream_name":"stdout","time":173.883989243,"data":"  2.0,\n"}
+,{"stream_name":"stdout","time":173.883992065,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.88399493,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.883997647,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.88400039,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884003103,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.884005833,"data":"  2.0,\n"}
+,{"stream_name":"stdout","time":173.884008738,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884011553,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884014426,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884017206,"data":"  2.0,\n"}
+,{"stream_name":"stdout","time":173.884019923,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884022685,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884025398,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.88402815,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.8840309,"data":"  3.0,\n"}
+,{"stream_name":"stdout","time":173.884033625,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884036363,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884039082,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884042486,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884045303,"data":"  1.0,\n"}
+,{"stream_name":"stdout","time":173.884048168,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.884050985,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884053983,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.884056713,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.88405951,"data":"  1.25,\n"}
+,{"stream_name":"stdout","time":173.884062243,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884064999,"data":"  3.0,\n"}
+,{"stream_name":"stdout","time":173.884067793,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884070585,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.88407334,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884076056,"data":"  3.0,\n"}
+,{"stream_name":"stdout","time":173.884078941,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884081658,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884084439,"data":"  NaN,\n"}
+,{"stream_name":"stdout","time":173.884087241,"data":"  2.5,\n"}
+,{"stream_name":"stdout","time":173.884089968,"data":"  3.0,\n"}
+,{"stream_name":"stdout","time":173.884092693,"data":"  NaN\n"}
+,{"stream_name":"stdout","time":173.884095441,"data":" ],\n"}
+,{"stream_name":"stdout","time":173.88409822,"data":" \"sample_manufacturer_kvp\": {\n"}
+,{"stream_name":"stdout","time":173.884104783,"data":"  \"TOSHIBA|135\": 5,\n"}
+,{"stream_name":"stdout","time":173.884107999,"data":"  \"GE MEDICAL SYSTEMS|125\": 13,\n"}
+,{"stream_name":"stdout","time":173.884111091,"data":"  \"GE MEDICAL SYSTEMS|120\": 25,\n"}
+,{"stream_name":"stdout","time":173.884114696,"data":"  \"SIEMENS|125\": 1,\n"}
+,{"stream_name":"stdout","time":173.884117679,"data":"  \"KODAK|?\": 1,\n"}
+,{"stream_name":"stdout","time":173.884121033,"data":"  \"GE MEDICAL SYSTEMS|140\": 5,\n"}
+,{"stream_name":"stdout","time":173.884124095,"data":"  \"FUJI PHOTO FILM Co., ltd.|?\": 1,\n"}
+,{"stream_name":"stdout","time":173.88412708,"data":"  \"Philips Medical Systems|150.000\": 1,\n"}
+,{"stream_name":"stdout","time":173.884130061,"data":"  \"SIEMENS|120\": 6,\n"}
+,{"stream_name":"stdout","time":173.884133119,"data":"  \"Philips|120\": 2\n"}
+,{"stream_name":"stdout","time":173.884136007,"data":" }\n"}
+,{"stream_name":"stdout","time":173.884138821,"data":"}\n"}
+,{"stream_name":"stderr","time":178.061476686,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":178.061514049,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":178.354472816,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":178.354502113,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":179.292505494,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":180.51800592,"data":"[NbConvertApp] Writing 290256 bytes to __results__.html\n"}
+]

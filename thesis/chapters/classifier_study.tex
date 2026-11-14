@@ -1,0 +1,23 @@
+% Classifier study: the third analysis plan (SAP_v3.md, hash-frozen in freeze_v3.json on 3 November 2026). Methods, results and discussion
+% are the sections of the second paper (paper/main_cls.tex: cls_methods, cls_results, cls_discussion), input here once; this file adds only
+% the question. \companion{...} in those sections becomes a chapter reference (thesis/main.tex). Every number comes from paper/tables/v3_*.tex.
+\section{Question}
+\label{sec:cls_intro}
+Chapter~\ref{ch:benchmark} gave the soft-tissue image to downstream classifiers in two simple ways: used alone it did not improve them, and
+added beside the radiograph it gave small gains; on paediatric radiographs it was non-inferior (Chapter~\ref{ch:external}). Two questions
+remain. First, a suppressor computes its soft-tissue and bone images from the radiograph, so they hold no information a classifier could not
+in principle extract itself. A gain can come only from the prior the suppressor learned from CT or from the way a network uses the extra
+images, and a network that reads three images instead of one also spends three times the computation; a fair test therefore needs a control
+that runs the same network on the radiograph alone. Second, suppression could help some findings and harm others, revealing small lesions
+behind ribs while removing cues for diffuse or pleural findings, and a macro-average over classes would hide such a trade-off.
+
+This chapter reports a third pre-specified study that addresses both. Five input configurations, among them a multi-stream network that
+reads the radiograph, soft-tissue and bone images as separate streams and a control that feeds the same network the radiograph three times,
+were trained with five seeds on NIH ChestX-ray14, VinBigData and BDCXR-3257, 175 runs in all. The plan continues the numbering of the earlier
+plans: H6 is primary, H7, H8 and H10 are secondary, and H9, which concerns the suppressor's own intervals, is reported in
+Chapter~\ref{ch:reliability}. The classifiers see the images as $X$, $S$ and $\hat B=X-S$, the radiograph and the suppressor's soft-tissue and
+bone images. The study is also the second paper of this thesis; its sections are reproduced here.
+
+\input{sections/cls_methods}
+\input{sections/cls_results}
+\input{sections/cls_discussion}

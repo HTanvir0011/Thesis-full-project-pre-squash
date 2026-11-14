@@ -1,0 +1,108 @@
+{
+ "src": "C:\\Thesis new\\swintrust4\\outputs\\v4",
+ "dst": "C:\\Thesis new\\swintrust4\\results\\v4",
+ "copied": {
+  "ct_xm_ct_s5": "ct-b"
+ },
+ "kept": [
+  "ct_xm_ct_s0",
+  "ct_xm_ct_s1",
+  "ct_xm_ct_s3",
+  "ct_xm_ct_s4",
+  "ct_xmx_xray_s0",
+  "ct_xmx_xray_s1",
+  "ct_xmx_xray_s2",
+  "ct_xmx_xray_s3",
+  "ct_xmx_xray_s4",
+  "ct_xmx_xraykd_s0",
+  "ct_xmx_xraykd_s1",
+  "ct_xmx_xraykd_s2",
+  "ct_xmx_xraykd_s3",
+  "ct_xmx_xraykd_s4",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xray_s0",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xray_s1",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xray_s2",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xray_s3",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xray_s4",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s0",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s1",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s2",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s3",
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s4",
+  "nih_hyb_orig@swinv2_tiny_window8_256_s0",
+  "nih_hyb_orig@swinv2_tiny_window8_256_s1",
+  "nih_hyb_orig@swinv2_tiny_window8_256_s2",
+  "nih_hyb_orig@swinv2_tiny_window8_256_s3",
+  "nih_hyb_orig@swinv2_tiny_window8_256_s4",
+  "nih_xm_transfer-xray_s0",
+  "nih_xm_transfer-xray_s1",
+  "nih_xm_transfer-xray_s2",
+  "nih_xm_transfer-xray_s3",
+  "nih_xm_transfer-xray_s4",
+  "nih_xm_transfer-xraykd_s0",
+  "nih_xm_transfer-xraykd_s1",
+  "nih_xm_transfer-xraykd_s2",
+  "nih_xm_transfer-xraykd_s3",
+  "nih_xm_transfer-xraykd_s4",
+  "nih_xmh_dn121_s0",
+  "nih_xmh_fin_s0",
+  "nih_xmh_fin_s3",
+  "nih_xmh_fp0_s0",
+  "nih_xmh_fp0_s3",
+  "nih_xmh_fp1_s0",
+  "nih_xmh_fp1_s3",
+  "qp_xm_xray_s0",
+  "qp_xm_xray_s1",
+  "qp_xm_xray_s2",
+  "qp_xm_xray_s3",
+  "qp_xm_xray_s4",
+  "qp_xm_xraykd_s0",
+  "qp_xm_xraykd_s1",
+  "qp_xm_xraykd_s2",
+  "qp_xm_xraykd_s3",
+  "qp_xm_xraykd_s4",
+  "vin_xm_transfer-xray_s0",
+  "vin_xm_transfer-xray_s1",
+  "vin_xm_transfer-xray_s2",
+  "vin_xm_transfer-xray_s3",
+  "vin_xm_transfer-xray_s4",
+  "vin_xm_transfer-xraykd_s0",
+  "vin_xm_transfer-xraykd_s1",
+  "vin_xm_transfer-xraykd_s2",
+  "vin_xm_transfer-xraykd_s3",
+  "vin_xm_transfer-xraykd_s4"
+ ],
+ "skipped": [
+  "ct_xm_ct_s2",
+  "ct_xm_ct_s6"
+ ],
+ "conflicts": {},
+ "incomplete": [],
+ "dst_differs": [],
+ "duplicates": {
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s3": [
+   "p1-b",
+   "p1-b-r"
+  ],
+  "nih_hyb_orig@swinv2_tiny_window8_256+xraykd_s4": [
+   "p1-b",
+   "p1-b-r"
+  ],
+  "nih_xm_transfer-xraykd_s4": [
+   "p1-b",
+   "p1-b-r"
+  ],
+  "nih_xmh_fp1_s3": [
+   "p1-b",
+   "p1-b-r"
+  ],
+  "qp_xm_xraykd_s3": [
+   "p1-b",
+   "p1-b-r"
+  ],
+  "qp_xm_xraykd_s4": [
+   "p1-b",
+   "p1-b-r"
+  ]
+ }
+}
